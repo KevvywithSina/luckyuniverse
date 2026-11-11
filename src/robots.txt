@@ -1,0 +1,11 @@
+# 검색엔진은 허용, 대량 수집 봇은 거절 (강제력은 없고 예의 있는 봇만 따릅니다)
+User-agent: GPTBot
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: Bytespider
+Disallow: /
+User-agent: PetalBot
+Disallow: /
+User-agent: *
+Allow: /

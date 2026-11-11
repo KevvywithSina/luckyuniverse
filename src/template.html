@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://docs.google.com; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; form-action 'self' https://docs.google.com; base-uri 'self'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>럭키유니버스</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="라이브쿠지·쿠지샵·쿠지머신·레전드쿠지에서 진행 중인 온라인 쿠지와 오리파의 남은 상, 상위상 확률을 한곳에서 비교합니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Black+Han+Sans&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: 기준시각 공지 띠 → 헤더(문의·광고 버튼) → 필터 바 → 응모권 카드 그리드 */
+:root{
+  --bg:#EEF0F3; --surface:#FFFFFF; --ink:#15171C; --muted:#5E6470; --line:#D9DCE2;
+  --accent:#2F45C8; --accent-soft:#E3E7FB; --on-accent:#FFFFFF;
+  --hit:#0E8A5F; --hit-soft:#DDF3EA; --warn:#B4610B; --warn-soft:#FBEBD6; --gone:#B9BDC6;
+  --notice:#FFF4D6; --notice-ink:#6B4A00; --ad:#7A3FC2; --ad-soft:#F0E7FB;
+  --f-display:"Black Han Sans","IBM Plex Sans KR",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111318; --surface:#1A1D24; --ink:#ECEEF2; --muted:#9AA1AE; --line:#2C303A;
+  --accent:#8C9BFF; --accent-soft:#23284A; --on-accent:#0F1222; --hit:#4FD1A0; --hit-soft:#143328; --warn:#F2A65A; --warn-soft:#3A2714; --gone:#454B57;
+  --notice:#2E2610; --notice-ink:#F3D27A; --ad:#C49BFF; --ad-soft:#2A1F3D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111318; --surface:#1A1D24; --ink:#ECEEF2; --muted:#9AA1AE; --line:#2C303A;
+  --accent:#8C9BFF; --accent-soft:#23284A; --on-accent:#0F1222; --hit:#4FD1A0; --hit-soft:#143328; --warn:#F2A65A; --warn-soft:#3A2714; --gone:#454B57;
+  --notice:#2E2610; --notice-ink:#F3D27A; --ad:#C49BFF; --ad-soft:#2A1F3D; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:1180px;margin:0 auto}
+.notice{margin-top:12px;background:var(--notice);color:var(--notice-ink);border-radius:10px;padding:10px 14px;font-size:.86rem;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.notice b{font-weight:700}
+.notice .times{font-family:var(--f-num);font-size:.78rem;opacity:.85}
+header{padding-block:20px 16px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between}
+.brand{display:flex;flex-direction:column;gap:4px;min-width:0}
+.brand h1{font-family:var(--f-display);font-weight:400;font-size:2.4rem;line-height:1;margin:0;letter-spacing:.01em}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:0;color:var(--muted);max-width:52ch}
+.hright{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.hbtn{height:36px;padding:0 14px;border-radius:9px;font:inherit;font-size:.86rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.hbtn.ad{border-color:var(--ad);color:var(--ad)}
+.stats{display:flex;gap:22px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-num);font-size:1.4rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:.78rem}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.search{flex:0 1 360px;min-width:0;height:40px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:0 14px;font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px}
+select{height:40px;padding:0 12px}
+#sort{flex:0 0 auto;min-width:190px;margin-left:auto}
+.chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip .n{display:inline-block;min-width:3ch;text-align:right;font-family:var(--f-num);font-size:.75rem;font-variant-numeric:tabular-nums;opacity:.7;margin-left:6px}
+.lbl{white-space:nowrap;font-size:.75rem;color:var(--muted);letter-spacing:.06em;margin-left:6px}
+.grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-right:10px}
+.grp .lbl{margin-left:0}
+.ips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;scrollbar-width:thin}
+.count{font-size:.8rem;color:var(--muted);margin:14px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:12px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-width:0}
+.card.sp{border-color:var(--ad)}
+.top{padding:14px 16px 0;min-height:118px;border-bottom:2px dashed var(--line);display:flex;flex-direction:column;gap:6px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.74rem;color:var(--muted)}
+.tag{padding:1px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.tag.o{background:var(--warn-soft);color:var(--warn)}
+.tag.c{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.tag.ad{background:var(--ad-soft);color:var(--ad);font-weight:700}
+.tag.live{background:#E0362B;color:#fff}
+.title{font-weight:700;font-size:1rem;line-height:1.35;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-bottom:12px}
+.bd{font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:6px}
+.bd.hit{background:var(--hit-soft);color:var(--hit)}
+.bd.last{background:var(--warn-soft);color:var(--warn)}
+.bot{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{display:flex;flex-direction:column;min-width:0}
+.nums b{font-family:var(--f-num);font-size:1.05rem;font-variant-numeric:tabular-nums}
+.nums small{font-size:.72rem;color:var(--muted)}
+.nums s{color:var(--muted);font-size:.72rem;font-family:var(--f-num)}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent)}
+.tiers{display:flex;flex-wrap:wrap;gap:4px}
+.tier{font-family:var(--f-num);font-size:.72rem;padding:2px 6px;border-radius:5px;border:1px solid var(--line)}
+.tier.on{border-color:var(--hit);color:var(--hit)}
+.tier.off{color:var(--gone);text-decoration:line-through}
+.acts{display:flex;gap:8px}
+.acts button,.acts a{flex:1;height:36px;border-radius:9px;font:inherit;font-size:.86rem;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none}
+.acts button{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.acts a{background:var(--accent);color:var(--on-accent);border:0;font-weight:500}
+.report{align-self:flex-start;background:none;border:0;padding:0;color:var(--muted);font:inherit;font-size:.74rem;text-decoration:underline;cursor:pointer}
+.detail{border-top:1px solid var(--line);padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px}
+.pl{display:grid;grid-template-columns:44px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:.82rem}
+.pl .g{font-family:var(--f-num);font-weight:700}
+.pl.t3 .g{color:var(--hit)}
+.pl .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.pl .c{font-family:var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
+.pl.z .g,.pl.z .c{color:var(--gone)}
+.pl .m{grid-column:2/4;height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:-4px}
+.pl .m i{display:block;height:100%;background:var(--hit)}
+.pl.lo .g{color:var(--warn)}
+.empty{padding:48px 0;text-align:center;color:var(--muted);grid-column:1/-1}
+footer{margin-top:28px;font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:0;width:min(520px,calc(100% - 32px))}
+dialog::backdrop{background:rgba(10,12,20,.45)}
+.dlg{padding:20px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{margin:0;font-size:1.15rem}
+.dlg p{margin:0;color:var(--muted);font-size:.86rem}
+.dlg label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.dlg input,.dlg select,.dlg textarea{padding:9px 12px;height:auto;font-size:.92rem}
+.dlg textarea{min-height:110px;resize:vertical}
+.dlg .btns{display:flex;gap:8px;justify-content:flex-end}
+.dlg .btns button{height:38px;padding:0 16px;border-radius:9px;font:inherit;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.dlg .btns button.primary{background:var(--accent);color:var(--on-accent);border:0}
+.dlg .msg{font-size:.86rem;color:var(--hit)}
+.dlg .msg.err{color:var(--warn)}
+@media (max-width:640px){.bar{position:static}.brand h1{font-size:2rem}.hright{align-items:flex-start}.stats{gap:16px}.stat b{font-size:1.2rem}}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--accent)}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="notice" role="note">
+    <b>실시간 정보가 아닙니다.</b>
+    <span id="asof">수집 시각 기준 현황판입니다.</span>
+    <span class="times" id="times"></span>
+  </div>
+
+  <header>
+    <div class="brand">
+      <h1>럭키<span>유니버스</span></h1>
+      <p>온라인 쿠지 사이트에서 진행 중인 쿠지와 오리파를 한곳에 모았습니다. 상위상이 몇 장 남았는지, 지금 뽑으면 확률이 얼마인지 비교해 보세요.</p>
+    </div>
+    <div class="hright">
+      <div class="hbtns">
+        <button class="hbtn" data-form="feedback">문의·건의</button>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="row">
+      <input id="q" class="search" type="search" placeholder="작품·상품명·샵 검색 (예: 원피스, 치이카와)" aria-label="검색">
+      <select id="sort" aria-label="정렬">
+        <option value="hit">상위상 확률 높은순</option>
+        <option value="last">라스트원 임박순</option>
+        <option value="topleft">상위상 남은 수</option>
+        <option value="cheap">가격 낮은순</option>
+      </select>
+    </div>
+    <div class="row" id="filters"></div>
+    <div class="row ips" id="ips"></div>
+  </div>
+
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"><div class="empty">현황을 불러오는 중입니다.</div></div>
+
+  <footer>
+    <span>각 사이트의 공개 페이지에서 수집한 시점 기준 정보입니다. 실제 잔여 수량과 가격은 해당 사이트에서 확인하세요. 럭키유니버스는 판매·추첨을 하지 않습니다.</span>
+    <span>상위상: 수량이 3장 이하인 등급(라스트원 제외). 상위상 확률 = 남은 상위상 ÷ 남은 응모권.</span>
+    <span>상품군(피규어·인형·굿즈·TCG)은 상위 등급 상품명으로 자동 분류해 틀릴 수 있습니다. 틀린 곳은 카드의 "정보가 다른가요?"로 알려주세요.</span>
+  </footer>
+</div>
+
+<dialog id="dlg">
+  <form class="dlg" id="fm" method="dialog" novalidate>
+    <h2 id="fm-title">문의·건의</h2>
+    <p id="fm-desc"></p>
+    <label for="fm-type">유형
+      <select id="fm-type" name="type">
+        <option value="데이터 오류 제보">데이터 오류 제보 (잔여·가격·분류가 달라요)</option>
+        <option value="기능 제안">기능 제안</option>
+        <option value="기타 문의">기타 문의</option>
+      </select>
+    </label>
+    <label for="fm-item">관련 상품 (선택)
+      <input id="fm-item" name="item" type="text" placeholder="상품명이나 링크">
+    </label>
+    <label for="fm-body">내용
+      <textarea id="fm-body" name="body" required placeholder="무엇이 다른지, 어떤 기능이 있으면 좋을지 적어주세요."></textarea>
+    </label>
+    <label for="fm-contact">답변 받을 연락처 (선택)
+      <input id="fm-contact" name="contact" type="text" placeholder="이메일 또는 카카오톡 ID">
+    </label>
+    <input id="fm-hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <div class="msg" id="fm-msg" role="status"></div>
+    <div class="btns">
+      <button type="button" id="fm-cancel">닫기</button>
+      <button type="submit" class="primary" id="fm-send">보내기</button>
+    </div>
+  </form>
+</dialog>
+
+__GA__
+<script>window.LUCKYUNIVERSE_B64="__PAYLOAD__";</script>
+<script>
+const K = (()=>{ try{ return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(window.LUCKYUNIVERSE_B64),c=>c.charCodeAt(0)))); }catch(e){ return {items:[],meta:{},config:{}}; } })();
+const CFG = K.config || {};
+const PLATS = ["라이브쿠지","쿠지샵","쿠지머신","레전드쿠지"];
+const CATS = ["피규어","인형","굿즈","TCG"];
+let DATA = [], META = {};
+
+/* 분석: config/site.json 의 ga4 가 있을 때만 빌드 단계에서 gtag 삽입 */
+function track(name, params){ try{ window.gtag && window.gtag("event", name, params||{}); }catch(e){} }
+
+function prep(items){
+  items.forEach((d,i)=>{
+    d.id=i;
+    const ranked=d.pr.filter(p=>!p[4]);
+    const top3=ranked.filter(p=>p[2]<=3);
+    d.top3=new Set(top3.map(p=>p[0]));
+    d.topTot=top3.reduce((s,p)=>s+p[2],0);
+    d.topRem=top3.reduce((s,p)=>s+p[3],0);
+    d.hit=d.rem&&d.pr.length?d.topRem/d.rem:0;
+    d.firstLeft=ranked[0]?ranked[0][3]>0:false;
+    d.firstG=ranked[0]?ranked[0][0]:"";
+    d.lastOne=d.pr.some(p=>p[4]&&p[3]>0);
+    d.near=d.lastOne&&(d.rem<=10||d.rem/d.tot<=0.15);
+    d.sp=!!d.pin;
+    d.cat=d.ty;
+  });
+  return items;
+}
+
+const st={q:"",plat:"",kind:"",off:"",cat:"",ip:"",onlyTop:false,sort:"hit",open:new Set()};
+try{const s=JSON.parse(localStorage.getItem("lu_pref")||"{}"); if(s.sort) st.sort=s.sort;}catch(e){}
+
+const $=s=>document.querySelector(s);
+const won=n=>n>=10000?(n/10000).toLocaleString("ko-KR",{maximumFractionDigits:2})+"만":n.toLocaleString("ko-KR");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtT=iso=>{const d=new Date(iso);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`};
+const outUrl=u=>!/^https:\/\//.test(u)?"#":CFG.utm?u+(u.includes("?")?"&":"?")+CFG.utm:u;
+
+function chip(label,group,val,n){
+  const on=st[group]===val;
+  return `<button class="chip" data-g="${group}" data-v="${esc(val)}" aria-pressed="${on}">${esc(label)}${n!=null?`<span class="n">${n}</span>`:""}</button>`;
+}
+function base(skip){
+  const q=st.q.trim().toLowerCase();
+  return DATA.filter(d=>
+    (skip==="plat"||!st.plat||d.p===st.plat)&&
+    (skip==="kind"||!st.kind||d.k===st.kind)&&
+    (!st.off||(st.off==="공식"?d.off:!d.off&&d.k==="kuji"))&&
+    (skip==="cat"||!st.cat||d.cat===st.cat)&&
+    (skip==="ip"||!st.ip||d.ip===st.ip)&&
+    (!st.onlyTop||d.topRem>0)&&
+    (!q||(d.t+" "+d.ip+" "+d.shop+" "+d.cat).toLowerCase().includes(q)));
+}
+function renderBars(){
+  const bp=base("plat"), bk=base("kind"), bc=base("cat"), bi=base("ip");
+  const g=(l,x)=>`<span class="grp"><span class="lbl">${l}</span>${x}</span>`;
+  let h=g("사이트",PLATS.map(p=>chip(p,"plat",p,bp.filter(d=>d.p===p).length)).join(""));
+  h+=g("종류",chip("쿠지","kind","kuji",bk.filter(d=>d.k==="kuji").length)+chip("오리파","kind","oripa",bk.filter(d=>d.k==="oripa").length));
+  h+=g("상품군",CATS.map(c=>chip(c,"cat",c,bc.filter(d=>d.cat===c).length)).join(""));
+  h+=g("구성",chip("공식 쿠지","off","공식")+chip("샵 구성","off","샵")+`<button class="chip" data-g="onlyTop" aria-pressed="${st.onlyTop}">상위상 남은 것만</button>`);
+  $("#filters").innerHTML=h;
+  const cnt={}; bi.forEach(d=>cnt[d.ip]=(cnt[d.ip]||0)+1);
+  const ips=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
+  if(st.ip&&!cnt[st.ip]) ips.unshift([st.ip,0]);
+  $("#ips").innerHTML=`<span class="lbl">작품</span>`+ips.map(([k,n])=>chip(k,"ip",k,n)).join("");
+}
+function card(d,pos){
+  const pct=d.tot?Math.round(d.rem/d.tot*100):0;
+  const tags=[d.sp?`<span class="tag ad">AD</span>`:"",`<span>${esc(d.p)}</span>`,`<span>·</span>`,`<span>${esc(d.shop)}</span>`,
+    d.k==="oripa"?`<span class="tag o">오리파</span>`:`<span class="tag">${d.off?"공식 쿠지":"샵 구성"}</span>`,
+    `<span class="tag c">${esc(d.cat)}</span>`, d.live?`<span class="tag live">LIVE</span>`:""].join("");
+  const badges=[];
+  if(d.topRem>0) badges.push(`<span class="bd hit">상위상 ${d.topRem}장 남음</span>`);
+  if(d.firstLeft && /^(A|S|SP1|1등|1|특)$/.test(d.firstG)) badges.push(`<span class="bd hit">${esc(d.firstG)}상 생존</span>`);
+  if(d.near) badges.push(`<span class="bd last">라스트원 임박</span>`);
+  const tiers=d.pr.filter(p=>!p[4]&&p[2]<=3).slice(0,10).map(p=>`<span class="tier ${p[3]>0?"on":"off"}">${esc(p[0])} ${p[3]}/${p[2]}</span>`).join("");
+  const open=st.open.has(d.id);
+  const detail=open?`<div class="detail">${d.pr.length?d.pr.map(p=>{
+      const r=p[2]?p[3]/p[2]:0, t3=!p[4]&&d.top3.has(p[0]);
+      return `<div class="pl ${p[3]===0?"z":""} ${p[4]?"lo":""} ${t3?"t3":""}"><span class="g">${p[4]?"LAST":esc(p[0])}</span><span class="nm">${esc(p[1]||(p[4]?"라스트원":"—"))}</span><span class="c">${p[3]}/${p[2]}</span><span class="m"><i style="width:${Math.round(r*100)}%"></i></span></div>`;}).join(""):
+      `<div class="pl"><span class="nm" style="grid-column:1/4">이 사이트는 오리파 구성표를 공개하지 않습니다.</span></div>`}</div>`:"";
+  return `<article class="card${d.sp?" sp":""}">
+    <div class="top"><div class="meta">${tags}</div><h2 class="title">${esc(d.t)}</h2>
+      <div class="badges">${badges.join("")}</div></div>
+    <div class="bot">
+      <div class="nums">
+        <div><small>1회</small><b>${won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
+        <div><small>남은 응모권</small><b>${d.rem.toLocaleString()}<span style="color:var(--muted);font-size:.75rem">/${d.tot.toLocaleString()}</span></b></div>
+        <div><small>상위상 확률</small><b style="color:${d.topRem?"var(--hit)":"var(--muted)"}">${d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—"}</b></div>
+      </div>
+      <div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>
+      ${tiers?`<div class="tiers">${tiers}</div>`:""}
+      <div class="acts"><button data-open="${d.id}" aria-expanded="${open}">${open?"접기":"등급별 잔여"}</button>
+        <a href="${esc(outUrl(d.url))}" target="_blank" rel="noopener" data-out="${d.id}" data-pos="${pos}">${esc(d.p)}에서 뽑기</a></div>
+      <button class="report" data-report="${d.id}">정보가 다른가요?</button>
+    </div>${detail}</article>`;
+}
+function filtered(){ return !!(st.q||st.plat||st.kind||st.off||st.cat||st.ip||st.onlyTop); }
+function render(){
+  renderBars();
+  let list=base();
+  const s=st.sort;
+  list.sort(s==="hit"?(a,b)=>b.hit-a.hit:s==="last"?(a,b)=>(b.near-a.near)||(a.rem/a.tot-b.rem/b.tot):s==="topleft"?(a,b)=>b.topRem-a.topRem:(a,b)=>a.price-b.price);
+  const sp=list.filter(d=>d.sp); list=sp.concat(list.filter(d=>!d.sp));
+  let html=list.map((d,i)=>card(d,i+1)).join("");
+  $("#grid").innerHTML=list.length?html:`<div class="empty">조건에 맞는 쿠지가 없습니다. 선택한 필터를 한 번 더 눌러 해제해 보세요.</div>`;
+  $("#count").textContent=`${list.length}개 표시 중`;
+}
+function renderHead(){
+  const k=DATA.filter(d=>d.k==="kuji").length,o=DATA.length-k;
+  const top=DATA.reduce((s,d)=>s+d.topRem,0);
+  $("#stats").innerHTML=[[DATA.length,"진행 중"],[k,"쿠지"],[o,"오리파"],[top.toLocaleString(),"남은 상위상"],[PLATS.length,"사이트"]].map(([b,l])=>`<div class="stat"><b>${b}</b><small>${l}</small></div>`).join("");
+  const S=META.sites||{}; const c={}; Object.entries(S).forEach(([k,v])=>{ if(v&&v.at) c[k]=v.at; });
+  const ts=Object.values(c).sort();
+  if(ts.length){
+    const latest=ts[ts.length-1], oldest=ts[0];
+    $("#asof").textContent = oldest===latest ? `${fmtT(latest)} 기준 현황판입니다. 뽑기 전에 사이트에서 남은 수량을 꼭 확인하세요.`
+      : `${fmtT(oldest)}~${fmtT(latest)} 사이에 수집한 현황판입니다. 뽑기 전에 사이트에서 남은 수량을 꼭 확인하세요.`;
+    $("#times").textContent=PLATS.filter(p=>c[p]).map(p=>`${p} ${fmtT(c[p])}${S[p]&&S[p].ok===false?" (갱신 실패·이전 값)":""}`).join(" · ");
+  }
+}
+
+/* 문의·광고 폼 */
+const dlg=$("#dlg"); let openedAt=0;
+function sentRecently(){ try{ const a=JSON.parse(localStorage.getItem("lu_sent")||"[]").filter(t=>Date.now()-t<3600e3); return a; }catch(e){ return []; } }
+function openForm(kind, item){
+  const ad=kind==="ad";
+  $("#fm-title").textContent=ad?"광고·제휴 문의":"문의·건의";
+  $("#fm-desc").textContent=ad?"목록 상단 노출 광고, 실시간 잔여 API 연동 등 제휴를 문의해 주세요. 확인 후 연락드립니다."
+    :"잘못된 정보는 확인 후 바로 고치고, 기능 제안은 검토해 반영 여부를 알려드립니다.";
+  $("#fm-type").value=ad?"광고: 상단 노출":(item?"데이터 오류 제보":"기능 제안");
+  $("#fm-item").value=item?`[${item.p}] ${item.t} ${item.url}`:"";
+  $("#fm-body").value=""; $("#fm-hp").value=""; openedAt=Date.now(); $("#fm-msg").textContent=""; $("#fm-msg").className="msg"; $("#fm-send").disabled=false;
+  try{dlg.showModal()}catch(e){dlg.setAttribute("open","")}
+  track("form_open",{form:kind});
+}
+$("#fm-cancel").addEventListener("click",()=>dlg.close());
+$("#fm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const msg=$("#fm-msg");
+  if(!$("#fm-body").value.trim()){msg.className="msg err";msg.textContent="내용을 적어주세요.";$("#fm-body").focus();return;}
+  if($("#fm-hp").value){ msg.className="msg"; msg.textContent="접수됐습니다. 고마워요!"; setTimeout(()=>dlg.close(),1400); return; }
+  if(Date.now()-openedAt<3000){ msg.className="msg err"; msg.textContent="조금만 천천히 작성해 주세요."; return; }
+  const recent=sentRecently(); if(recent.length>=5){ msg.className="msg err"; msg.textContent="한 시간에 5건까지 보낼 수 있어요. 잠시 뒤에 다시 보내주세요."; return; }
+  if($("#fm-body").value.length>2000){ msg.className="msg err"; msg.textContent="내용은 2,000자까지 적을 수 있어요."; return; }
+  const F=CFG.form||{};
+  if(!F.action){msg.className="msg err";msg.textContent="접수 창구를 준비하고 있습니다. 조금 뒤에 다시 시도해 주세요.";return;}
+  const fd=new FormData(); const vals={type:$("#fm-type").value,body:$("#fm-body").value,item:$("#fm-item").value,contact:$("#fm-contact").value};
+  Object.entries(F.fields||{}).forEach(([k,id])=>{ if(id) fd.append(id, vals[k]||""); });
+  $("#fm-send").disabled=true;
+  try{ await fetch(F.action,{method:"POST",mode:"no-cors",body:fd});
+    try{ localStorage.setItem("lu_sent",JSON.stringify(recent.concat(Date.now()))); }catch(_){}
+    msg.className="msg"; msg.textContent="접수됐습니다. 고마워요!"; track("form_submit",{type:vals.type});
+    setTimeout(()=>dlg.close(),1400);
+  }catch(err){ msg.className="msg err"; msg.textContent="보내지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요."; $("#fm-send").disabled=false; }
+});
+
+document.addEventListener("click",e=>{
+  const c=e.target.closest(".chip");
+  if(c){const g=c.dataset.g;
+    if(g==="onlyTop") st.onlyTop=!st.onlyTop; else st[g]= st[g]===c.dataset.v ? "" : c.dataset.v;
+    track("filter",{group:g,value:st[g]}); render(); return;}
+  const o=e.target.closest("[data-open]");
+  if(o){const id=+o.dataset.open; const was=st.open.has(id); was?st.open.delete(id):st.open.add(id); if(!was) track("view_detail",{platform:DATA[id].p}); render(); return;}
+  const f=e.target.closest("[data-form]"); if(f){openForm(f.dataset.form); return;}
+  const r=e.target.closest("[data-report]"); if(r){openForm("feedback",DATA[+r.dataset.report]); return;}
+  const a=e.target.closest("[data-out]");
+  if(a){const d=DATA[+a.dataset.out]; track("outbound_click",{platform:d.p,item:d.t,category:d.cat,position:+a.dataset.pos,sponsored:d.sp});}
+});
+let qT; $("#q").addEventListener("input",e=>{st.q=e.target.value;render();clearTimeout(qT);qT=setTimeout(()=>st.q&&track("search",{search_term:st.q}),800);});
+$("#sort").value=st.sort;
+$("#sort").addEventListener("change",e=>{st.sort=e.target.value;try{localStorage.setItem("lu_pref",JSON.stringify({sort:st.sort}))}catch(_){}render();});
+
+META=K.meta||{}; DATA=prep(K.items||[]);
+renderHead(); render();
+</script>
+
+</body>
+</html>

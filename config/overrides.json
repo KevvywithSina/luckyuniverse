@@ -1,0 +1,7 @@
+{
+  "_doc": "오류 제보·광고 반영용 수동 보정. key = '사이트:id'. hide=목록에서 제외, ip/type=작품·상품군 수정, pin=상단 고정 광고 [{key, until:'YYYY-MM-DD'}]",
+  "hide": [],
+  "ip": {},
+  "type": {},
+  "pin": []
+}

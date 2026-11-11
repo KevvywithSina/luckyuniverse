@@ -1,0 +1,12 @@
+{
+  "name": "luckyuniverse",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "node scripts/scrape.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0"
+  }
+}

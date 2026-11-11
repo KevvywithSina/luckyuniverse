@@ -1,0 +1,16 @@
+{
+  "siteName": "럭키유니버스",
+  "refreshMinutes": 120,
+  "ga4": "",
+  "form": {
+    "_doc": "구글 폼 주소의 /viewform 을 /formResponse 로 바꿔 action 에, 각 질문의 entry.숫자 를 fields 에 넣으세요.",
+    "action": "",
+    "fields": {
+      "type": "",
+      "body": "",
+      "item": "",
+      "contact": ""
+    }
+  },
+  "utm": "utm_source=luckyuniverse&utm_medium=referral&utm_campaign=board"
+}
