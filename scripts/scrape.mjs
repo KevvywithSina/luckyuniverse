@@ -114,7 +114,7 @@ async function twokuji() {
   const r = await get('https://2kuji.com/api/v1/kujis', 'json');
   return (r.data || []).filter(d => d.status === 'active' && d.paymentMode !== 'point_only' && +d.price > 0 && d.remainingTickets > 0).map(d => {
     const pr = (d.prizes || []).map(x => [String(x.grade).trim(), cut(x.name, 30), +x.total, +x.remaining, 0]);
-    if (d.lastOne) pr.push(['LAST', cut(d.lastOnePrize?.name || d.lastOnePrize || '라스트원', 30), 1, d.remainingTickets > 0 ? 1 : 0, 1]);
+    if (d.lastOne) pr.push(['LAST', cut(typeof d.lastOnePrize === 'string' ? d.lastOnePrize : (d.lastOnePrize?.name || '라스트원'), 30), 1, d.remainingTickets > 0 ? 1 : 0, 1]);
     return { p: '2쿠지', id: d.id, k: 'kuji', t: d.name, shop: '2쿠지', cat: d.categoryName || '', price: +d.price, orig: 0, off: /오리지널|original/i.test(d.name) ? 0 : 1,
       live: 0, url: `https://2kuji.com/kuji/${encodeURIComponent(d.slug)}`, pr, tot: d.totalTickets, rem: d.remainingTickets };
   });
@@ -137,15 +137,20 @@ async function cosmickuji() {
   return out;
 }
 
-// ── 미라클쿠지: 공개 첫 화면의 "판매 중 남은 X / Y칸" 카드 (가격·상별 구성은 목록에 없음)
+// ── 미라클쿠지: 공개 첫 화면의 쿠지판 카드 (제목 h2, "남은/전체장", "1장 가격원", 진행 중)
 async function miraclekuji() {
   const B = 'https://www.miraclekuji.com'; const $ = cheerio.load(await get(B + '/')); const seen = new Set(); const out = [];
+  const n = x => +String(x).replace(/,/g, '');
   $('a[href^="/rounds/"]').each((_, a) => {
-    const h = $(a).attr('href'); const t = $(a).text().replace(/\s+/g, ' ').trim();
-    const m = t.match(/판매 ?중\s*남은\s*([\d,]+)\s*\/\s*([\d,]+)\s*칸\s*(.+?)\s*뽑으러/);
-    if (!m || seen.has(h)) return; seen.add(h);
-    const rem = +m[1].replace(/,/g, ''), tot = +m[2].replace(/,/g, '');
-    if (rem > 0) out.push({ p: '미라클쿠지', id: h.split('/').pop(), k: 'kuji', t: m[3], shop: '미라클쿠지', cat: '', price: 0, orig: 0, off: 0, live: 0, url: B + h, pr: [], tot, rem });
+    const h = $(a).attr('href'); if (seen.has(h)) return;
+    const t = $(a).text().replace(/\s+/g, ' ').trim();
+    if (!/진행 ?중|판매 ?중/.test(t)) return;
+    const m = t.match(/([\d,]+)\s*\/\s*([\d,]+)\s*(?:장|칸)/); if (!m) return;
+    const title = $(a).find('h2').first().text().replace(/\s+/g, ' ').trim() || (t.match(/칸\s*(.+?)\s*뽑으러/) || [])[1] || '';
+    const price = n((t.match(/1장\s*([\d,]+)\s*원/) || [])[1] || 0);
+    seen.add(h);
+    if (n(m[1]) > 0 && title) out.push({ p: '미라클쿠지', id: h.split('/').pop(), k: 'kuji', t: title, shop: '미라클쿠지', cat: '', price, orig: 0, off: 0, live: 0,
+      url: B + h, pr: [], tot: n(m[2]), rem: n(m[1]) });
   });
   return out;
 }
@@ -194,8 +199,60 @@ async function ichibanOnline() {
   return out;
 }
 
+// ── 일본 오리파 공통: 페이지에 박힌 JSON 객체를 키 기준으로 꺼냄
+function objectsAround(text, key) {
+  const out = []; let from = 0;
+  for (;;) {
+    const i = text.indexOf(key, from); if (i < 0) break; from = i + key.length;
+    const s = text.lastIndexOf('{"id":', i); if (s < 0) continue;
+    let dep = 0, j = s; for (; j < text.length; j++) { const c = text[j]; if (c === '{') dep++; else if (c === '}') { dep--; if (dep === 0) break; } }
+    try { out.push(JSON.parse(text.slice(s, j + 1))); } catch { /* 깨진 조각은 건너뜀 */ }
+  }
+  return out;
+}
+const JP_CAT = { pokemon: '포켓몬 TCG', one_piece: '원피스 카드', 'one-piece': '원피스 카드', yugioh: '유희왕', dragonball: '드래곤볼 카드', weiss: '바이스슈발츠', mtg: 'MTG' };
+
+// ── DOPA!: 첫 화면에 실린 판매 중 팩 (1pt = 1엔)
+async function dopa() {
+  const B = 'https://dopa-game.jp'; const t = clean(await get(B + '/')); const seen = new Set(); const out = [];
+  for (const o of objectsAround(t, '"remaining":')) {
+    if (seen.has(o.id) || o.status !== 'released' || !(o.total > 0) || !(o.remaining > 0) || !o.name) continue; seen.add(o.id);
+    const cat = String(o.category || 'pokemon');
+    out.push({ p: 'DOPA', id: String(o.id), k: 'oripa', t: o.name, shop: 'DOPA!', cat: JP_CAT[cat] || 'TCG', price: +o.one_time_point || 0, cur: 'JPY', orig: 0, off: 0, live: 0,
+      url: `${B}/${cat.replace(/_/g, '-')}/gacha/${o.id}`, pr: [], tot: o.total, rem: o.remaining, jp: 1 });
+  }
+  return out;
+}
+
+// ── magi: 공개 오리파 목록 (가격/1구, 남은/전체 구)
+async function magi() {
+  const B = 'https://magi.camp'; const $ = cheerio.load(await get(B + '/oripa/lotteries/')); const seen = new Set(); const out = [];
+  const n = x => +String(x).replace(/[^\d]/g, '');
+  $('a[href*="/oripa/lotteries/"]').each((_, a) => {
+    const h = $(a).attr('href'); const title = $(a).find('.online-oripa-card__title').text().trim();
+    const rem = n($(a).find('.remaining-amount-meter__remain').text()), tot = n($(a).find('.remaining-amount-meter__amount').text());
+    if (!title || seen.has(h) || !(rem > 0)) return; seen.add(h);
+    out.push({ p: 'magi', id: h.split('/').filter(Boolean).pop(), k: 'oripa', t: title, shop: 'magi', cat: '포켓몬 TCG', price: n($(a).find('.online-oripa-card__price').text()), cur: 'JPY',
+      orig: 0, off: 0, live: 0, url: h.startsWith('http') ? h : B + h, pr: [], tot, rem, jp: 1 });
+  });
+  return out;
+}
+
+// ── オリパワン: 첫 화면에 실린 팩 (남은 구수를 공개하는 팩만)
+async function oripaone() {
+  const B = 'https://oripaone.jp'; const t = clean(await get(B + '/')); const seen = new Set(); const out = [];
+  for (const o of objectsAround(t, '"displayRemaining":')) {
+    if (seen.has(o.id) || !o.title || !(o.quantity > 0) || !(o.remaining > 0) || o.visible !== 'public') continue; seen.add(o.id);
+    const cat = (o.categories || ['pokemon'])[0];
+    out.push({ p: '오리파원', id: o.id, k: 'oripa', t: o.title, shop: 'オリパワン', cat: JP_CAT[cat] || 'TCG', price: +o.price || 0, cur: 'JPY', orig: 0, off: 0, live: 0,
+      url: `${B}/category/${cat}/${o.slug}`, pr: [], tot: o.quantity, rem: o.remaining, jp: 1 });
+  }
+  return out;
+}
+
 const SITES = { 라이브쿠지: livekuji, 쿠지샵: kujishop, 쿠지머신: kujimachine, 레전드쿠지: legendkuji, '2쿠지': twokuji, 코스믹쿠지: cosmickuji,
-  미라클쿠지: miraclekuji, 피카유니버스: pikauniverse, 쿠지사: kujisa, '一番くじONLINE': ichibanOnline };
+  미라클쿠지: miraclekuji, 피카유니버스: pikauniverse, 쿠지사: kujisa, '一番くじONLINE': ichibanOnline,
+  DOPA: dopa, magi, 오리파원: oripaone };
 const prev = existsSync('data/raw.json') ? JSON.parse(readFileSync('data/raw.json', 'utf8')) : null;
 const res = { collectedAt: new Date().toISOString(), sites: {}, items: [] };
 for (const [name, fn] of Object.entries(SITES)) {

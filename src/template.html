@@ -77,6 +77,7 @@ select{height:40px;padding:0 12px}
 .tag.ad{background:var(--ad-soft);color:var(--ad);font-weight:700}
 .tag.live{background:#E0362B;color:#fff}
 .title{font-weight:700;font-size:1rem;line-height:1.35;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
+.jt{margin:-2px 0 0;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-bottom:12px}
 .bd{font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:6px}
 .bd.hit{background:var(--hit-soft);color:var(--hit)}
@@ -147,7 +148,7 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
   <header>
     <div class="brand">
       <h1>럭키<span>유니버스</span></h1>
-      <p>온라인 쿠지 사이트에서 진행 중인 쿠지와 오리파를 한곳에 모았습니다. 상위상이 몇 장 남았는지, 지금 뽑으면 확률이 얼마인지 비교해 보세요.</p>
+      <p>여러 사이트에서 진행 중인 온라인 쿠지와 오리파를 한곳에 모았습니다. 상위상이 몇 장 남았는지, 지금 뽑으면 확률이 얼마인지 비교해 보세요.</p>
     </div>
     <div class="hright">
       <div class="hbtns">
@@ -268,7 +269,7 @@ function base(skip){
     (skip==="cat"||!st.cat||d.cat===st.cat)&&
     (skip==="ip"||!st.ip||d.ip===st.ip)&&
     (!st.onlyTop||d.topRem>0)&&
-    (!q||(d.t+" "+d.ip+" "+d.shop+" "+d.cat).toLowerCase().includes(q)));
+    (!q||(d.t+" "+(d.jt||"")+" "+d.ip+" "+d.shop+" "+d.cat).toLowerCase().includes(q)));
 }
 function renderBars(){
   const bp=base("plat"), bk=base("kind"), bc=base("cat"), bi=base("ip");
@@ -301,7 +302,7 @@ function card(d,pos){
       return `<div class="pl ${p[3]===0?"z":""} ${p[4]?"lo":""} ${t3?"t3":""}"><span class="g">${p[4]?"LAST":esc(p[0])}</span><span class="nm">${esc(p[1]||(p[4]?"라스트원":"—"))}</span><span class="c">${p[3]}/${p[2]}</span><span class="m"><i style="width:${Math.round(r*100)}%"></i></span></div>`;}).join(""):
       `<div class="pl"><span class="nm" style="grid-column:1/4">이 사이트는 목록에 상별 구성을 공개하지 않습니다. 사이트에서 확인해 주세요.</span></div>`}</div>`:"";
   return `<article class="card${d.sp?" sp":""}">
-    <div class="top"><div class="meta">${tags}</div><h2 class="title">${esc(d.t)}</h2>
+    <div class="top"><div class="meta">${tags}</div><h2 class="title">${esc(d.t)}</h2>${d.jt?`<p class="jt">${esc(d.jt)}</p>`:""}
       <div class="badges">${badges.join("")}</div></div>
     <div class="bot">
       <div class="nums">

@@ -55,7 +55,7 @@
       "url": "https://www.miraclekuji.com",
       "country": "KR",
       "mode": "auto",
-      "note": "가격·상별 구성은 사이트에서 확인"
+      "note": "상별 구성은 사이트에서 확인"
     },
     {
       "name": "피카유니버스",
@@ -103,6 +103,26 @@
       "country": "JP",
       "mode": "auto",
       "note": "기간 판매(남은 수량 개념 없음)"
+    },
+    {
+      "name": "DOPA",
+      "url": "https://dopa-game.jp",
+      "country": "JP",
+      "mode": "auto",
+      "note": "첫 화면 노출 팩 기준"
+    },
+    {
+      "name": "magi",
+      "url": "https://magi.camp/oripa/lotteries/",
+      "country": "JP",
+      "mode": "auto"
+    },
+    {
+      "name": "오리파원",
+      "url": "https://oripaone.jp",
+      "country": "JP",
+      "mode": "auto",
+      "note": "남은 구수 공개 팩만"
     }
   ]
 }

@@ -1,16 +1,19 @@
 // raw.json + 보정값 → 작품/상품유형 라벨링 → dist/index.html
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 const raw = JSON.parse(readFileSync('data/raw.json', 'utf8'));
 const cfg = JSON.parse(readFileSync('config/site.json', 'utf8'));
 const ov = JSON.parse(readFileSync('config/overrides.json', 'utf8'));
 
-const KW = [['헌터헌터','HUNTER X HUNTER'],['포켓몬','포켓몬'],['PIKACHU','포켓몬 TCG'],['CHARIZARD','포켓몬 TCG'],['히로아카','나의 히어로 아카데미아'],['나히아','나의 히어로 아카데미아'],
+const KW = [['헌터헌터','HUNTER X HUNTER'],['포켓몬','포켓몬'],['PIKACHU','포켓몬'],['CHARIZARD','포켓몬'],['ポケモン','포켓몬'],['ポケカ','포켓몬'],['進撃の巨人','진격의 거인'],['ONE PIECE','원피스'],['ワンピース','원피스'],['ドラゴンボール','드래곤볼'],['鬼滅','귀멸의 칼날'],['呪術廻戦','주술회전'],['ちいかわ','치이카와'],['ホロライブ','홀로라이브'],['ガンダム','건담'],['崩壊','붕괴'],['ベルセルク','베르세르크'],['プリキュア','프리큐어'],['たまごっち','다마고치'],['遊戯王','유희왕'],['히로아카','나의 히어로 아카데미아'],['나히아','나의 히어로 아카데미아'],
   ['미도리야','나의 히어로 아카데미아'],['PLUS ULTRA','나의 히어로 아카데미아'],['귀멸','귀멸의 칼날'],['거인','진격의 거인'],['니케','승리의 여신 NIKKE'],
   ['베르세르크','베르세르크'],['근육맨','근육맨'],['FATE','Fate'],['페그오','Fate'],['카구라바치','카구라바치'],['학원아이돌','아이돌마스터'],['북두의 권','북두의 권'],
   ['홀로라이브','홀로라이브'],['붕괴','붕괴'],['공각기동대','공각기동대'],['치이카와','치이카와'],['해리포터','해리포터'],['스파이더맨','마블'],['주술회전','주술회전'],
   ['도쿄 리벤저스','도쿄 리벤저스'],['쿠로미','산리오'],['한교동','산리오'],['포차코','산리오'],['미쿠','하츠네 미쿠'],['카드 캡터','카드캡터 체리'],['드래곤볼','드래곤볼'],['원피스','원피스']];
 const cats = [...new Set(raw.items.map(i => i.cat).filter(Boolean))].sort((a, b) => b.length - a.length);
-function ipOf(it) {
+// 같은 작품이 '포켓몬'·'포켓몬 TCG'처럼 갈라지지 않게 작품명으로 통일 (상품 종류는 상품군 필터가 따로 구분)
+const IP_NORM = { '포켓몬 TCG': '포켓몬', '원피스 카드': '원피스', '드래곤볼 카드': '드래곤볼', 'TCG': '믹스·기타' };
+function ipOf(it) { const v = ipOf0(it); return IP_NORM[v] || v; }
+function ipOf0(it) {
   const t = it.t;
   if (/\bIVE\b/.test(t)) return 'IVE';
   for (const [k, v] of KW) if (t.toLowerCase().includes(k.toLowerCase())) return v;
@@ -27,8 +30,10 @@ function typeOf(it) {
   return '굿즈';
 }
 const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+const tr = { ...(existsSync('data/tr-cache.json') ? JSON.parse(readFileSync('data/tr-cache.json', 'utf8')) : {}), ...JSON.parse(readFileSync('config/translations.json', 'utf8')) };
 const items = [];
-for (const it of raw.items) {
+for (const it0 of raw.items) {
+  const it = it0.jp && tr[it0.t] ? { ...it0, t: tr[it0.t], jt: it0.t } : it0;
   const key = `${it.p}:${it.id}`;
   if (ov.hide.includes(key)) continue;
   const nonLast = it.pr.filter(p => !p[4]);
