@@ -80,16 +80,14 @@ async function kujimachine() {
         url: `${B}/gatcha/machine/${id}`, pr, tot: M.total_quantity, rem: M.remaining_quantity });
     }
   }
-  let packs = hrefs(await get(B + '/pack'), /^\/pack\/[0-9a-f-]{36}$/);
+  // 오리파 팩: /pack 목록 페이지 안의 initialMachines 에 팩별 잔여가 모두 들어 있음
+  const t = clean(await get(B + '/pack'));
+  const re = /\{"id":"([0-9a-f-]{36})","name":"([^"]*)"[^{}]*?"total_quantity":(\d+),"remaining_quantity":(\d+),"price":(\d+)[^{}]*?"status":"([a-z_]+)"/g; let m;
   const seen = new Set();
-  for (const h of packs) {
-    const t = clean(await get(B + h));
-    const re = /\{"id":"([0-9a-f-]{36})","name":"([^"]*)"[^{}]*?"total_quantity":(\d+),"remaining_quantity":(\d+),"price":(\d+)[^{}]*?"status":"([a-z_]+)"/g; let m;
-    while ((m = re.exec(t))) if (m[6] === 'open' && +m[4] > 0 && !seen.has(m[1])) {
-      seen.add(m[1]);
-      out.push({ p: '쿠지머신', id: m[1], k: 'oripa', t: m[2], shop: 'TCG 오리파', cat: '포켓몬 TCG', price: +m[5], orig: 0, off: 0, live: 0,
-        url: B + h, pr: [], tot: +m[3], rem: +m[4] });
-    }
+  while ((m = re.exec(t))) if (m[6] === 'open' && +m[4] > 0 && !seen.has(m[1])) {
+    seen.add(m[1]);
+    out.push({ p: '쿠지머신', id: m[1], k: 'oripa', t: m[2], shop: 'TCG 오리파', cat: '포켓몬 TCG', price: +m[5], orig: 0, off: 0, live: 0,
+      url: `${B}/pack/machine/${m[1]}`, pr: [], tot: +m[3], rem: +m[4] });
   }
   return out;
 }
@@ -110,7 +108,94 @@ async function legendkuji() {
   return out;
 }
 
-const SITES = { 라이브쿠지: livekuji, 쿠지샵: kujishop, 쿠지머신: kujimachine, 레전드쿠지: legendkuji };
+
+// ── 2쿠지: 공개 API (포인트 전용 쿠지는 현금 구매가 안 되어 제외)
+async function twokuji() {
+  const r = await get('https://2kuji.com/api/v1/kujis', 'json');
+  return (r.data || []).filter(d => d.status === 'active' && d.paymentMode !== 'point_only' && +d.price > 0 && d.remainingTickets > 0).map(d => {
+    const pr = (d.prizes || []).map(x => [String(x.grade).trim(), cut(x.name, 30), +x.total, +x.remaining, 0]);
+    if (d.lastOne) pr.push(['LAST', cut(d.lastOnePrize?.name || d.lastOnePrize || '라스트원', 30), 1, d.remainingTickets > 0 ? 1 : 0, 1]);
+    return { p: '2쿠지', id: d.id, k: 'kuji', t: d.name, shop: '2쿠지', cat: d.categoryName || '', price: +d.price, orig: 0, off: /오리지널|original/i.test(d.name) ? 0 : 1,
+      live: 0, url: `https://2kuji.com/kuji/${encodeURIComponent(d.slug)}`, pr, tot: d.totalTickets, rem: d.remainingTickets };
+  });
+}
+
+// ── 코스믹쿠지마켓: 공개 API (목록 → 상세의 상별 잔여)
+async function cosmickuji() {
+  const B = 'https://cosmic-kuji.com/api'; const list = []; let page = 1, pages = 1;
+  do { const r = await get(`${B}/packages?page=${page}`, 'json'); list.push(...(r.data || [])); pages = r.meta?.totalPages || 1; page++; } while (page <= pages && page <= 10);
+  const out = [];
+  for (const p of list) {
+    if (p.status !== 'active' || p.isSoldOut || p.isComingSoon || !(p.ticketSummary?.remaining > 0)) continue;
+    const d = (await get(`${B}/packages/${p.id}/detail`, 'json')).data || {};
+    const pr = (d.products || []).sort((a, b) => (a.isLastOne - b.isLastOne) || (a.displayOrder - b.displayOrder))
+      .map(x => [x.isLastOne ? 'LAST' : String(x.productType || x.name).replace(/상$/, ''), cut(x.description || x.name, 30), x.ticketSummary?.total ?? 0, x.ticketSummary?.remaining ?? 0, x.isLastOne ? 1 : 0]);
+    out.push({ p: '코스믹쿠지', id: p.id, k: 'kuji', t: p.name.replace(/^\[[^\]]+\]\s*/, ''), shop: '코스믹쿠지마켓', cat: '', price: p.pricePerTicket, orig: 0,
+      off: /이치방쿠지|세가|타이토|아타리|애니마이|스퀘어/.test(p.name) ? 1 : 0, live: 0, url: `https://cosmic-kuji.com/packages/${p.id}`, pr,
+      tot: p.ticketSummary.total, rem: p.ticketSummary.remaining });
+  }
+  return out;
+}
+
+// ── 미라클쿠지: 공개 첫 화면의 "판매 중 남은 X / Y칸" 카드 (가격·상별 구성은 목록에 없음)
+async function miraclekuji() {
+  const B = 'https://www.miraclekuji.com'; const $ = cheerio.load(await get(B + '/')); const seen = new Set(); const out = [];
+  $('a[href^="/rounds/"]').each((_, a) => {
+    const h = $(a).attr('href'); const t = $(a).text().replace(/\s+/g, ' ').trim();
+    const m = t.match(/판매 ?중\s*남은\s*([\d,]+)\s*\/\s*([\d,]+)\s*칸\s*(.+?)\s*뽑으러/);
+    if (!m || seen.has(h)) return; seen.add(h);
+    const rem = +m[1].replace(/,/g, ''), tot = +m[2].replace(/,/g, '');
+    if (rem > 0) out.push({ p: '미라클쿠지', id: h.split('/').pop(), k: 'kuji', t: m[3], shop: '미라클쿠지', cat: '', price: 0, orig: 0, off: 0, live: 0, url: B + h, pr: [], tot, rem });
+  });
+  return out;
+}
+
+// ── 피카유니버스: 공개 오리파 목록 "제목 남은/전체 · %가격원"
+async function pikauniverse() {
+  const B = 'https://www.pikauniverse.com'; const $ = cheerio.load(await get(B + '/oripa')); const seen = new Set(); const out = [];
+  $('a[href^="/oripa/"]').each((_, a) => {
+    const h = $(a).attr('href'); const t = $(a).text().replace(/\s+/g, ' ').trim();
+    const m = t.match(/^(.*?)([\d,]+)\s*\/\s*([\d,]+)\s*·\s*\d+%\s*([\d,]+)원/);
+    if (!m || seen.has(h)) return; seen.add(h);
+    const n = x => +x.replace(/,/g, '');
+    if (n(m[2]) > 0) out.push({ p: '피카유니버스', id: h.split('/')[2], k: 'oripa', t: m[1].trim(), shop: 'PIKA UNIVERSE', cat: '포켓몬 TCG', price: n(m[4]), orig: 0, off: 0, live: 0,
+      url: B + h, pr: [], tot: n(m[3]), rem: n(m[2]) });
+  });
+  return out;
+}
+
+// ── 쿠지사: 공개 상품 목록. 진행 중인 판만 상품 페이지에서 남은 티켓을 읽음
+async function kujisa() {
+  const B = 'https://kujisa.com'; const $ = cheerio.load(await get(B + '/')); const out = []; const seen = new Set();
+  for (const a of $('a[href^="/kuji/"]').toArray()) {
+    const h = $(a).attr('href'); const t = $(a).text().replace(/\s+/g, ' ').trim();
+    if (seen.has(h) || !/판매 ?중|진행 ?중/.test(t)) continue; seen.add(h);
+    const d = cheerio.load(await get(B + h)); const x = d('body').text().replace(/\s+/g, ' ');
+    const rem = +((x.match(/남은 ?티켓\s*([\d,]+)/) || [])[1] || '0').replace(/,/g, '');
+    const tot = +((x.match(/총\s*([\d,]+)\s*장/) || [])[1] || '0').replace(/,/g, '');
+    const price = +((x.match(/([\d,]+)\s*원/) || [])[1] || '0').replace(/,/g, '');
+    if (rem > 0) out.push({ p: '쿠지사', id: h.split('/').pop(), k: 'kuji', t: t.replace(/판매 ?중|진행 ?중/, '').replace(/^이치방쿠지\s*/, ''), shop: '쿠지사', cat: '', price, orig: 0,
+      off: 1, live: 0, url: B + h, pr: [], tot: tot || rem, rem });
+  }
+  return out;
+}
+
+// ── 일본 一番くじONLINE: 판매 중 목록. 온라인 일번쿠지는 기간 판매라 남은 수량 개념이 없음(u:1)
+async function ichibanOnline() {
+  const B = 'https://on-line.1kuji.com'; const $ = cheerio.load(await get(B + '/Form/Product/ProductList.aspx')); const out = [];
+  $('.m-product-item').each((_, el) => {
+    const a = $(el).find('a[href*="ProductDetail"]').filter((_, x) => !/vid=/.test($(x).attr('href'))).first();
+    const title = (a.find('img').attr('alt') || '').trim(); const txt = $(el).text().replace(/\s+/g, ' ');
+    const yen = +((txt.match(/¥([\d,]+)/) || [])[1] || '0').replace(/,/g, '');
+    if (!title || !a.attr('href')) return;
+    out.push({ p: '一番くじONLINE', id: (a.attr('href').match(/pid=([^&]+)/) || [])[1] || title, k: 'kuji', t: title.replace(/^一番くじ\s*/, ''), shop: 'BANDAI SPIRITS',
+      cat: '', price: yen, cur: 'JPY', orig: 0, off: 1, live: 0, url: B + a.attr('href'), pr: [], tot: 0, rem: 0, u: 1, jp: 1 });
+  });
+  return out;
+}
+
+const SITES = { 라이브쿠지: livekuji, 쿠지샵: kujishop, 쿠지머신: kujimachine, 레전드쿠지: legendkuji, '2쿠지': twokuji, 코스믹쿠지: cosmickuji,
+  미라클쿠지: miraclekuji, 피카유니버스: pikauniverse, 쿠지사: kujisa, '一番くじONLINE': ichibanOnline };
 const prev = existsSync('data/raw.json') ? JSON.parse(readFileSync('data/raw.json', 'utf8')) : null;
 const res = { collectedAt: new Date().toISOString(), sites: {}, items: [] };
 for (const [name, fn] of Object.entries(SITES)) {

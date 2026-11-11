@@ -34,7 +34,7 @@ for (const it of raw.items) {
   const nonLast = it.pr.filter(p => !p[4]);
   const tot = it.tot ?? nonLast.reduce((s, p) => s + p[2], 0);
   const rem = it.rem ?? nonLast.reduce((s, p) => s + p[3], 0);
-  if (rem <= 0) continue;
+  if (!it.u && rem <= 0) continue;
   if (!/^https:\/\/[^\s"'<>]+$/.test(it.url || '')) continue;   // 이상한 링크(javascript: 등) 차단
   items.push({ ...it, key, tot, rem, ip: ov.ip[key] || ipOf(it), ty: ov.type[key] || typeOf(it), pin: ov.pin.some(x => (x.key || x) === key && (!x.until || x.until >= today)) ? 1 : 0 });
 }

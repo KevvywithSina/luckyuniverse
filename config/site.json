@@ -4,13 +4,105 @@
   "ga4": "G-B8W5PQKNPE",
   "form": {
     "_doc": "구글 폼 주소의 /viewform 을 /formResponse 로 바꿔 action 에, 각 질문의 entry.숫자 를 fields 에 넣으세요.",
-    "action": "",
+    "action": "https://docs.google.com/forms/d/e/1FAIpQLSfpt7i4QlScMBatT0bCm99Yh9YlsnFn4pNXk0jF0QHsc-VRaw/formResponse",
     "fields": {
-      "type": "",
-      "body": "",
-      "item": "",
-      "contact": ""
+      "type": "entry.155181268",
+      "body": "entry.278227189",
+      "item": "entry.950420118",
+      "contact": "entry.412693823"
     }
   },
-  "utm": "utm_source=luckyuniverse&utm_medium=referral&utm_campaign=board"
+  "utm": "utm_source=luckyuniverse&utm_medium=referral&utm_campaign=board",
+  "sites": [
+    {
+      "name": "라이브쿠지",
+      "url": "https://livekuji.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "쿠지샵",
+      "url": "https://kujishop.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "쿠지머신",
+      "url": "https://kujimachine.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "레전드쿠지",
+      "url": "https://legendkuji.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "2쿠지",
+      "url": "https://2kuji.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "코스믹쿠지",
+      "url": "https://cosmic-kuji.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "미라클쿠지",
+      "url": "https://www.miraclekuji.com",
+      "country": "KR",
+      "mode": "auto",
+      "note": "가격·상별 구성은 사이트에서 확인"
+    },
+    {
+      "name": "피카유니버스",
+      "url": "https://www.pikauniverse.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "쿠지사",
+      "url": "https://kujisa.com",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "오리파코리아",
+      "url": "https://oripa-korea.com",
+      "country": "KR",
+      "mode": "closed",
+      "note": "잔여 수량 비공개"
+    },
+    {
+      "name": "오리파덕",
+      "url": "https://oripaduk.com",
+      "country": "KR",
+      "mode": "closed",
+      "note": "잔여 수량 비공개"
+    },
+    {
+      "name": "쿠지히트",
+      "url": "https://kuji-hit.com",
+      "country": "KR",
+      "mode": "soon",
+      "note": "오픈 준비 중"
+    },
+    {
+      "name": "가챠샵",
+      "url": "https://gachashop.app",
+      "country": "KR",
+      "mode": "soon",
+      "note": "오픈 준비 중"
+    },
+    {
+      "name": "一番くじONLINE",
+      "url": "https://on-line.1kuji.com",
+      "country": "JP",
+      "mode": "auto",
+      "note": "기간 판매(남은 수량 개념 없음)"
+    }
+  ]
 }
