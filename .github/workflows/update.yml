@@ -23,15 +23,22 @@ jobs:
       - name: 직전 수집분 복원(사이트 실패 대비)
         uses: actions/cache/restore@v4
         with:
-          path: data/raw.json
+          path: |
+            data/raw.json
+            data/tr-cache.json
           key: raw-${{ github.run_id }}
           restore-keys: raw-
       - run: npm install --no-audit --no-fund
       - run: npm run scrape
+      - run: node scripts/translate.mjs
+        env:
+          DEEPL_KEY: ${{ secrets.DEEPL_KEY }}
       - run: npm run build
       - uses: actions/cache/save@v4
         with:
-          path: data/raw.json
+          path: |
+            data/raw.json
+            data/tr-cache.json
           key: raw-${{ github.run_id }}
       - uses: actions/upload-pages-artifact@v3
         with:
