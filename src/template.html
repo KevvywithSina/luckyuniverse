@@ -143,7 +143,6 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
   <div class="notice" role="note">
     <b>실시간 정보가 아닙니다.</b>
     <span id="asof">수집 시각 기준 현황판입니다.</span>
-    <span class="times" id="times"></span>
   </div>
 
   <header>
@@ -251,6 +250,8 @@ const st={nat:"",q:"",plat:"",kind:"",off:"",cat:"",ip:"",onlyTop:false,sort:"hi
 try{const s=JSON.parse(localStorage.getItem("lu_pref")||"{}"); if(s.sort) st.sort=s.sort;}catch(e){}
 
 const $=s=>document.querySelector(s);
+// 응모권이 10만 장 이상이면 K(천) 단위로 끊어 표시
+const cnt=(n,big)=>big?Math.round(n/1000).toLocaleString("ko-KR")+"K":n.toLocaleString("ko-KR");
 const won=n=>n>=10000?(n/10000).toLocaleString("ko-KR",{maximumFractionDigits:2})+"만":n.toLocaleString("ko-KR");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmtT=iso=>{const d=new Date(iso);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`};
@@ -308,7 +309,7 @@ function card(d,pos){
     <div class="bot">
       <div class="nums">
         <div><small>1회</small><b>${!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():d.cur==="PT"?d.price.toLocaleString()+"pt":won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
-        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b style="${d.tot>=1e5?"font-size:.86rem;":""}overflow-wrap:anywhere">${d.rem.toLocaleString()}<span style="color:var(--muted);font-size:.75rem">/${d.tot.toLocaleString()}</span></b>`}</div>
+        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b style="overflow-wrap:anywhere">${cnt(d.rem,d.tot>=1e5)}<span style="color:var(--muted);font-size:.75rem">/${cnt(d.tot,d.tot>=1e5)}</span></b>`}</div>
         <div><small>상위상 확률</small><b style="color:${d.topRem?"var(--hit)":"var(--muted)"}">${d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—"}</b></div>
       </div>
       ${d.u?"":`<div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>`}
@@ -344,14 +345,10 @@ function renderHead(){
   const k=DATA.filter(d=>d.k==="kuji").length,o=DATA.filter(d=>d.k==="oripa").length,ga=DATA.filter(d=>d.k==="gacha").length;
   const top=DATA.reduce((s,d)=>s+d.topRem,0);
   $("#stats").innerHTML=[[DATA.length,"진행 중"],[k,"쿠지"],[o,"오리파"],[ga,"가챠"],[top.toLocaleString(),"남은 상위상"],[SITES.length,"대상 사이트"]].map(([b,l])=>`<div class="stat"><b>${b}</b><small>${l}</small></div>`).join("");
-  const S=META.sites||{}; const c={}; Object.entries(S).forEach(([k,v])=>{ if(v&&v.at) c[k]=v.at; });
-  const ts=Object.values(c).sort();
-  if(ts.length){
-    const latest=ts[ts.length-1], oldest=ts[0];
-    $("#asof").textContent = oldest===latest ? `${fmtT(latest)} 기준 현황판입니다. 뽑기 전에 사이트에서 남은 수량을 꼭 확인하세요.`
-      : `${fmtT(oldest)}~${fmtT(latest)} 사이에 수집한 현황판입니다. 뽑기 전에 사이트에서 남은 수량을 꼭 확인하세요.`;
-    $("#times").textContent=PLATS.filter(p=>c[p]).map(p=>`${p} ${fmtT(c[p])}${S[p]&&S[p].ok===false?" (갱신 실패·이전 값)":""}`).join(" · ");
-  }
+  // 마지막 업데이트 = 마지막 수집·배포 시각 (없으면 사이트별 수집 시각 중 가장 늦은 것)
+  const S=META.sites||{}; const ts=Object.values(S).map(v=>v&&v.at).filter(Boolean).sort();
+  const last=META.builtAt||ts[ts.length-1];
+  if(last) $("#asof").textContent=`${fmtT(last)}에 마지막으로 업데이트했어요. 뽑기 전에 사이트에서 남은 수량을 꼭 확인하세요.`;
 }
 
 /* 문의·광고 폼 */
