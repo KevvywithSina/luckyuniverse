@@ -111,7 +111,8 @@ select{height:40px;padding:0 12px}
 .pl .m i{display:block;height:100%;background:var(--hit)}
 .pl.lo .g{color:var(--warn)}
 .sitelist{margin-top:28px}
-.sitelist h2{font-size:.95rem;margin:0 0 10px}
+.sitelist h2{font-size:.95rem;margin:0 0 4px}
+.sitehint{margin:0 0 10px;font-size:.8rem;color:var(--muted)}
 #sites{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 .site{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);text-decoration:none;font-size:.86rem;min-width:0}
 .site small{color:var(--muted);font-size:.74rem;display:block}
@@ -175,7 +176,7 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
   <p class="count" id="count"></p>
   <div class="grid" id="grid"><div class="empty">현황을 불러오는 중입니다.</div></div>
 
-  <section class="sitelist" aria-label="수집 대상 사이트"><h2>수집 대상 사이트</h2><div id="sites"></div></section>
+  <section class="sitelist" aria-label="수집 대상 사이트"><h2>수집 대상 사이트</h2><p class="sitehint">사이트를 누르면 해당 사이트로 이동합니다.</p><div id="sites"></div></section>
 
   <footer>
     <span>각 사이트의 공개 페이지에서 수집한 시점 기준 정보입니다. 실제 잔여 수량과 가격은 해당 사이트에서 확인하세요. 럭키유니버스는 판매·추첨을 하지 않습니다.</span>
