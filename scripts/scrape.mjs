@@ -7,7 +7,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function get(url, type = 'text') {
   for (let i = 0; i < 3; i++) {
     try {
-      const r = await fetch(url, { headers: { 'user-agent': UA, 'accept-language': 'ko-KR,ko;q=0.9' } });
+      // 응답이 없는 사이트가 수집 전체를 붙잡지 않도록 요청마다 30초 제한
+      const r = await fetch(url, { headers: { 'user-agent': UA, 'accept-language': 'ko-KR,ko;q=0.9' }, signal: AbortSignal.timeout(30000) });
       if (!r.ok) throw new Error(`${r.status} ${url}`);
       await sleep(250);
       return type === 'json' ? r.json() : r.text();
@@ -156,16 +157,20 @@ async function miraclekuji() {
   return out;
 }
 
-// ── 피카유니버스: 공개 오리파 목록 "제목 남은/전체 · %가격원"
+// ── 피카유니버스: 공개 오리파 목록. 카드 안의 제목(h3), "남은 / 전체", 정가(원)를 요소 단위로 읽음
 async function pikauniverse() {
   const B = 'https://www.pikauniverse.com'; const $ = cheerio.load(await get(B + '/oripa')); const seen = new Set(); const out = [];
+  const n = x => +String(x).replace(/,/g, '');
   $('a[href^="/oripa/"]').each((_, a) => {
-    const h = $(a).attr('href'); const t = $(a).text().replace(/\s+/g, ' ').trim();
-    const m = t.match(/^(.*?)([\d,]+)\s*\/\s*([\d,]+)\s*·\s*\d+%\s*([\d,]+)원/);
-    if (!m || seen.has(h)) return; seen.add(h);
-    const n = x => +x.replace(/,/g, '');
-    if (n(m[2]) > 0) out.push({ p: '피카유니버스', id: h.split('/')[2], k: 'oripa', t: m[1].trim(), shop: 'PIKA UNIVERSE', cat: '포켓몬 TCG', price: n(m[4]), orig: 0, off: 0, live: 0,
-      url: B + h, pr: [], tot: n(m[3]), rem: n(m[2]) });
+    const h = $(a).attr('href'); if (seen.has(h)) return;
+    const title = $(a).find('h3').first().text().replace(/\s+/g, ' ').trim();
+    const spans = $(a).find('span').toArray().map(x => $(x));
+    const remEl = spans.find(x => /^[\d,]+$/.test(x.text().trim()));
+    const priceEl = spans.find(x => /^[\d,]+원$/.test(x.text().trim()));
+    const m = remEl && remEl.parent().text().replace(/\s+/g, ' ').match(/([\d,]+)\s*\/\s*([\d,]+)/);
+    if (!title || !m) return; seen.add(h);
+    if (n(m[1]) > 0) out.push({ p: '피카유니버스', id: h.split('/')[2], k: 'oripa', t: title, shop: 'PIKA UNIVERSE', cat: '포켓몬 TCG',
+      price: priceEl ? n(priceEl.text().replace('원', '')) : 0, orig: 0, off: 0, live: 0, url: B + h, pr: [], tot: n(m[2]), rem: n(m[1]) });
   });
   return out;
 }
@@ -291,8 +296,10 @@ async function clove() {
   const CAT = { Pokemon: '포켓몬', OnePiece: '원피스', Yugioh: '유희왕', WeissSchwarz: '바이스슈발츠', All: '' };
   try {
     for (const c of Object.keys(CAT)) {
-      await pg.goto(`${B}/ko/oripa/${c}`, { waitUntil: 'networkidle', timeout: 60000 });
-      await pg.waitForTimeout(2000); await scrollAll(pg, `a[href*="/ko/oripa/${c}/"]`);
+      // 광고·분석 통신이 끝없이 이어져 'networkidle'에 도달하지 않음 → 카드가 화면에 뜨면 바로 읽음
+      await pg.goto(`${B}/ko/oripa/${c}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await pg.waitForSelector(`a[href*="/ko/oripa/${c}/"]`, { timeout: 30000 }).catch(() => {});
+      await pg.waitForTimeout(1500); await scrollAll(pg, `a[href*="/ko/oripa/${c}/"]`);
       const rows = await pg.evaluate(c => {
         const hrefs = [...new Set([...document.querySelectorAll(`a[href*="/ko/oripa/${c}/"]`)].map(a => a.getAttribute('href')))];
         return hrefs.map(h => {
@@ -321,7 +328,8 @@ async function clove() {
 async function pocacha() {
   const B = 'https://www.pocacha.im'; const pg = await page(); const out = [];
   try {
-    await pg.goto(B + '/', { waitUntil: 'networkidle', timeout: 60000 }); await pg.waitForTimeout(2000);
+    await pg.goto(B + '/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await pg.waitForSelector('a[href^="/gacha/"]', { timeout: 30000 }).catch(() => {}); await pg.waitForTimeout(1500);
     const rows = await pg.evaluate(() => [...document.querySelectorAll('a[href^="/gacha/"]')].map(a => ({ h: a.getAttribute('href'), t: a.innerText.replace(/\s+/g, ' ').trim() })));
     const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10).replace(/-/g, '/');
     const seen = new Set();
