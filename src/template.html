@@ -9,7 +9,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="라이브쿠지·쿠지샵·쿠지머신·레전드쿠지에서 진행 중인 온라인 쿠지와 오리파의 남은 상, 상위상 확률을 한곳에서 비교합니다.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Black+Han+Sans&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap">
 <style>
 /* Layout: 기준시각 공지 띠 → 헤더(문의·광고 버튼) → 필터 바 → 응모권 카드 그리드 */
 :root{
@@ -17,9 +17,9 @@
   --accent:#2F45C8; --accent-soft:#E3E7FB; --on-accent:#FFFFFF;
   --hit:#0E8A5F; --hit-soft:#DDF3EA; --warn:#B4610B; --warn-soft:#FBEBD6; --gone:#B9BDC6;
   --notice:#FFF4D6; --notice-ink:#6B4A00; --ad:#7A3FC2; --ad-soft:#F0E7FB;
-  --f-display:"Black Han Sans","IBM Plex Sans KR",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --f-num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --f-display:"Black Han Sans","Nanum Gothic",system-ui,sans-serif;
+  --f-body:"Nanum Gothic",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"Nanum Gothic",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111318; --surface:#1A1D24; --ink:#ECEEF2; --muted:#9AA1AE; --line:#2C303A;
@@ -34,15 +34,16 @@
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
 .wrap{max-width:1180px;margin:0 auto}
+.gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px;height:56px;border-bottom:1px solid var(--line)}
+.logo{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.6rem;line-height:1;letter-spacing:.01em}
+.logo a{color:var(--ink);text-decoration:none}
+.logo span{color:var(--accent)}
+.gl{display:flex;align-items:baseline;gap:10px;min-width:0}
+.tagline{color:var(--muted);font-size:.86rem;font-weight:700;white-space:nowrap}
 .notice{margin-top:12px;background:var(--notice);color:var(--notice-ink);border-radius:10px;padding:10px 14px;font-size:.86rem;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
 .notice b{font-weight:700}
 .notice .times{font-family:var(--f-num);font-size:.78rem;opacity:.85}
-header{padding-block:20px 16px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between}
-.brand{display:flex;flex-direction:column;gap:4px;min-width:0}
-.brand h1{font-family:var(--f-display);font-weight:400;font-size:2.4rem;line-height:1;margin:0;letter-spacing:.01em}
-.brand h1 span{color:var(--accent)}
-.brand p{margin:0;color:var(--muted);max-width:52ch}
-.hright{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+header{padding-block:14px 14px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between}
 .hbtns{display:flex;gap:8px;flex-wrap:wrap}
 .hbtn{height:36px;padding:0 14px;border-radius:9px;font:inherit;font-size:.86rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .hbtn.ad{border-color:var(--ad);color:var(--ad)}
@@ -51,13 +52,13 @@ header{padding-block:20px 16px;display:flex;flex-wrap:wrap;gap:14px 28px;align-i
 .stat b{font-family:var(--f-num);font-size:1.4rem;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat small{color:var(--muted);font-size:.78rem}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 56px);z-index:5;background:var(--bg);padding-block:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .search{flex:0 1 360px;min-width:0;height:40px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:0 14px;font:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px}
 select{height:40px;padding:0 12px}
-#sort{flex:0 0 auto;min-width:190px;margin-left:auto}
+#sort{flex:0 0 auto;min-width:160px;margin-left:auto}
 .chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .chip .n{display:inline-block;min-width:3ch;text-align:right;font-family:var(--f-num);font-size:.75rem;font-variant-numeric:tabular-nums;opacity:.7;margin-left:6px}
@@ -118,6 +119,39 @@ select{height:40px;padding:0 12px}
 .site small{color:var(--muted);font-size:.74rem;display:block}
 .site b{font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
 .site.off b{color:var(--muted);font-family:var(--f-body);font-weight:500;font-size:.78rem}
+.more{grid-column:1/-1;display:flex;justify-content:center;padding:8px 0 4px}
+.more button{height:40px;padding:0 20px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem;cursor:pointer}
+/* 티켓(목록용 압축 카드) */
+.tk{background:var(--surface);border:1px solid var(--line);border-radius:12px;display:flex;align-items:stretch;min-width:0;cursor:pointer}
+.tk.sp{border-color:var(--ad)}
+.tk-b{flex:1;min-width:0;padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.tk .title{font-size:.92rem;line-height:1.3;min-height:2.6em}
+.tk .meta{font-size:.7rem;gap:5px}
+.tk .bd{font-size:.68rem;padding:1px 6px}
+.tk-n{display:flex;gap:12px;align-items:baseline;font-size:.72rem;color:var(--muted);white-space:nowrap;min-width:0}
+.tk-n b{font-family:var(--f-num);font-size:.92rem;color:var(--ink);font-variant-numeric:tabular-nums;margin-left:3px}
+.tk-n .hp{color:var(--hit)}
+.tk-n .hp.z{color:var(--muted)}
+.tk .meter{height:3px}
+.go{flex:0 0 58px;display:flex;align-items:center;justify-content:center;border-left:1px dashed var(--line);color:var(--accent);font-weight:700;font-size:.82rem;text-decoration:none;border-radius:0 12px 12px 0}
+.go:hover{background:var(--accent-soft)}
+/* 상세보기 시트 */
+.sheet{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:0;width:min(440px,calc(100% - 32px));max-height:88vh}
+.sheet::backdrop{background:rgba(10,12,20,.45)}
+.sh-h{position:sticky;top:0;background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);z-index:1}
+.sh-h button{background:none;border:0;color:var(--muted);font:inherit;font-size:.86rem;cursor:pointer;padding:4px 0}
+.sheet .card{border:0;border-radius:0}
+/* 모바일 필터: 항목 탭 + 펼침 패널 */
+.mf{display:none}
+.ftabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ftabs::-webkit-scrollbar{display:none}
+.ft{flex:0 0 auto;height:32px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.ft.on{border-color:var(--ink);font-weight:700}
+.ft[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ft .v{color:var(--accent);margin-left:4px}
+.ft[aria-expanded="true"] .v{color:inherit}
+.ft.reset{color:var(--muted)}
+.fpanel{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;max-height:38vh;overflow-y:auto}
 .empty{padding:48px 0;text-align:center;color:var(--muted);grid-column:1/-1}
 footer{margin-top:28px;font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:0;width:min(520px,calc(100% - 32px))}
@@ -133,7 +167,7 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
 .dlg .btns button.primary{background:var(--accent);color:var(--on-accent);border:0}
 .dlg .msg{font-size:.86rem;color:var(--hit)}
 .dlg .msg.err{color:var(--warn)}
-@media (max-width:640px){.bar{position:static}.brand h1{font-size:2rem}.hright{align-items:flex-start}.stats{gap:16px}.stat b{font-size:1.2rem}}
+@media (max-width:640px){.pc{display:none}.gnb{height:50px}.logo{font-size:1.35rem}.gnb .hbtn{height:32px;padding:0 12px;font-size:.8rem}.notice{margin-top:8px;padding:6px 10px;font-size:.74rem;gap:2px 8px;border-radius:8px}header{padding-block:10px;gap:10px}.tagline{font-size:.74rem}.stats{gap:14px}.stat b{font-size:1rem}.stat small{font-size:.68rem}.stat:nth-child(n+5){display:none}.bar .row:first-child{flex-wrap:nowrap}.search{flex:1 1 0;height:38px;padding:0 12px}#sort{min-width:0;width:118px;height:38px;padding:0 8px;font-size:.86rem}#filters,#ips{display:none}.mf{display:block}.grid{grid-template-columns:1fr;gap:8px}.sheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:16px 16px 0 0;border-bottom:0}.bar{position:static}}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--accent)}}
 </style>
 </head>
@@ -141,36 +175,33 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
 
 
 <div class="wrap">
+  <nav class="gnb" aria-label="상단 메뉴">
+    <div class="gl"><h1 class="logo"><a href="./">럭키<span>유니버스</span></a></h1><span class="tagline">쿠지·오리파·가챠를 한눈에!</span></div>
+    <button class="hbtn" data-form="feedback">문의·건의</button>
+  </nav>
+
   <div class="notice" role="note">
-    <b>실시간 정보가 아닙니다.</b>
+    <b>실시간 정보가 아닙니다</b>
     <span id="asof">수집 시각 기준 현황판입니다.</span>
   </div>
 
   <header>
-    <div class="brand">
-      <h1>럭키<span>유니버스</span></h1>
-      <p>여러 사이트에서 진행 중인 온라인 쿠지·오리파·가챠를 한곳에 모았습니다. 상위상이 몇 장 남았는지, 지금 뽑으면 확률이 얼마인지 비교해 보세요.</p>
-    </div>
-    <div class="hright">
-      <div class="hbtns">
-        <button class="hbtn" data-form="feedback">문의·건의</button>
-      </div>
-      <div class="stats" id="stats"></div>
-    </div>
+    <div class="stats" id="stats"></div>
   </header>
 
   <div class="bar">
     <div class="row">
       <input id="q" class="search" type="search" placeholder="작품·상품명·샵 검색 (예: 원피스, 치이카와)" aria-label="검색">
       <select id="sort" aria-label="정렬">
-        <option value="hit">상위상 확률 높은순</option>
+        <option value="hit">확률 높은순</option>
         <option value="last">라스트원 임박순</option>
-        <option value="topleft">상위상 남은 수</option>
+        <option value="topleft">상위상 많은순</option>
         <option value="cheap">가격 낮은순</option>
       </select>
     </div>
     <div class="row" id="filters"></div>
     <div class="row ips" id="ips"></div>
+    <div class="mf" id="mf"></div>
   </div>
 
   <p class="count" id="count"></p>
@@ -184,6 +215,8 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
     <span>상품군(피규어·인형·굿즈·TCG)은 상위 등급 상품명으로 자동 분류해 틀릴 수 있습니다. 틀린 곳은 카드의 "정보가 다른가요?"로 알려주세요.</span>
   </footer>
 </div>
+
+<dialog id="sheet" class="sheet" aria-label="상세보기"><div class="sh-h"><b>상세보기</b><button type="button" data-close aria-label="닫기">닫기</button></div><div id="sheet-body"></div></dialog>
 
 <dialog id="dlg">
   <form class="dlg" id="fm" method="dialog" novalidate>
@@ -247,7 +280,7 @@ function prep(items){
   return items;
 }
 
-const st={nat:"",q:"",plat:"",kind:"",off:"",cat:"",ip:"",onlyTop:false,sort:"hit",open:new Set()};
+const st={ft:"",nat:"",q:"",plat:"",kind:"",off:"",cat:"",ip:"",onlyTop:false,sort:"hit",open:new Set()};
 try{const s=JSON.parse(localStorage.getItem("lu_pref")||"{}"); if(s.sort) st.sort=s.sort;}catch(e){}
 
 const $=s=>document.querySelector(s);
@@ -278,18 +311,42 @@ function renderBars(){
   const bp=base("plat"), bk=base("kind"), bc=base("cat"), bi=base("ip");
   const g=(l,x)=>`<span class="grp"><span class="lbl">${l}</span>${x}</span>`;
   const bn=base("nat");
-  let h=g("국가",chip("한국","nat","한국",bn.filter(d=>d.nat==="한국").length)+chip("일본","nat","일본",bn.filter(d=>d.nat==="일본").length));
-  h+=g("사이트",PLATS.map(p=>chip(p,"plat",p,bp.filter(d=>d.p===p).length)).join(""));
-  h+=g("종류",chip("쿠지","kind","kuji",bk.filter(d=>d.k==="kuji").length)+chip("오리파","kind","oripa",bk.filter(d=>d.k==="oripa").length)+chip("가챠","kind","gacha",bk.filter(d=>d.k==="gacha").length));
-  h+=g("상품군",CATS.map(c=>chip(c,"cat",c,bc.filter(d=>d.cat===c).length)).join(""));
-  h+=g("구성",chip("공식 쿠지","off","공식")+chip("샵 구성","off","샵")+`<button class="chip" data-g="onlyTop" aria-pressed="${st.onlyTop}">상위상 남은 것만</button>`);
-  $("#filters").innerHTML=h;
   const cnt={}; bi.forEach(d=>cnt[d.ip]=(cnt[d.ip]||0)+1);
   const ips=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
   if(st.ip&&!cnt[st.ip]) ips.unshift([st.ip,0]);
-  $("#ips").innerHTML=`<span class="lbl">작품</span>`+ips.map(([k,n])=>chip(k,"ip",k,n)).join("");
+  const KN={kuji:"쿠지",oripa:"오리파",gacha:"가챠"};
+  // [키, 라벨, 칩들, 선택값 요약]
+  const G=[
+    ["nat","국가",chip("한국","nat","한국",bn.filter(d=>d.nat==="한국").length)+chip("일본","nat","일본",bn.filter(d=>d.nat==="일본").length),st.nat],
+    ["plat","사이트",PLATS.map(p=>chip(p,"plat",p,bp.filter(d=>d.p===p).length)).join(""),st.plat],
+    ["kind","종류",chip("쿠지","kind","kuji",bk.filter(d=>d.k==="kuji").length)+chip("오리파","kind","oripa",bk.filter(d=>d.k==="oripa").length)+chip("가챠","kind","gacha",bk.filter(d=>d.k==="gacha").length),KN[st.kind]||""],
+    ["cat","상품군",CATS.map(c=>chip(c,"cat",c,bc.filter(d=>d.cat===c).length)).join(""),st.cat],
+    ["off","구성",chip("공식 쿠지","off","공식")+chip("샵 구성","off","샵")+`<button class="chip" data-g="onlyTop" aria-pressed="${st.onlyTop}">상위상 남은 것만</button>`,[st.off,st.onlyTop?"상위상":""].filter(Boolean).join("·")],
+    ["ip","작품",ips.map(([k,n])=>chip(k,"ip",k,n)).join(""),st.ip],
+  ];
+  $("#filters").innerHTML=G.slice(0,5).map(x=>g(x[1],x[2])).join("");
+  $("#ips").innerHTML=`<span class="lbl">작품</span>`+G[5][2];
+  // 모바일: 항목 이름만 한 줄로, 누른 항목만 아래에 펼침
+  const cur=G.find(x=>x[0]===st.ft);
+  $("#mf").innerHTML=`<div class="ftabs">${G.map(x=>`<button type="button" class="ft${x[3]?" on":""}" data-ft="${x[0]}" aria-expanded="${st.ft===x[0]}">${x[1]}${x[3]?`<span class="v">${esc(x[3])}</span>`:""} ▾</button>`).join("")}${filtered()||st.nat?`<button type="button" class="ft reset" data-reset>초기화</button>`:""}</div>${cur?`<div class="fpanel">${cur[2]}</div>`:""}`;
 }
+const priceTxt=d=>!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():d.cur==="PT"?d.price.toLocaleString()+"pt":won(d.price)+"원";
+const probTxt=d=>d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—";
+// 목록용 티켓: 핵심 숫자만. 누르면 상세보기 시트
 function card(d,pos){
+  const pct=d.tot?Math.round(d.rem/d.tot*100):0;
+  const kind=d.k==="oripa"?`<span class="tag o">오리파</span>`:d.k==="gacha"?`<span class="tag g">가챠</span>`:`<span class="tag">${d.off?"공식":"샵"}</span>`;
+  const bd=d.near?`<span class="bd last">라스트원 임박</span>`:d.topRem>0?`<span class="bd hit">상위상 ${d.topRem}장</span>`:"";
+  const rem=d.hid?"비공개":d.u?(d.until?"~"+d.until.slice(5):"기간 판매"):`${cnt(d.rem,d.tot>=1e5)}<span style="color:var(--muted);font-weight:400;font-size:.72rem">/${cnt(d.tot,d.tot>=1e5)}</span>`;
+  return `<article class="tk${d.sp?" sp":""}" data-detail="${d.id}" data-pos="${pos}" tabindex="0" aria-label="${esc(d.t)} 상세보기">
+    <div class="tk-b"><div class="meta">${d.sp?`<span class="tag ad">AD</span>`:""}${kind}<span>${esc(d.p)}</span>${bd}</div>
+      <h2 class="title">${esc(d.t)}</h2>
+      <div class="tk-n"><span><b style="margin-left:0">${priceTxt(d)}</b></span><span>남은<b>${rem}</b></span>${d.pr.length&&!d.u?`<span>상위상<b class="hp${d.topRem?"":" z"}">${probTxt(d)}</b></span>`:""}</div>
+      ${d.u||d.hid?"":`<div class="meter"><i style="width:${pct}%"></i></div>`}</div>
+    <a class="go" href="${esc(outUrl(d.url))}" target="_blank" rel="noopener" data-out="${d.id}" data-pos="${pos}" aria-label="${esc(d.p)}에서 뽑기">뽑기</a></article>`;
+}
+// 상세보기: 기존 카드 전체 + 등급별 잔여 펼친 상태
+function cardFull(d,pos){
   const pct=d.tot?Math.round(d.rem/d.tot*100):0;
   const tags=[d.sp?`<span class="tag ad">AD</span>`:"",`<span>${esc(d.p)}</span>`,`<span>·</span>`,`<span>${esc(d.shop)}</span>`,
     d.k==="oripa"?`<span class="tag o">오리파</span>`:d.k==="gacha"?`<span class="tag g">가챠</span>`:`<span class="tag">${d.off?"공식 쿠지":"샵 구성"}</span>`,
@@ -299,7 +356,7 @@ function card(d,pos){
   if(d.firstLeft && /^(A|S|SP1|1등|1|특)$/.test(d.firstG)) badges.push(`<span class="bd hit">${esc(d.firstG)}상 생존</span>`);
   if(d.near) badges.push(`<span class="bd last">라스트원 임박</span>`);
   const tiers=d.pr.filter(p=>!p[4]&&p[2]<=3).slice(0,10).map(p=>`<span class="tier ${p[3]>0?"on":"off"}">${esc(p[0])} ${p[3]}/${p[2]}</span>`).join("");
-  const open=st.open.has(d.id);
+  const open=true;
   const detail=open?`<div class="detail">${d.pr.length?d.pr.map(p=>{
       const r=p[2]?p[3]/p[2]:0, t3=!p[4]&&d.top3.has(p[0]);
       return `<div class="pl ${p[3]===0?"z":""} ${p[4]?"lo":""} ${t3?"t3":""}"><span class="g">${p[4]?"LAST":esc(p[0])}</span><span class="nm">${esc(p[1]||(p[4]?"라스트원":"—"))}</span><span class="c">${p[3]}/${p[2]}</span><span class="m"><i style="width:${Math.round(r*100)}%"></i></span></div>`;}).join(""):
@@ -309,13 +366,13 @@ function card(d,pos){
       <div class="badges">${badges.join("")}</div></div>
     <div class="bot">
       <div class="nums">
-        <div><small>1회</small><b>${!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():d.cur==="PT"?d.price.toLocaleString()+"pt":won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
+        <div><small>1회</small><b>${priceTxt(d)}</b>${d.orig?`<s>${won(d.orig)}원</s>`:""}</div>
         <div><small>남은 응모권</small>${d.hid?`<b style="font-size:.86rem">${d.tot?d.tot+"구 · ":""}비공개</b>`:d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b style="overflow-wrap:anywhere">${cnt(d.rem,d.tot>=1e5)}<span style="color:var(--muted);font-size:.75rem">/${cnt(d.tot,d.tot>=1e5)}</span></b>`}</div>
         <div><small>상위상 확률</small><b style="color:${d.topRem?"var(--hit)":"var(--muted)"}">${d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—"}</b></div>
       </div>
       ${d.u||d.hid?"":`<div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>`}
       ${tiers?`<div class="tiers">${tiers}</div>`:""}
-      <div class="acts">${d.u||!d.pr.length?"":`<button data-open="${d.id}" aria-expanded="${open}">${open?"접기":"등급별 잔여"}</button>`}
+      <div class="acts">
         <a href="${esc(outUrl(d.url))}" target="_blank" rel="noopener" data-out="${d.id}" data-pos="${pos}">${esc(d.p)}에서 뽑기</a></div>
       <button class="report" data-report="${d.id}">정보가 다른가요?</button>
     </div>${detail}</article>`;
@@ -327,10 +384,19 @@ function render(){
   const s=st.sort;
   list.sort(s==="hit"?(a,b)=>b.hit-a.hit:s==="last"?(a,b)=>(b.near-a.near)||(a.rem/a.tot-b.rem/b.tot):s==="topleft"?(a,b)=>b.topRem-a.topRem:(a,b)=>a.price-b.price);
   const sp=list.filter(d=>d.sp); list=sp.concat(list.filter(d=>!d.sp));
-  let html=list.map((d,i)=>card(d,i+1)).join("");
+  // 처음엔 PAGE개만 그리고, 스크롤해서 바닥에 닿으면 PAGE개씩 더 그림. 필터·정렬·검색이 바뀌면 처음부터
+  const key=JSON.stringify([st.q,st.plat,st.kind,st.off,st.cat,st.ip,st.nat,st.onlyTop,st.sort]);
+  if(key!==lastKey){ shown=PAGE; lastKey=key; }
+  const vis=list.slice(0,shown);
+  let html=vis.map((d,i)=>card(d,i+1)).join("");
+  if(list.length>vis.length) html+=`<div class="more" id="more"><button type="button" data-more>더 보기 (${(list.length-vis.length).toLocaleString()}개 남음)</button></div>`;
   $("#grid").innerHTML=list.length?html:`<div class="empty">조건에 맞는 쿠지가 없습니다. 선택한 필터를 한 번 더 눌러 해제해 보세요.</div>`;
-  $("#count").textContent=`${list.length}개 표시 중`;
+  $("#count").textContent=`${list.length.toLocaleString()}개`;
+  const m=$("#more"); if(m&&io) io.observe(m);
 }
+const PAGE=24; let shown=PAGE, lastKey="";
+function loadMore(){ shown+=PAGE; render(); }
+const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); loadMore(); } },{rootMargin:"600px 0px"}):null;
 function renderSites(){
   const S=META.sites||{};
   $("#sites").innerHTML=SITES.map(s=>{
@@ -349,7 +415,7 @@ function renderHead(){
   // 마지막 업데이트 = 마지막 수집·배포 시각 (없으면 사이트별 수집 시각 중 가장 늦은 것)
   const S=META.sites||{}; const ts=Object.values(S).map(v=>v&&v.at).filter(Boolean).sort();
   const last=META.builtAt||ts[ts.length-1];
-  if(last) $("#asof").textContent=`${fmtT(last)}에 마지막으로 업데이트했어요. 뽑기 전에 사이트에서 남은 수량을 꼭 확인하세요.`;
+  if(last) $("#asof").innerHTML=`${fmtT(last)} 업데이트<span class="pc"> · 뽑기 전에 사이트에서 남은 수량을 확인하세요.</span>`;
 }
 
 /* 문의·광고 폼 */
@@ -387,17 +453,26 @@ $("#fm").addEventListener("submit",async e=>{
   }catch(err){ msg.className="msg err"; msg.textContent="보내지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요."; $("#fm-send").disabled=false; }
 });
 
+const sheet=$("#sheet");
+function openSheet(id,pos){ const d=DATA[id]; $("#sheet-body").innerHTML=cardFull(d,pos); try{sheet.showModal()}catch(e){sheet.setAttribute("open","")} sheet.scrollTop=0; track("view_detail",{platform:d.p}); }
+sheet.addEventListener("click",e=>{ if(e.target===sheet) sheet.close(); });
+document.addEventListener("keydown",e=>{ const t=e.target.closest&&e.target.closest("[data-detail]"); if(t&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); openSheet(+t.dataset.detail,+t.dataset.pos); } });
 document.addEventListener("click",e=>{
+  if(e.target.closest("[data-close]")){ sheet.close(); return; }
+  const ft=e.target.closest("[data-ft]"); if(ft){ st.ft=st.ft===ft.dataset.ft?"":ft.dataset.ft; renderBars(); return; }
+  if(e.target.closest("[data-reset]")){ Object.assign(st,{nat:"",plat:"",kind:"",off:"",cat:"",ip:"",onlyTop:false,ft:""}); track("filter",{group:"reset"}); render(); return; }
   const c=e.target.closest(".chip");
   if(c){const g=c.dataset.g;
     if(g==="onlyTop") st.onlyTop=!st.onlyTop; else st[g]= st[g]===c.dataset.v ? "" : c.dataset.v;
     track("filter",{group:g,value:st[g]}); render(); return;}
   const o=e.target.closest("[data-open]");
   if(o){const id=+o.dataset.open; const was=st.open.has(id); was?st.open.delete(id):st.open.add(id); if(!was) track("view_detail",{platform:DATA[id].p}); render(); return;}
+  if(e.target.closest("[data-more]")){ loadMore(); return; }
   const f=e.target.closest("[data-form]"); if(f){openForm(f.dataset.form); return;}
-  const r=e.target.closest("[data-report]"); if(r){openForm("feedback",DATA[+r.dataset.report]); return;}
+  const r=e.target.closest("[data-report]"); if(r){ sheet.open&&sheet.close(); openForm("feedback",DATA[+r.dataset.report]); return;}
   const a=e.target.closest("[data-out]");
-  if(a){const d=DATA[+a.dataset.out]; track("outbound_click",{platform:d.p,item:d.t,category:d.cat,position:+a.dataset.pos,sponsored:d.sp});}
+  if(a){const d=DATA[+a.dataset.out]; track("outbound_click",{platform:d.p,item:d.t,category:d.cat,position:+a.dataset.pos,sponsored:d.sp,from:a.closest("#sheet")?"detail":"list"}); return;}
+  const dt=e.target.closest("[data-detail]"); if(dt){ openSheet(+dt.dataset.detail,+dt.dataset.pos); return; }
 });
 let qT; $("#q").addEventListener("input",e=>{st.q=e.target.value;render();clearTimeout(qT);qT=setTimeout(()=>st.q&&track("search",{search_term:st.q}),800);});
 $("#sort").value=st.sort;
