@@ -73,15 +73,14 @@
       "name": "오리파코리아",
       "url": "https://oripa-korea.com",
       "country": "KR",
-      "mode": "closed",
-      "note": "잔여 수량 비공개"
+      "mode": "auto"
     },
     {
       "name": "오리파덕",
       "url": "https://oripaduk.com",
       "country": "KR",
-      "mode": "closed",
-      "note": "잔여 수량 비공개"
+      "mode": "auto",
+      "note": "완판 후 공개 방식 · 남은 구수 비공개"
     },
     {
       "name": "쿠지히트",

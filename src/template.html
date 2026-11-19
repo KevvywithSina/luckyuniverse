@@ -310,10 +310,10 @@ function card(d,pos){
     <div class="bot">
       <div class="nums">
         <div><small>1회</small><b>${!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():d.cur==="PT"?d.price.toLocaleString()+"pt":won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
-        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b style="overflow-wrap:anywhere">${cnt(d.rem,d.tot>=1e5)}<span style="color:var(--muted);font-size:.75rem">/${cnt(d.tot,d.tot>=1e5)}</span></b>`}</div>
+        <div><small>남은 응모권</small>${d.hid?`<b style="font-size:.86rem">${d.tot?d.tot+"구 · ":""}비공개</b>`:d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b style="overflow-wrap:anywhere">${cnt(d.rem,d.tot>=1e5)}<span style="color:var(--muted);font-size:.75rem">/${cnt(d.tot,d.tot>=1e5)}</span></b>`}</div>
         <div><small>상위상 확률</small><b style="color:${d.topRem?"var(--hit)":"var(--muted)"}">${d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—"}</b></div>
       </div>
-      ${d.u?"":`<div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>`}
+      ${d.u||d.hid?"":`<div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>`}
       ${tiers?`<div class="tiers">${tiers}</div>`:""}
       <div class="acts">${d.u||!d.pr.length?"":`<button data-open="${d.id}" aria-expanded="${open}">${open?"접기":"등급별 잔여"}</button>`}
         <a href="${esc(outUrl(d.url))}" target="_blank" rel="noopener" data-out="${d.id}" data-pos="${pos}">${esc(d.p)}에서 뽑기</a></div>
