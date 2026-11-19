@@ -23,6 +23,7 @@ function ipOf0(it) {
 }
 const top3 = pr => pr.filter(p => !p[4]).slice(0, 3);
 function typeOf(it) {
+  if (it.p === '포카챠') return '포토카드';
   const names = [it.t, ...top3(it.pr).map(p => p[1])].join(' ');
   if (it.k === 'oripa' || /TCG|카드 ?박스|부스터|확장팩|오리파|1 ?box|1박스|일판/i.test(names)) return 'TCG';
   if (/피규어|figure|넨도|스케일|1\/[5-8]|룩업|소프비|MASTERLIS|POP UP|아츠|S-FIRE|알터|ALTER|스피리테일|루미나스타|Luminasta|FIGURIZM|XStellar|Trio Try|그란디스타|흉상/i.test(names)) return '피규어';
@@ -33,7 +34,7 @@ const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 const tr = { ...(existsSync('data/tr-cache.json') ? JSON.parse(readFileSync('data/tr-cache.json', 'utf8')) : {}), ...JSON.parse(readFileSync('config/translations.json', 'utf8')) };
 const items = [];
 for (const it0 of raw.items) {
-  const it = it0.jp && tr[it0.t] ? { ...it0, t: tr[it0.t], jt: it0.t } : it0;
+  const it = (it0.jp || it0.tr) && tr[it0.t] ? { ...it0, t: tr[it0.t], jt: it0.t } : it0;
   const key = `${it.p}:${it.id}`;
   if (ov.hide.includes(key)) continue;
   const nonLast = it.pr.filter(p => !p[4]);

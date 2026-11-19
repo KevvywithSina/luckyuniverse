@@ -145,7 +145,8 @@ async function miraclekuji() {
     const h = $(a).attr('href'); if (seen.has(h)) return;
     const t = $(a).text().replace(/\s+/g, ' ').trim();
     if (!/진행 ?중|판매 ?중/.test(t)) return;
-    const m = t.match(/([\d,]+)\s*\/\s*([\d,]+)\s*(?:장|칸)/); if (!m) return;
+    // 화면 디자인이 번갈아 나옴: "잔여 366 / 500" 또는 "366/ 500장 남음"
+    const m = t.match(/(?:잔여|남은)\s*([\d,]+)\s*\/\s*([\d,]+)/) || t.match(/([\d,]+)\s*\/\s*([\d,]+)\s*(?:장|칸)/); if (!m) return;
     const title = $(a).find('h2').first().text().replace(/\s+/g, ' ').trim() || (t.match(/칸\s*(.+?)\s*뽑으러/) || [])[1] || '';
     const price = n((t.match(/1장\s*([\d,]+)\s*원/) || [])[1] || 0);
     seen.add(h);
@@ -250,9 +251,93 @@ async function oripaone() {
   return out;
 }
 
+// ── 포케팝 TCG: 오리파 상품(번호별 옵션)의 품절 아닌 번호 수 = 남은 구수
+async function pokepop() {
+  const B = 'https://pokepop.kr'; const $ = cheerio.load(await get(B + '/')); const seen = new Set(); const out = [];
+  const links = $('a[href*="/product/"]').map((_, a) => $(a).attr('href')).get().filter(h => /오리파|%EC%98%A4%EB%A6%AC%ED%8C%8C/.test(h));
+  for (const h of links) {
+    const id = (h.match(/\/(\d+)\/category\//) || h.match(/\/(\d+)\/?$/) || [])[1]; if (!id || seen.has(id)) continue; seen.add(id);
+    const url = h.startsWith('http') ? h : B + encodeURI(decodeURI(h));
+    const d = cheerio.load(await get(url));
+    const opts = d('select option').map((_, o) => d(o).text().trim()).get().filter(t => /^\d+/.test(t));
+    if (!opts.length) continue;
+    const rem = opts.filter(t => !/품절/.test(t)).length;
+    const txt = d('body').text().replace(/\s+/g, ' ');
+    const title = (txt.match(/상품명\s*(.+?)\s*(?:소비자가|판매가)/) || [])[1] || d('title').text().trim();
+    const price = +((txt.match(/판매가\s*([\d,]+)\s*원/) || [])[1] || '0').replace(/,/g, '');
+    if (rem > 0) out.push({ p: '포케팝', id, k: 'oripa', t: title.trim(), shop: '포케팝 TCG', cat: '포켓몬', price, orig: 0, off: 0, live: 0, url, pr: [], tot: opts.length, rem });
+  }
+  return out;
+}
+
+// ── 화면 렌더링이 필요한 사이트용 브라우저 (Clove, 포카챠). 한 번 띄워서 같이 씀
+let _browser = null;
+async function page() {
+  if (!_browser) { const { chromium } = await import('playwright'); _browser = await chromium.launch(); }
+  const ctx = await _browser.newContext({ userAgent: UA + ' Chrome/130', locale: 'ko-KR', viewport: { width: 1280, height: 2000 } });
+  return ctx.newPage();
+}
+async function scrollAll(pg, sel) {
+  let last = -1;
+  for (let i = 0; i < 12; i++) {
+    await pg.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await pg.waitForTimeout(1200);
+    const n = await pg.locator(sel).count(); if (n === last && i > 2) break; last = n;
+  }
+}
+
+// ── Clove 오리파 한국어판: 카테고리별 화면에서 제목(이미지 alt)·1회 pt·남은/전체 구수
+async function clove() {
+  const B = 'https://oripa.clove.jp'; const pg = await page(); const out = new Map();
+  const CAT = { Pokemon: '포켓몬', OnePiece: '원피스', Yugioh: '유희왕', WeissSchwarz: '바이스슈발츠', All: '' };
+  try {
+    for (const c of Object.keys(CAT)) {
+      await pg.goto(`${B}/ko/oripa/${c}`, { waitUntil: 'networkidle', timeout: 60000 });
+      await pg.waitForTimeout(2000); await scrollAll(pg, `a[href*="/ko/oripa/${c}/"]`);
+      const rows = await pg.evaluate(c => {
+        const hrefs = [...new Set([...document.querySelectorAll(`a[href*="/ko/oripa/${c}/"]`)].map(a => a.getAttribute('href')))];
+        return hrefs.map(h => {
+          let p = document.querySelector(`a[href="${h}"]`);
+          for (let i = 0; i < 6 && p.parentElement; i++) { if (/\/\s*1회/.test(p.innerText)) break; p = p.parentElement; }
+          const t = p.innerText.replace(/\s+/g, ' ');
+          const m = t.match(/([\d,]+)\s*\/\s*1회\s*([\d,]+)\s*\/\s*([\d,]+)/);
+          const img = p.querySelector('img[alt]:not([alt="coin"])');
+          return { id: h.split('/').pop(), alt: img ? img.alt : '', m: m ? [m[1], m[2], m[3]] : null };
+        });
+      }, c);
+      for (const r of rows) {
+        if (!r.m || out.has(r.id)) continue;
+        const n = x => +x.replace(/,/g, '');
+        const title = r.alt.replace(/\s*\|\s*클로브 오리파\(Clove\)\s*$/, '').replace(/^오리파\s*/, '').trim();
+        if (!title || n(r.m[1]) <= 0 || n(r.m[2]) <= 0) continue;
+        out.set(r.id, { p: 'Clove', id: r.id, k: 'oripa', t: title, shop: 'Clove 오리파', cat: CAT[c], price: n(r.m[0]), cur: 'PT', orig: 0, off: 0, live: 0,
+          url: `${B}/ko/oripa/All/${r.id}`, pr: [], tot: n(r.m[2]), rem: n(r.m[1]), tr: /[぀-ヿ一-鿿]/.test(title) ? 1 : 0 });
+      }
+    }
+  } finally { await pg.context().close(); }
+  return [...out.values()];
+}
+
+// ── 포카챠: 셀럽 포토카드 가챠. 기간 판매라 남은 수량 없음, 오늘이 기간 안인 것만
+async function pocacha() {
+  const B = 'https://www.pocacha.im'; const pg = await page(); const out = [];
+  try {
+    await pg.goto(B + '/', { waitUntil: 'networkidle', timeout: 60000 }); await pg.waitForTimeout(2000);
+    const rows = await pg.evaluate(() => [...document.querySelectorAll('a[href^="/gacha/"]')].map(a => ({ h: a.getAttribute('href'), t: a.innerText.replace(/\s+/g, ' ').trim() })));
+    const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10).replace(/-/g, '/');
+    const seen = new Set();
+    for (const r of rows) {
+      const m = r.t.match(/^(.*?)(\d{4}\/\d{2}\/\d{2})\s*~\s*(\d{4}\/\d{2}\/\d{2})/); if (!m || seen.has(r.h)) continue; seen.add(r.h);
+      if (m[2] > today || m[3] < today) continue;
+      out.push({ p: '포카챠', id: r.h.split('/').pop(), k: 'gacha', t: m[1].trim(), shop: '포카챠', cat: '', price: 0, orig: 0, off: 0, live: 0,
+        url: B + r.h, pr: [], tot: 0, rem: 0, u: 1, until: m[3] });
+    }
+  } finally { await pg.context().close(); }
+  return out;
+}
+
 const SITES = { 라이브쿠지: livekuji, 쿠지샵: kujishop, 쿠지머신: kujimachine, 레전드쿠지: legendkuji, '2쿠지': twokuji, 코스믹쿠지: cosmickuji,
   미라클쿠지: miraclekuji, 피카유니버스: pikauniverse, 쿠지사: kujisa, '一番くじONLINE': ichibanOnline,
-  DOPA: dopa, magi, 오리파원: oripaone };
+  magi, 오리파원: oripaone, 포케팝: pokepop, Clove: clove, 포카챠: pocacha };   // DOPA는 외부 수집기 접속을 막아(404) 제외
 const prev = existsSync('data/raw.json') ? JSON.parse(readFileSync('data/raw.json', 'utf8')) : null;
 const res = { collectedAt: new Date().toISOString(), sites: {}, items: [] };
 for (const [name, fn] of Object.entries(SITES)) {
@@ -267,4 +352,5 @@ for (const [name, fn] of Object.entries(SITES)) {
     console.error(name, 'FAILED', e.message);
   }
 }
+if (_browser) await _browser.close();
 writeFileSync('data/raw.json', JSON.stringify(res));

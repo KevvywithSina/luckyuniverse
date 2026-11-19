@@ -108,8 +108,8 @@
       "name": "DOPA",
       "url": "https://dopa-game.jp",
       "country": "JP",
-      "mode": "auto",
-      "note": "첫 화면 노출 팩 기준"
+      "mode": "closed",
+      "note": "외부 수집 차단"
     },
     {
       "name": "magi",
@@ -123,6 +123,47 @@
       "country": "JP",
       "mode": "auto",
       "note": "남은 구수 공개 팩만"
+    },
+    {
+      "name": "Clove",
+      "url": "https://oripa.clove.jp/ko/oripa/All",
+      "country": "KR",
+      "mode": "auto",
+      "note": "일본 Clove 한국어 서비스 · 가격은 pt"
+    },
+    {
+      "name": "포케팝",
+      "url": "https://pokepop.kr",
+      "country": "KR",
+      "mode": "auto"
+    },
+    {
+      "name": "포카챠",
+      "url": "https://www.pocacha.im",
+      "country": "KR",
+      "mode": "auto",
+      "note": "포토카드 가챠 · 기간 판매"
+    },
+    {
+      "name": "포케히트",
+      "url": "https://pokehit.co.kr/ORIPA",
+      "country": "KR",
+      "mode": "soon",
+      "note": "판매 중인 오리파 없음"
+    },
+    {
+      "name": "ALL PO ONE",
+      "url": "https://allpoone.github.io/cards/",
+      "country": "KR",
+      "mode": "soon",
+      "note": "오픈 준비 중"
+    },
+    {
+      "name": "티프(TIF)",
+      "url": "http://takeitfirst.co.kr",
+      "country": "KR",
+      "mode": "closed",
+      "note": "앱 전용"
     }
   ]
 }

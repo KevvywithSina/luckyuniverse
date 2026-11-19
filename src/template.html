@@ -72,6 +72,7 @@ select{height:40px;padding:0 12px}
 .top{padding:14px 16px 0;min-height:118px;border-bottom:2px dashed var(--line);display:flex;flex-direction:column;gap:6px}
 .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.74rem;color:var(--muted)}
 .tag{padding:1px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.tag.g{background:var(--hit-soft);color:var(--hit)}
 .tag.o{background:var(--warn-soft);color:var(--warn)}
 .tag.c{background:transparent;border:1px solid var(--line);color:var(--ink)}
 .tag.ad{background:var(--ad-soft);color:var(--ad);font-weight:700}
@@ -148,7 +149,7 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
   <header>
     <div class="brand">
       <h1>럭키<span>유니버스</span></h1>
-      <p>여러 사이트에서 진행 중인 온라인 쿠지와 오리파를 한곳에 모았습니다. 상위상이 몇 장 남았는지, 지금 뽑으면 확률이 얼마인지 비교해 보세요.</p>
+      <p>여러 사이트에서 진행 중인 온라인 쿠지·오리파·가챠를 한곳에 모았습니다. 상위상이 몇 장 남았는지, 지금 뽑으면 확률이 얼마인지 비교해 보세요.</p>
     </div>
     <div class="hright">
       <div class="hbtns">
@@ -220,7 +221,7 @@ const K = (()=>{ try{ return JSON.parse(new TextDecoder().decode(Uint8Array.from
 const CFG = K.config || {};
 const SITES = (CFG.sites&&CFG.sites.length)?CFG.sites:[{name:"라이브쿠지",mode:"auto",country:"KR"},{name:"쿠지샵",mode:"auto",country:"KR"},{name:"쿠지머신",mode:"auto",country:"KR"},{name:"레전드쿠지",mode:"auto",country:"KR"}];
 const PLATS = SITES.filter(s=>s.mode==="auto").map(s=>s.name);
-const CATS = ["피규어","인형","굿즈","TCG"];
+const CATS = ["피규어","인형","굿즈","TCG","포토카드"];
 let DATA = [], META = {};
 
 /* 분석: config/site.json 의 ga4 가 있을 때만 빌드 단계에서 gtag 삽입 */
@@ -277,7 +278,7 @@ function renderBars(){
   const bn=base("nat");
   let h=g("국가",chip("한국","nat","한국",bn.filter(d=>d.nat==="한국").length)+chip("일본","nat","일본",bn.filter(d=>d.nat==="일본").length));
   h+=g("사이트",PLATS.map(p=>chip(p,"plat",p,bp.filter(d=>d.p===p).length)).join(""));
-  h+=g("종류",chip("쿠지","kind","kuji",bk.filter(d=>d.k==="kuji").length)+chip("오리파","kind","oripa",bk.filter(d=>d.k==="oripa").length));
+  h+=g("종류",chip("쿠지","kind","kuji",bk.filter(d=>d.k==="kuji").length)+chip("오리파","kind","oripa",bk.filter(d=>d.k==="oripa").length)+chip("가챠","kind","gacha",bk.filter(d=>d.k==="gacha").length));
   h+=g("상품군",CATS.map(c=>chip(c,"cat",c,bc.filter(d=>d.cat===c).length)).join(""));
   h+=g("구성",chip("공식 쿠지","off","공식")+chip("샵 구성","off","샵")+`<button class="chip" data-g="onlyTop" aria-pressed="${st.onlyTop}">상위상 남은 것만</button>`);
   $("#filters").innerHTML=h;
@@ -289,7 +290,7 @@ function renderBars(){
 function card(d,pos){
   const pct=d.tot?Math.round(d.rem/d.tot*100):0;
   const tags=[d.sp?`<span class="tag ad">AD</span>`:"",`<span>${esc(d.p)}</span>`,`<span>·</span>`,`<span>${esc(d.shop)}</span>`,
-    d.k==="oripa"?`<span class="tag o">오리파</span>`:`<span class="tag">${d.off?"공식 쿠지":"샵 구성"}</span>`,
+    d.k==="oripa"?`<span class="tag o">오리파</span>`:d.k==="gacha"?`<span class="tag g">가챠</span>`:`<span class="tag">${d.off?"공식 쿠지":"샵 구성"}</span>`,
     `<span class="tag c">${esc(d.cat)}</span>`, d.live?`<span class="tag live">LIVE</span>`:""].join("");
   const badges=[];
   if(d.topRem>0) badges.push(`<span class="bd hit">상위상 ${d.topRem}장 남음</span>`);
@@ -306,8 +307,8 @@ function card(d,pos){
       <div class="badges">${badges.join("")}</div></div>
     <div class="bot">
       <div class="nums">
-        <div><small>1회</small><b>${!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
-        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">기간 판매</b>`:`<b>${d.rem.toLocaleString()}<span style="color:var(--muted);font-size:.75rem">/${d.tot.toLocaleString()}</span></b>`}</div>
+        <div><small>1회</small><b>${!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():d.cur==="PT"?d.price.toLocaleString()+"pt":won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
+        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b>${d.rem.toLocaleString()}<span style="color:var(--muted);font-size:.75rem">/${d.tot.toLocaleString()}</span></b>`}</div>
         <div><small>상위상 확률</small><b style="color:${d.topRem?"var(--hit)":"var(--muted)"}">${d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—"}</b></div>
       </div>
       ${d.u?"":`<div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>`}
@@ -340,9 +341,9 @@ function renderSites(){
 }
 function renderHead(){
   renderSites();
-  const k=DATA.filter(d=>d.k==="kuji").length,o=DATA.length-k;
+  const k=DATA.filter(d=>d.k==="kuji").length,o=DATA.filter(d=>d.k==="oripa").length,ga=DATA.filter(d=>d.k==="gacha").length;
   const top=DATA.reduce((s,d)=>s+d.topRem,0);
-  $("#stats").innerHTML=[[DATA.length,"진행 중"],[k,"쿠지"],[o,"오리파"],[top.toLocaleString(),"남은 상위상"],[SITES.length,"대상 사이트"]].map(([b,l])=>`<div class="stat"><b>${b}</b><small>${l}</small></div>`).join("");
+  $("#stats").innerHTML=[[DATA.length,"진행 중"],[k,"쿠지"],[o,"오리파"],[ga,"가챠"],[top.toLocaleString(),"남은 상위상"],[SITES.length,"대상 사이트"]].map(([b,l])=>`<div class="stat"><b>${b}</b><small>${l}</small></div>`).join("");
   const S=META.sites||{}; const c={}; Object.entries(S).forEach(([k,v])=>{ if(v&&v.at) c[k]=v.at; });
   const ts=Object.values(c).sort();
   if(ts.length){
