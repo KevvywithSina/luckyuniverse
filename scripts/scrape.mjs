@@ -343,9 +343,51 @@ async function pocacha() {
   return out;
 }
 
+// ── 오리파코리아: 오리파 목록(campaigns) 화면에서 "제목 … 가격 원 / 1회 남은 수 X/Y" (화면 렌더링)
+async function oripakorea() {
+  const B = 'https://oripa-korea.com'; const pg = await page(); const out = [];
+  try {
+    await pg.goto(B + '/campaigns.html', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await pg.waitForSelector('a[href*="oripa-v2.html"]', { timeout: 30000 }).catch(() => {});
+    await pg.waitForTimeout(2000); await scrollAll(pg, 'a[href*="oripa-v2.html"]');
+    const rows = await pg.evaluate(() => [...document.querySelectorAll('a[href*="oripa-v2.html"]')].map(a => ({ h: a.getAttribute('href'), t: a.innerText.replace(/\s+/g, ' ').trim() })));
+    const seen = new Set(); const n = x => +String(x).replace(/,/g, '');
+    for (const r of rows) {
+      const id = (r.h.match(/id=([\w-]+)/) || [])[1]; if (!id || seen.has(id)) continue;
+      // 할인 표기("71%6,500원")가 있으면 건너뛰고 실제 1회 가격을 읽음
+      const m = r.t.match(/^(.*?)\s*(?:\d+%\s*[\d,]+\s*원\s*)?([\d,]+)\s*원\s*\/\s*1회\s*남은 수\s*([\d,]+)\s*\/\s*([\d,]+)/);
+      if (!m) continue; seen.add(id);
+      const title = m[1].replace(/^(NEW|Event|EVENT|HOT|BEST)\s+/i, '').trim();
+      if (n(m[3]) > 0 && title) out.push({ p: '오리파코리아', id, k: 'oripa', t: title, shop: '오리파코리아', cat: /원피스|OP-|ONE ?PIECE/i.test(title) ? '원피스' : '포켓몬',
+        price: n(m[2]), orig: 0, off: 0, live: 0, url: `${B}/oripa-v2.html?id=${id}`, pr: [], tot: n(m[4]), rem: n(m[3]) });
+    }
+  } finally { await pg.context().close(); }
+  return out;
+}
+
+// ── 오리파덕: "N구 완판 후 공개" 방식이라 남은 구수를 공개하지 않음 → 상품명·가격·총 구수만 (hid:1)
+async function oripaduk() {
+  const B = 'https://oripaduk.com'; const $ = cheerio.load(await get(B + '/oripa')); const seen = new Set(); const out = [];
+  $('a[href*="/oripa/?idx="]').each((_, a) => {
+    const h = $(a).attr('href'); const idx = (h.match(/idx=(\d+)/) || [])[1];
+    const title = $(a).find('h2').first().text().replace(/\s+/g, ' ').trim();
+    const price = +(($(a).find('p.pay').first().text().match(/([\d,]+)\s*원/) || [])[1] || '0').replace(/,/g, '');
+    if (!idx || !title || seen.has(idx)) return;
+    // 같은 상품 카드 안에 품절 표시가 있으면 제외
+    let c = $(a); while (c.parent().length && c.parent().find('h2').length === 1) c = c.parent();
+    if (/품절|SOLD ?OUT/i.test(c.text())) return;
+    seen.add(idx);
+    const tot = +((title.match(/(\d+)\s*구/) || [])[1] || '0');
+    out.push({ p: '오리파덕', id: idx, k: 'oripa', t: title.replace(/🔸️?/g, ' ').replace(/\s+/g, ' ').trim(), shop: '오리파덕', cat: /루피|원피스|아카이누|키자루|아오키지|나미|우타/.test(title) ? '원피스' : '포켓몬',
+      price, orig: 0, off: 0, live: 0, url: B + h, pr: [], tot, rem: 0, hid: 1 });
+  });
+  return out;
+}
+
 const SITES = { 라이브쿠지: livekuji, 쿠지샵: kujishop, 쿠지머신: kujimachine, 레전드쿠지: legendkuji, '2쿠지': twokuji, 코스믹쿠지: cosmickuji,
   미라클쿠지: miraclekuji, 피카유니버스: pikauniverse, 쿠지사: kujisa, '一番くじONLINE': ichibanOnline,
-  magi, 오리파원: oripaone, 포케팝: pokepop, Clove: clove, 포카챠: pocacha };   // DOPA는 외부 수집기 접속을 막아(404) 제외
+  magi, 오리파원: oripaone, 포케팝: pokepop, Clove: clove, 포카챠: pocacha,
+  오리파코리아: oripakorea, 오리파덕: oripaduk };   // DOPA는 외부 수집기 접속을 막아(404) 제외
 const prev = existsSync('data/raw.json') ? JSON.parse(readFileSync('data/raw.json', 'utf8')) : null;
 const res = { collectedAt: new Date().toISOString(), sites: {}, items: [] };
 for (const [name, fn] of Object.entries(SITES)) {
