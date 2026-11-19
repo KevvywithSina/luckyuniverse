@@ -1,0 +1,27 @@
+name: GA 일일 리포트
+on:
+  schedule:
+    - cron: '41 22 * * *'   # 매일 KST 07:41
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/ga-report.mjs
+        env:
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
+      # 저장소 로그·사이트에 숫자가 노출되지 않도록 아티팩트(7일 보관)로만 남긴다.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ga-report
+          path: data/ga-report.json
+          retention-days: 7
+          if-no-files-found: ignore
