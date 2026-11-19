@@ -118,6 +118,8 @@ select{height:40px;padding:0 12px}
 .site small{color:var(--muted);font-size:.74rem;display:block}
 .site b{font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
 .site.off b{color:var(--muted);font-family:var(--f-body);font-weight:500;font-size:.78rem}
+.more{grid-column:1/-1;display:flex;justify-content:center;padding:8px 0 4px}
+.more button{height:40px;padding:0 20px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem;cursor:pointer}
 .empty{padding:48px 0;text-align:center;color:var(--muted);grid-column:1/-1}
 footer{margin-top:28px;font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:0;width:min(520px,calc(100% - 32px))}
@@ -327,10 +329,19 @@ function render(){
   const s=st.sort;
   list.sort(s==="hit"?(a,b)=>b.hit-a.hit:s==="last"?(a,b)=>(b.near-a.near)||(a.rem/a.tot-b.rem/b.tot):s==="topleft"?(a,b)=>b.topRem-a.topRem:(a,b)=>a.price-b.price);
   const sp=list.filter(d=>d.sp); list=sp.concat(list.filter(d=>!d.sp));
-  let html=list.map((d,i)=>card(d,i+1)).join("");
+  // 처음엔 PAGE개만 그리고, 스크롤해서 바닥에 닿으면 PAGE개씩 더 그림. 필터·정렬·검색이 바뀌면 처음부터
+  const key=JSON.stringify([st.q,st.plat,st.kind,st.off,st.cat,st.ip,st.nat,st.onlyTop,st.sort]);
+  if(key!==lastKey){ shown=PAGE; lastKey=key; }
+  const vis=list.slice(0,shown);
+  let html=vis.map((d,i)=>card(d,i+1)).join("");
+  if(list.length>vis.length) html+=`<div class="more" id="more"><button type="button" data-more>더 보기 (${(list.length-vis.length).toLocaleString()}개 남음)</button></div>`;
   $("#grid").innerHTML=list.length?html:`<div class="empty">조건에 맞는 쿠지가 없습니다. 선택한 필터를 한 번 더 눌러 해제해 보세요.</div>`;
-  $("#count").textContent=`${list.length}개 표시 중`;
+  $("#count").textContent=`${list.length.toLocaleString()}개`;
+  const m=$("#more"); if(m&&io) io.observe(m);
 }
+const PAGE=24; let shown=PAGE, lastKey="";
+function loadMore(){ shown+=PAGE; render(); }
+const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); loadMore(); } },{rootMargin:"600px 0px"}):null;
 function renderSites(){
   const S=META.sites||{};
   $("#sites").innerHTML=SITES.map(s=>{
@@ -394,6 +405,7 @@ document.addEventListener("click",e=>{
     track("filter",{group:g,value:st[g]}); render(); return;}
   const o=e.target.closest("[data-open]");
   if(o){const id=+o.dataset.open; const was=st.open.has(id); was?st.open.delete(id):st.open.add(id); if(!was) track("view_detail",{platform:DATA[id].p}); render(); return;}
+  if(e.target.closest("[data-more]")){ loadMore(); return; }
   const f=e.target.closest("[data-form]"); if(f){openForm(f.dataset.form); return;}
   const r=e.target.closest("[data-report]"); if(r){openForm("feedback",DATA[+r.dataset.report]); return;}
   const a=e.target.closest("[data-out]");
