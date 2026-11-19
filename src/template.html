@@ -84,7 +84,7 @@ select{height:40px;padding:0 12px}
 .bd.hit{background:var(--hit-soft);color:var(--hit)}
 .bd.last{background:var(--warn-soft);color:var(--warn)}
 .bot{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums{display:grid;grid-template-columns:1fr 1.5fr .9fr;gap:8px}
 .nums div{display:flex;flex-direction:column;min-width:0}
 .nums b{font-family:var(--f-num);font-size:1.05rem;font-variant-numeric:tabular-nums}
 .nums small{font-size:.72rem;color:var(--muted)}
@@ -308,12 +308,12 @@ function card(d,pos){
     <div class="bot">
       <div class="nums">
         <div><small>1회</small><b>${!d.price?"—":d.cur==="JPY"?"¥"+d.price.toLocaleString():d.cur==="PT"?d.price.toLocaleString()+"pt":won(d.price)}</b>${d.orig?`<s>${won(d.orig)}</s>`:""}</div>
-        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b>${d.rem.toLocaleString()}<span style="color:var(--muted);font-size:.75rem">/${d.tot.toLocaleString()}</span></b>`}</div>
+        <div><small>남은 응모권</small>${d.u?`<b style="font-size:.86rem">${d.until?"~"+d.until.slice(5)+" 까지":"기간 판매"}</b>`:`<b style="${d.tot>=1e5?"font-size:.86rem;":""}overflow-wrap:anywhere">${d.rem.toLocaleString()}<span style="color:var(--muted);font-size:.75rem">/${d.tot.toLocaleString()}</span></b>`}</div>
         <div><small>상위상 확률</small><b style="color:${d.topRem?"var(--hit)":"var(--muted)"}">${d.pr.length?(d.hit*100).toFixed(d.hit<.1?1:0)+"%":"—"}</b></div>
       </div>
       ${d.u?"":`<div class="meter" aria-label="남은 비율 ${pct}%"><i style="width:${pct}%"></i></div>`}
       ${tiers?`<div class="tiers">${tiers}</div>`:""}
-      <div class="acts">${d.u?"":`<button data-open="${d.id}" aria-expanded="${open}">${open?"접기":"등급별 잔여"}</button>`}
+      <div class="acts">${d.u||!d.pr.length?"":`<button data-open="${d.id}" aria-expanded="${open}">${open?"접기":"등급별 잔여"}</button>`}
         <a href="${esc(outUrl(d.url))}" target="_blank" rel="noopener" data-out="${d.id}" data-pos="${pos}">${esc(d.p)}에서 뽑기</a></div>
       <button class="report" data-report="${d.id}">정보가 다른가요?</button>
     </div>${detail}</article>`;
