@@ -29,6 +29,7 @@ jobs:
           key: raw-${{ github.run_id }}
           restore-keys: raw-
       - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
       - run: npm run scrape
       - run: node scripts/translate.mjs
         env:

@@ -4,7 +4,7 @@ const key = process.env.DEEPL_KEY || '';
 const raw = JSON.parse(readFileSync('data/raw.json', 'utf8'));
 const manual = JSON.parse(readFileSync('config/translations.json', 'utf8'));
 const cache = existsSync('data/tr-cache.json') ? JSON.parse(readFileSync('data/tr-cache.json', 'utf8')) : {};
-const need = [...new Set(raw.items.filter(i => i.jp).map(i => i.t))].filter(t => !manual[t] && !cache[t]);
+const need = [...new Set(raw.items.filter(i => i.jp || i.tr).map(i => i.t))].filter(t => !manual[t] && !cache[t]);
 console.log('번역 필요', need.length, key ? '' : '(DEEPL_KEY 없음: 원문 표시)');
 if (key && need.length) {
   const host = key.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com';
