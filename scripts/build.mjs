@@ -1,5 +1,5 @@
 // raw.json + 보정값 → 작품/상품유형 라벨링 → dist/index.html
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from 'node:fs';
 const raw = JSON.parse(readFileSync('data/raw.json', 'utf8'));
 const cfg = JSON.parse(readFileSync('config/site.json', 'utf8'));
 const ov = JSON.parse(readFileSync('config/overrides.json', 'utf8'));
@@ -53,5 +53,7 @@ const html = tpl.replace('__PAYLOAD__', () => b64)
 mkdirSync('dist', { recursive: true });
 writeFileSync('dist/index.html', html);
 writeFileSync('dist/robots.txt', readFileSync('src/robots.txt', 'utf8'));
+// 폰트 등 정적 파일(public/) 그대로 복사
+if (existsSync('public')) cpSync('public', 'dist', { recursive: true });
 const cnt = {}; items.forEach(i => cnt[i.ty] = (cnt[i.ty] || 0) + 1);
 console.log('items', items.length, cnt);

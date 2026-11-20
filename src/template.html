@@ -2,14 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://docs.google.com; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; form-action 'self' https://docs.google.com; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://docs.google.com; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; form-action 'self' https://docs.google.com; base-uri 'self'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>럭키유니버스</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="라이브쿠지·쿠지샵·쿠지머신·레전드쿠지에서 진행 중인 온라인 쿠지와 오리파의 남은 상, 상위상 확률을 한곳에서 비교합니다.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap">
+<link rel="stylesheet" href="fonts/pretendard/pretendardvariable-dynamic-subset.css">
 <style>
 /* Layout: 기준시각 공지 띠 → 헤더(문의·광고 버튼) → 필터 바 → 응모권 카드 그리드 */
 :root{
@@ -17,9 +16,9 @@
   --accent:#2F45C8; --accent-soft:#E3E7FB; --on-accent:#FFFFFF;
   --hit:#0E8A5F; --hit-soft:#DDF3EA; --warn:#B4610B; --warn-soft:#FBEBD6; --gone:#B9BDC6;
   --notice:#FFF4D6; --notice-ink:#6B4A00; --ad:#7A3FC2; --ad-soft:#F0E7FB;
-  --f-display:"Black Han Sans","Nanum Gothic",system-ui,sans-serif;
-  --f-body:"Nanum Gothic",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --f-num:"Nanum Gothic",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-display:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111318; --surface:#1A1D24; --ink:#ECEEF2; --muted:#9AA1AE; --line:#2C303A;
@@ -35,7 +34,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
 .wrap{max-width:1180px;margin:0 auto}
 .gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px;height:56px;border-bottom:1px solid var(--line)}
-.logo{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.6rem;line-height:1;letter-spacing:.01em}
+.logo{margin:0;font-family:var(--f-display);font-weight:800;font-size:1.45rem;line-height:1;letter-spacing:-.02em}
 .logo a{color:var(--ink);text-decoration:none}
 .logo span{color:var(--accent)}
 .gl{display:flex;align-items:baseline;gap:10px;min-width:0}
