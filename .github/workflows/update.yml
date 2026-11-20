@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
 permissions:
-  contents: read
+  contents: write   # debug-snapshots 브랜치 저장용
   pages: write
   id-token: write
 concurrency:
@@ -32,6 +32,17 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npm run scrape
+      # 0건 사이트 화면을 debug-snapshots 브랜치에 덮어씀(커밋 1개만 유지).
+      # 아티팩트는 외부 저장소 주소라 클라우드 점검 세션에서 못 받아서, GitHub API로 읽을 수 있는 브랜치에 둠
+      - name: 0건 사이트 화면 저장(원격 점검용)
+        if: always() && hashFiles('debug/*') != ''
+        continue-on-error: true
+        working-directory: debug
+        run: |
+          git init -q -b debug-snapshots
+          git config user.name github-actions; git config user.email github-actions@users.noreply.github.com
+          git add -A && git commit -q -m "0건 사이트 화면 ${{ github.run_id }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" debug-snapshots
       - run: node scripts/translate.mjs
         env:
           DEEPL_KEY: ${{ secrets.DEEPL_KEY }}

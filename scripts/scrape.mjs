@@ -16,6 +16,7 @@ async function get(url, type = 'text') {
   }
 }
 const cut = (s, n) => (s || '').replace(/[|~]/g, '').trim().slice(0, n);
+const diag = {};   // 사이트별 진단 정보 (0건일 때 로그에 출력)
 
 // ── 라이브쿠지: 공개 상품 API
 async function livekuji() {
@@ -176,16 +177,25 @@ async function pikauniverse() {
 }
 
 // ── 쿠지사: 공개 상품 목록. 진행 중인 판만 상품 페이지에서 남은 티켓을 읽음
+// 링크가 절대주소(https://kujisa.com/kuji/…)로도 나오고, 판매 중 카드에 '판매중' 글자가 없을 수 있어
+// "끝났거나 아직인" 표시가 붙은 카드만 빼고 상품 페이지에서 남은 티켓으로 판단
 async function kujisa() {
   const B = 'https://kujisa.com'; const $ = cheerio.load(await get(B + '/')); const out = []; const seen = new Set();
-  for (const a of $('a[href^="/kuji/"]').toArray()) {
-    const h = $(a).attr('href'); const t = $(a).text().replace(/\s+/g, ' ').trim();
-    if (seen.has(h) || !/판매 ?중|진행 ?중/.test(t)) continue; seen.add(h);
+  const n = s => +String(s || '0').replace(/,/g, '');
+  const DONE = /SOLD ?OUT|판매 ?종료|소진 ?100%|발매 ?(예정|대기)|출시 ?예정|공개 ?예정|COMING ?SOON/i;
+  const links = $('a[href*="/kuji/"]').toArray().map(a => ({ h: ($(a).attr('href') || '').replace(/^https?:\/\/(www\.)?kujisa\.com/, ''), t: $(a).text().replace(/\s+/g, ' ').trim() }))
+    .filter(l => /^\/kuji\/[^/?#]+\/?$/.test(l.h));
+  diag.쿠지사 = { links: links.length, done: links.filter(l => DONE.test(l.t)).length };
+  for (const { h, t } of links) {
+    if (seen.has(h) || DONE.test(t)) continue; seen.add(h);
     const d = cheerio.load(await get(B + h)); const x = d('body').text().replace(/\s+/g, ' ');
-    const rem = +((x.match(/남은 ?티켓\s*([\d,]+)/) || [])[1] || '0').replace(/,/g, '');
-    const tot = +((x.match(/총\s*([\d,]+)\s*장/) || [])[1] || '0').replace(/,/g, '');
-    const price = +((x.match(/([\d,]+)\s*원/) || [])[1] || '0').replace(/,/g, '');
-    if (rem > 0) out.push({ p: '쿠지사', id: h.split('/').pop(), k: 'kuji', t: t.replace(/판매 ?중|진행 ?중/, '').replace(/^이치방쿠지\s*/, ''), shop: '쿠지사', cat: '', price, orig: 0,
+    // "남은 티켓 12 / 80장" 또는 "남은 티켓 12" + "총 80장"
+    const m = x.match(/남은 ?티켓\s*([\d,]+)\s*\/\s*([\d,]+)\s*장/);
+    const rem = n(m ? m[1] : (x.match(/남은 ?티켓\s*([\d,]+)/) || [])[1]);
+    const tot = n(m ? m[2] : (x.match(/총\s*([\d,]+)\s*장/) || [])[1]);
+    const price = n((x.match(/(?:최종 ?)?판매가\s*([\d,]+)\s*원/) || x.match(/([\d,]+)\s*원/) || [])[1]);
+    const title = d('h1').first().text().replace(/\s+/g, ' ').trim() || t;
+    if (rem > 0) out.push({ p: '쿠지사', id: h.split('/').filter(Boolean).pop(), k: 'kuji', t: title.replace(/판매 ?중|진행 ?중/, '').replace(/^이치방쿠지\s*/, '').trim(), shop: '쿠지사', cat: '', price, orig: 0,
       off: 1, live: 0, url: B + h, pr: [], tot: tot || rem, rem });
   }
   return out;
@@ -234,13 +244,21 @@ async function dopa() {
 async function magi() {
   const B = 'https://magi.camp'; const $ = cheerio.load(await get(B + '/oripa/lotteries/')); const seen = new Set(); const out = [];
   const n = x => +String(x).replace(/[^\d]/g, '');
-  $('a[href*="/oripa/lotteries/"]').each((_, a) => {
-    const h = $(a).attr('href'); const title = $(a).find('.online-oripa-card__title').text().trim();
-    const rem = n($(a).find('.remaining-amount-meter__remain').text()), tot = n($(a).find('.remaining-amount-meter__amount').text());
+  const cards = $('a[href*="/oripa/lotteries/"]').filter((_, a) => /\/oripa\/lotteries\/\d+\/?$/.test($(a).attr('href') || ''));
+  diag.magi = { links: cards.length };
+  cards.each((_, a) => {
+    const h = $(a).attr('href'); const txt = $(a).text().replace(/\s+/g, ' ').trim();
+    // 1순위: 카드 class, 2순위: 화면 글자 "¥100/1口 残り496,854/500,000口 제목"
+    const tm = txt.match(/¥\s*([\d,]+)\s*\/\s*1口\s*残り\s*([\d,]+)\s*\/\s*([\d,]+)\s*口\s*(.*)$/);
+    const title = $(a).find('.online-oripa-card__title').text().trim() || (tm ? tm[4].trim() : '');
+    const rem = n($(a).find('.remaining-amount-meter__remain').text()) || (tm ? n(tm[2]) : 0);
+    const tot = n($(a).find('.remaining-amount-meter__amount').text()) || (tm ? n(tm[3]) : 0);
+    const price = n($(a).find('.online-oripa-card__price').text()) || (tm ? n(tm[1]) : 0);
     if (!title || seen.has(h) || !(rem > 0)) return; seen.add(h);
-    out.push({ p: 'magi', id: h.split('/').filter(Boolean).pop(), k: 'oripa', t: title, shop: 'magi', cat: '포켓몬 TCG', price: n($(a).find('.online-oripa-card__price').text()), cur: 'JPY',
+    out.push({ p: 'magi', id: h.split('/').filter(Boolean).pop(), k: 'oripa', t: title, shop: 'magi', cat: '포켓몬 TCG', price, cur: 'JPY',
       orig: 0, off: 0, live: 0, url: h.startsWith('http') ? h : B + h, pr: [], tot, rem, jp: 1 });
   });
+  if (!out.length) diag.magi.sample = cards.first().text().replace(/\s+/g, ' ').trim().slice(0, 150);
   return out;
 }
 
@@ -298,26 +316,32 @@ async function clove() {
     for (const c of Object.keys(CAT)) {
       // 광고·분석 통신이 끝없이 이어져 'networkidle'에 도달하지 않음 → 카드가 화면에 뜨면 바로 읽음
       await pg.goto(`${B}/ko/oripa/${c}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
-      await pg.waitForSelector(`a[href*="/ko/oripa/${c}/"]`, { timeout: 30000 }).catch(() => {});
-      await pg.waitForTimeout(1500); await scrollAll(pg, `a[href*="/ko/oripa/${c}/"]`);
-      const rows = await pg.evaluate(c => {
-        const hrefs = [...new Set([...document.querySelectorAll(`a[href*="/ko/oripa/${c}/"]`)].map(a => a.getAttribute('href')))];
+      // 카드 링크 형식이 /ko/oripa/<카테고리>/<id> 가 아닐 수 있어 카테고리 메뉴 링크만 빼고 oripa 링크를 모두 봄
+      const SEL = 'a[href*="/oripa/"]';
+      await pg.waitForFunction(() => /1회/.test(document.body.innerText), null, { timeout: 30000 }).catch(() => {});
+      await pg.waitForTimeout(1500); await scrollAll(pg, SEL);
+      const rows = await pg.evaluate(cats => {
+        const nav = new RegExp(`/oripa/(${cats.join('|')})/?$`);
+        const hrefs = [...new Set([...document.querySelectorAll('a[href*="/oripa/"]')].map(a => a.getAttribute('href')))]
+          .filter(h => h && !nav.test(h.split(/[?#]/)[0]));
         return hrefs.map(h => {
           let p = document.querySelector(`a[href="${h}"]`);
-          for (let i = 0; i < 6 && p.parentElement; i++) { if (/\/\s*1회/.test(p.innerText)) break; p = p.parentElement; }
+          for (let i = 0; i < 6 && p.parentElement; i++) { if (/1회/.test(p.innerText)) break; p = p.parentElement; }
           const t = p.innerText.replace(/\s+/g, ' ');
-          const m = t.match(/([\d,]+)\s*\/\s*1회\s*([\d,]+)\s*\/\s*([\d,]+)/);
+          const m = t.match(/([\d,]+)\s*(?:pt|PT|P)?\s*\/\s*1회\s*(?:남은\s*(?:수량)?\s*)?([\d,]+)\s*\/\s*([\d,]+)/);
           const img = p.querySelector('img[alt]:not([alt="coin"])');
-          return { id: h.split('/').pop(), alt: img ? img.alt : '', m: m ? [m[1], m[2], m[3]] : null };
+          return { id: h.split(/[?#]/)[0].split('/').filter(Boolean).pop(), h, alt: img ? img.alt : '', m: m ? [m[1], m[2], m[3]] : null, t: t.slice(0, 120) };
         });
-      }, c);
+      }, Object.keys(CAT));
+      if (c === 'All') diag.Clove = { url: pg.url(), links: rows.length, parsed: rows.filter(r => r.m).length, hrefs: rows.slice(0, 3).map(r => r.h),
+        sample: rows[0]?.t || (await pg.evaluate(() => document.body.innerText.replace(/\s+/g, ' ').slice(0, 200))) };
       for (const r of rows) {
         if (!r.m || out.has(r.id)) continue;
         const n = x => +x.replace(/,/g, '');
         const title = r.alt.replace(/\s*\|\s*클로브 오리파\(Clove\)\s*$/, '').replace(/^오리파\s*/, '').trim();
         if (!title || n(r.m[1]) <= 0 || n(r.m[2]) <= 0) continue;
         out.set(r.id, { p: 'Clove', id: r.id, k: 'oripa', t: title, shop: 'Clove 오리파', cat: CAT[c], price: n(r.m[0]), cur: 'PT', orig: 0, off: 0, live: 0,
-          url: `${B}/ko/oripa/All/${r.id}`, pr: [], tot: n(r.m[2]), rem: n(r.m[1]), tr: /[぀-ヿ一-鿿]/.test(title) ? 1 : 0 });
+          url: r.h.startsWith('http') ? r.h : B + r.h, pr: [], tot: n(r.m[2]), rem: n(r.m[1]), tr: /[぀-ヿ一-鿿]/.test(title) ? 1 : 0 });
       }
     }
   } finally { await pg.context().close(); }
@@ -394,12 +418,35 @@ for (const [name, fn] of Object.entries(SITES)) {
   try {
     const items = await fn();
     res.items.push(...items); res.sites[name] = { ok: true, at: new Date().toISOString(), count: items.length };
-    console.log(name, items.length);
+    // 0건이면 원인 추적용으로 찾은 링크 수·화면 글자 일부를 함께 남김
+    console.log(name, items.length, items.length === 0 && diag[name] ? JSON.stringify(diag[name]) : '');
   } catch (e) {
     // 실패 시 이전 수집분을 유지하고 수집 시각을 그대로 표시
     const old = prev?.items.filter(i => i.p === name) || [];
     res.items.push(...old); res.sites[name] = { ok: false, at: prev?.sites?.[name]?.at || null, count: old.length, error: String(e.message || e).slice(0, 200) };
     console.error(name, 'FAILED', e.message);
+  }
+}
+// 0건·실패 사이트는 실제 화면을 찍어 debug/ 에 남김 (워크플로 아티팩트로 올라가 "진짜 0건인지" 원격으로 확인)
+const zero = Object.entries(res.sites).filter(([, v]) => !v.ok || v.count === 0).map(([k]) => k);
+if (zero.length) {
+  const { mkdirSync } = await import('node:fs');
+  const urls = Object.fromEntries(JSON.parse(readFileSync('config/site.json', 'utf8')).sites.map(s => [s.name, s.url]));
+  mkdirSync('debug', { recursive: true });
+  for (const name of zero.slice(0, 6)) {   // 많이 실패한 날에도 20분 제한을 넘지 않게 최대 6곳
+    if (!urls[name]) continue;
+    try {
+      const pg = await page();
+      try {
+        await pg.goto(urls[name], { waitUntil: 'domcontentloaded', timeout: 45000 });
+        await pg.waitForTimeout(6000);
+        const f = name.replace(/[^\w가-힣ぁ-んァ-ン一-龯]/g, '_');
+        await pg.screenshot({ path: `debug/${f}.jpg`, type: 'jpeg', quality: 60 });   // 1280x2000 화면 한 장
+        writeFileSync(`debug/${f}.html`, await pg.content());
+        writeFileSync(`debug/${f}.txt`, `${pg.url()}\n${JSON.stringify(diag[name] || {})}\n\n` + await pg.evaluate(() => document.body.innerText));
+        console.log('화면 저장', name);
+      } finally { await pg.context().close(); }
+    } catch (e) { console.error('화면 저장 실패', name, e.message); }
   }
 }
 if (_browser) await _browser.close();
