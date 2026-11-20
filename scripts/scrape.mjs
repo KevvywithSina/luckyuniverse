@@ -328,7 +328,7 @@ async function clove() {
           let p = document.querySelector(`a[href="${h}"]`);
           for (let i = 0; i < 6 && p.parentElement; i++) { if (/1회/.test(p.innerText)) break; p = p.parentElement; }
           const t = p.innerText.replace(/\s+/g, ' ');
-          const m = t.match(/([\d,]+)\s*(?:pt|PT|P)?\s*\/\s*1회\s*(?:남은\s*(?:수량)?\s*)?([\d,]+)\s*\/\s*([\d,]+)/);
+          const m = t.match(/([\d,]+)\s*(?:pt|PT|P)?\s*\/\s*1회\s*(?:남은\s*(?:수량|수)?\s*)?([\d,]+)\s*\/\s*([\d,]+)/);
           const img = p.querySelector('img[alt]:not([alt="coin"])');
           return { id: h.split(/[?#]/)[0].split('/').filter(Boolean).pop(), h, alt: img ? img.alt : '', m: m ? [m[1], m[2], m[3]] : null, t: t.slice(0, 120) };
         });
