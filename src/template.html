@@ -59,6 +59,8 @@ select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
 select{height:40px;padding:0 12px}
 #sort{flex:0 0 auto;min-width:160px;margin-left:auto}
 .chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;cursor:pointer;white-space:nowrap}
+.chip.zero{background:transparent;border-style:dashed;color:var(--muted);opacity:.55}
+.chip.zero .n{opacity:1}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .chip .n{display:inline-block;min-width:3ch;text-align:right;font-family:var(--f-num);font-size:.75rem;font-variant-numeric:tabular-nums;opacity:.7;margin-left:6px}
 .lbl{white-space:nowrap;font-size:.75rem;color:var(--muted);letter-spacing:.06em;margin-left:6px}
@@ -292,7 +294,8 @@ const outUrl=u=>!/^https:\/\//.test(u)?"#":CFG.utm?u+(u.includes("?")?"&":"?")+C
 
 function chip(label,group,val,n){
   const on=st[group]===val;
-  return `<button class="chip" data-g="${group}" data-v="${esc(val)}" aria-pressed="${on}">${esc(label)}${n!=null?`<span class="n">${n}</span>`:""}</button>`;
+  // 지금 조건에서 0개인 옵션은 흐리게 (선택돼 있으면 그대로)
+  return `<button class="chip${n===0&&!on?" zero":""}" data-g="${group}" data-v="${esc(val)}" aria-pressed="${on}">${esc(label)}${n!=null?`<span class="n">${n}</span>`:""}</button>`;
 }
 function base(skip){
   const q=st.q.trim().toLowerCase();
