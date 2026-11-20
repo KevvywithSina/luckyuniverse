@@ -441,7 +441,7 @@ if (zero.length) {
         await pg.goto(urls[name], { waitUntil: 'domcontentloaded', timeout: 45000 });
         await pg.waitForTimeout(6000);
         const f = name.replace(/[^\w가-힣ぁ-んァ-ン一-龯]/g, '_');
-        await pg.screenshot({ path: `debug/${f}.png`, fullPage: true });
+        await pg.screenshot({ path: `debug/${f}.jpg`, type: 'jpeg', quality: 60 });   // 1280x2000 화면 한 장
         writeFileSync(`debug/${f}.html`, await pg.content());
         writeFileSync(`debug/${f}.txt`, `${pg.url()}\n${JSON.stringify(diag[name] || {})}\n\n` + await pg.evaluate(() => document.body.innerText));
         console.log('화면 저장', name);
