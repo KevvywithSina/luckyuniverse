@@ -427,5 +427,27 @@ for (const [name, fn] of Object.entries(SITES)) {
     console.error(name, 'FAILED', e.message);
   }
 }
+// 0건·실패 사이트는 실제 화면을 찍어 debug/ 에 남김 (워크플로 아티팩트로 올라가 "진짜 0건인지" 원격으로 확인)
+const zero = Object.entries(res.sites).filter(([, v]) => !v.ok || v.count === 0).map(([k]) => k);
+if (zero.length) {
+  const { mkdirSync } = await import('node:fs');
+  const urls = Object.fromEntries(JSON.parse(readFileSync('config/site.json', 'utf8')).sites.map(s => [s.name, s.url]));
+  mkdirSync('debug', { recursive: true });
+  for (const name of zero.slice(0, 6)) {   // 많이 실패한 날에도 20분 제한을 넘지 않게 최대 6곳
+    if (!urls[name]) continue;
+    try {
+      const pg = await page();
+      try {
+        await pg.goto(urls[name], { waitUntil: 'domcontentloaded', timeout: 45000 });
+        await pg.waitForTimeout(6000);
+        const f = name.replace(/[^\w가-힣ぁ-んァ-ン一-龯]/g, '_');
+        await pg.screenshot({ path: `debug/${f}.png`, fullPage: true });
+        writeFileSync(`debug/${f}.html`, await pg.content());
+        writeFileSync(`debug/${f}.txt`, `${pg.url()}\n${JSON.stringify(diag[name] || {})}\n\n` + await pg.evaluate(() => document.body.innerText));
+        console.log('화면 저장', name);
+      } finally { await pg.context().close(); }
+    } catch (e) { console.error('화면 저장 실패', name, e.message); }
+  }
+}
 if (_browser) await _browser.close();
 writeFileSync('data/raw.json', JSON.stringify(res));

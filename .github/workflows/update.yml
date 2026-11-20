@@ -32,6 +32,14 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npm run scrape
+      - name: 0건 사이트 화면 업로드(원격 점검용, 3일 보관)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zero-sites
+          path: debug/
+          if-no-files-found: ignore
+          retention-days: 3
       - run: node scripts/translate.mjs
         env:
           DEEPL_KEY: ${{ secrets.DEEPL_KEY }}
