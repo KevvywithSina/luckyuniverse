@@ -78,6 +78,7 @@ select{height:40px;padding:0 12px}
 .tag.o{background:var(--warn-soft);color:var(--warn)}
 .tag.c{background:transparent;border:1px solid var(--line);color:var(--ink)}
 .tag.ad{background:var(--ad-soft);color:var(--ad);font-weight:700}
+.tag.new{background:#E0362B;color:#fff;font-weight:800;letter-spacing:.02em}
 .tag.live{background:#E0362B;color:#fff}
 .title{font-weight:700;font-size:1rem;line-height:1.35;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
 .jt{margin:-2px 0 0;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -197,6 +198,7 @@ dialog::backdrop{background:rgba(10,12,20,.45)}
         <option value="hit">확률 높은순</option>
         <option value="last">라스트원 임박순</option>
         <option value="topleft">상위상 많은순</option>
+        <option value="new">최신순</option>
         <option value="cheap">가격 낮은순</option>
       </select>
     </div>
@@ -277,6 +279,8 @@ function prep(items){
     d.nat=d.jp?"일본":"한국";
     d.sp=!!d.pin;
     d.cat=d.ty;
+    // NEW: 처음 수집된 지 24시간 이내
+    d.isNew=!!d.fs&&(Date.parse(META.builtAt||Date.now())-Date.parse(d.fs))<864e5;
   });
   return items;
 }
@@ -341,7 +345,7 @@ function card(d,pos){
   const bd=d.near?`<span class="bd last">라스트원 임박</span>`:d.topRem>0?`<span class="bd hit">상위상 ${d.topRem}장</span>`:"";
   const rem=d.hid?"비공개":d.u?(d.until?"~"+d.until.slice(5):"기간 판매"):`${cnt(d.rem,d.tot>=1e5)}<span style="color:var(--muted);font-weight:400;font-size:.72rem">/${cnt(d.tot,d.tot>=1e5)}</span>`;
   return `<article class="tk${d.sp?" sp":""}" data-detail="${d.id}" data-pos="${pos}" tabindex="0" aria-label="${esc(d.t)} 상세보기">
-    <div class="tk-b"><div class="meta">${d.sp?`<span class="tag ad">AD</span>`:""}${kind}<span>${esc(d.p)}</span>${bd}</div>
+    <div class="tk-b"><div class="meta">${d.sp?`<span class="tag ad">AD</span>`:""}${d.isNew?`<span class="tag new">NEW</span>`:""}${kind}<span>${esc(d.p)}</span>${bd}</div>
       <h2 class="title">${esc(d.t)}</h2>
       <div class="tk-n"><span><b style="margin-left:0">${priceTxt(d)}</b></span><span>남은<b>${rem}</b></span>${d.pr.length&&!d.u?`<span>상위상<b class="hp${d.topRem?"":" z"}">${probTxt(d)}</b></span>`:""}</div>
       ${d.u||d.hid?"":`<div class="meter"><i style="width:${pct}%"></i></div>`}</div>
@@ -350,7 +354,7 @@ function card(d,pos){
 // 상세보기: 기존 카드 전체 + 등급별 잔여 펼친 상태
 function cardFull(d,pos){
   const pct=d.tot?Math.round(d.rem/d.tot*100):0;
-  const tags=[d.sp?`<span class="tag ad">AD</span>`:"",`<span>${esc(d.p)}</span>`,`<span>·</span>`,`<span>${esc(d.shop)}</span>`,
+  const tags=[d.sp?`<span class="tag ad">AD</span>`:"",d.isNew?`<span class="tag new">NEW</span>`:"",`<span>${esc(d.p)}</span>`,`<span>·</span>`,`<span>${esc(d.shop)}</span>`,
     d.k==="oripa"?`<span class="tag o">오리파</span>`:d.k==="gacha"?`<span class="tag g">가챠</span>`:`<span class="tag">${d.off?"공식 쿠지":"샵 구성"}</span>`,
     `<span class="tag c">${esc(d.cat)}</span>`, d.live?`<span class="tag live">LIVE</span>`:""].join("");
   const badges=[];
@@ -384,7 +388,7 @@ function render(){
   renderBars();
   let list=base();
   const s=st.sort;
-  list.sort(s==="hit"?(a,b)=>b.hit-a.hit:s==="last"?(a,b)=>(b.near-a.near)||(a.rem/a.tot-b.rem/b.tot):s==="topleft"?(a,b)=>b.topRem-a.topRem:(a,b)=>a.price-b.price);
+  list.sort(s==="hit"?(a,b)=>b.hit-a.hit:s==="last"?(a,b)=>(b.near-a.near)||(a.rem/a.tot-b.rem/b.tot):s==="topleft"?(a,b)=>b.topRem-a.topRem:s==="new"?(a,b)=>(b.fs||"").localeCompare(a.fs||""):(a,b)=>a.price-b.price);
   const sp=list.filter(d=>d.sp); list=sp.concat(list.filter(d=>!d.sp));
   // 처음엔 PAGE개만 그리고, 스크롤해서 바닥에 닿으면 PAGE개씩 더 그림. 필터·정렬·검색이 바뀌면 처음부터
   const key=JSON.stringify([st.q,st.plat,st.kind,st.off,st.cat,st.ip,st.nat,st.onlyTop,st.sort]);
