@@ -1,7 +1,7 @@
 name: 수집·배포
 on:
   schedule:
-    - cron: '17 */2 * * *'   # 2시간마다 (KST 기준 매 홀수시 17분)
+    - cron: '17 */4 * * *'   # 4시간마다 (KST 1·5·9·13·17·21시 17분)
   workflow_dispatch:
   push:
     branches: [main]
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20   # 수집이 멈춰도 20분 뒤 끝내서 다음 배포를 막지 않음
+    timeout-minutes: 40   # 천천히 수집해도 넉넉하게, 멈추면 40분 뒤 끝내서 다음 배포를 막지 않음
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

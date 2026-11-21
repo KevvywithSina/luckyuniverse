@@ -4,15 +4,30 @@ import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 
 const UA = 'Mozilla/5.0 (compatible; LuckyUniverseBot/0.1; aggregator of public kuji listings)';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// 천천히 가져오기: 같은 사이트에는 요청 사이를 최소 2~3초 띄움 (사이트 부담·접근 거부 방지)
+const GAP = 2000, JITTER = 1000;
+const lastHit = new Map();
+async function pace(url) {
+  const host = new URL(url).host;
+  const wait = (lastHit.get(host) || 0) + GAP + Math.random() * JITTER - Date.now();
+  if (wait > 0) await sleep(wait);
+  lastHit.set(host, Date.now());
+}
 async function get(url, type = 'text') {
   for (let i = 0; i < 3; i++) {
+    let st = 0;
     try {
+      await pace(url);
       // 응답이 없는 사이트가 수집 전체를 붙잡지 않도록 요청마다 30초 제한
       const r = await fetch(url, { headers: { 'user-agent': UA, 'accept-language': 'ko-KR,ko;q=0.9' }, signal: AbortSignal.timeout(30000) });
+      st = r.status;
       if (!r.ok) throw new Error(`${r.status} ${url}`);
-      await sleep(250);
       return type === 'json' ? r.json() : r.text();
-    } catch (e) { if (i === 2) throw e; await sleep(1500 * (i + 1)); }
+    } catch (e) {
+      if (i === 2) throw e;
+      // 접근 거부·과부하(403/429/503)면 한참 쉬었다가 다시 (20초 → 60초), 그 밖의 오류는 짧게
+      await sleep([403, 429, 503].includes(st) ? [20000, 60000][i] : 3000 * (i + 1));
+    }
   }
 }
 const cut = (s, n) => (s || '').replace(/[|~]/g, '').trim().slice(0, n);
@@ -298,7 +313,11 @@ let _browser = null;
 async function page() {
   if (!_browser) { const { chromium } = await import('playwright'); _browser = await chromium.launch(); }
   const ctx = await _browser.newContext({ userAgent: UA + ' Chrome/130', locale: 'ko-KR', viewport: { width: 1280, height: 2000 } });
-  return ctx.newPage();
+  const pg = await ctx.newPage();
+  // 화면 렌더링 수집도 같은 간격 규칙을 따름
+  const goto = pg.goto.bind(pg);
+  pg.goto = async (url, opts) => { await pace(url); return goto(url, opts); };
+  return pg;
 }
 async function scrollAll(pg, sel) {
   let last = -1;
@@ -433,7 +452,7 @@ if (zero.length) {
   const { mkdirSync } = await import('node:fs');
   const urls = Object.fromEntries(JSON.parse(readFileSync('config/site.json', 'utf8')).sites.map(s => [s.name, s.url]));
   mkdirSync('debug', { recursive: true });
-  for (const name of zero.slice(0, 6)) {   // 많이 실패한 날에도 20분 제한을 넘지 않게 최대 6곳
+  for (const name of zero.slice(0, 6)) {   // 많이 실패한 날에도 제한 시간을 넘지 않게 최대 6곳
     if (!urls[name]) continue;
     try {
       const pg = await page();
