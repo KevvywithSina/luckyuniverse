@@ -44,6 +44,20 @@ for (const it0 of raw.items) {
   if (!/^https:\/\/[^\s"'<>]+$/.test(it.url || '')) continue;   // 이상한 링크(javascript: 등) 차단
   items.push({ ...it, key, tot, rem, ip: ov.ip[key] || ipOf(it), ty: ov.type[key] || typeOf(it), pin: ov.pin.some(x => (x.key || x) === key && (!x.until || x.until >= today)) ? 1 : 0 });
 }
+// 처음 수집된 시각 기록 → NEW 배지·최신순 정렬. 30일 넘게 안 보인 상품은 지움
+// 처음 도입할 때와 새로 추가된 사이트는 기존 상품 전체가 NEW로 뜨지 않게 '예전부터 있던 것'으로 둠
+const SEEN = 'data/seen.json', OLD = '2000-01-01T00:00:00.000Z';
+const firstRun = !existsSync(SEEN);
+const seen = firstRun ? {} : JSON.parse(readFileSync(SEEN, 'utf8'));
+const nowIso = new Date().toISOString();
+const knownSites = new Set(Object.keys(seen).map(k => k.split(':')[0]));
+for (const it of items) {
+  if (seen[it.key]) seen[it.key].l = nowIso;
+  else seen[it.key] = { f: firstRun || !knownSites.has(it.p) ? OLD : nowIso, l: nowIso };
+  it.fs = seen[it.key].f;
+}
+for (const k of Object.keys(seen)) if (Date.now() - Date.parse(seen[k].l) > 30 * 864e5) delete seen[k];
+writeFileSync(SEEN, JSON.stringify(seen));
 const payload = { meta: { collectedAt: raw.collectedAt, sites: raw.sites, builtAt: new Date().toISOString() }, config: cfg, items };
 const tpl = readFileSync('src/template.html', 'utf8');
 const clean = JSON.stringify(payload).replace(/[\u0000-\u001f\u2028\u2029]/g, ' ');
