@@ -1,0 +1,1974 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>오리파코리아</title>
+<link rel="icon" type="image/png" href="favicon.png?v=3">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+<meta name="description" content="오리파코리아 — 온라인 오리파, 지금 바로 참여하세요.">
+<meta name="facebook-domain-verification" content="hfpi7l5h1dm5jinmvrv2dtyrz31swc">
+<link rel="canonical" href="https://oripa-korea.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="오리파코리아">
+<meta property="og:title" content="오리파코리아 — 온라인 오리파">
+<meta property="og:description" content="모든 카드 실물 배송, 온라인 오리파. 지금 바로 참여하세요.">
+<meta property="og:image" content="https://oripa-korea.com/og-image.png?v=4">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://oripa-korea.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="오리파코리아 — 온라인 오리파">
+<meta name="twitter:description" content="가입하면 무료 응모권! 지금 바로 오리파에 참여하세요.">
+<meta name="twitter:image" content="https://oripa-korea.com/og-image.png?v=4">
+<link rel="preconnect" href="https://eacpxovbushbznzcoxoh.supabase.co">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="">
+<link rel="modulepreload" href="vendor/supabase-2.116.0.mjs">
+<link rel="modulepreload" href="supabase-init.js">
+<link rel="stylesheet" href="fonts/pretendard-var-1.3.9.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap" rel="stylesheet" media="all" onload="this.media='all'">
+<style>
+  :root{
+    /* 블랙/화이트/민트 톤앤매너 (다크 메인) — 검정 배경 + 흰 글자 + 민트 포인트, 등급 금/은·위험 빨강 유지 */
+    --ink:#F2F4F7; --paper:#0B0C0E; --accent:#3ECFAE; --accent-dim:#0F2A25;
+    --success:#2FD27A; --success-dim:#14301F; --warning:#E3B341; --warning-dim:#2E2712;
+    --danger:#F45B5B; --danger-dim:#3A1E1E; --line:#2B2E34; --line-strong:#3C4048;
+    --muted:#A2AAB6; --faint:#6B7280; --surface:#15161C;
+    /* repack 대비 살짝 더 어두운 차콜네이비 (repack ≈ #17181C) */
+    --bg:#0E0F13; --paper:#14151A; --elev:#1E2027; --card:#1C1E24;
+    --line:#26282F; --line-strong:#3A3D45;
+    --font-body:'Pretendard', -apple-system, sans-serif; --font-mono:'Pretendard', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font-body); color:var(--ink); background:var(--bg);
+    -webkit-font-smoothing:antialiased; letter-spacing:-0.01em;
+    /* 한글이 단어 중간에서 잘리지 않게 (긴 영문/URL은 예외적으로 줄바꿈 허용) */
+    word-break:keep-all; overflow-wrap:break-word;
+  }
+  img,svg{display:block; max-width:100%;}
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+  .num{font-family:var(--font-mono);}
+  ::selection{background:var(--elev); color:var(--paper);}
+
+  html,body{ background:var(--bg); }
+  .app{
+    max-width:430px; margin:0 auto; background:transparent; min-height:100vh;
+    position:relative; z-index:1; border-left:1px solid var(--line); border-right:1px solid var(--line);
+    padding-bottom:88px;
+  }
+  /* repack 스타일 배경: 미세 체크(그리드) 패턴 + 소프트 글로우 */
+  /* Topographic Line — 등고선 SVG */
+  .grid-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    /* 바둑판 격자 배경 (리팩 스타일) — 등고선 패턴에서 교체, 은은한 라인 */
+    background:
+      linear-gradient(90deg, rgba(242,244,247,0.05) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(242,244,247,0.05) 1px, transparent 1px);
+    background-size:120px 120px;
+    -webkit-mask-image:radial-gradient(120% 100% at 80% 12%, #000 30%, rgba(0,0,0,0.35) 70%, transparent);
+    mask-image:radial-gradient(120% 100% at 80% 12%, #000 30%, rgba(0,0,0,0.35) 70%, transparent);
+  }
+  /* Aurora Gradient — 오로라 글로우 (우상단 + 좌하단) */
+  .glow-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(38% 30% at 88% 8%, rgba(62,207,174,0.30), transparent 72%),
+      radial-gradient(42% 34% at 8% 96%, rgba(47,182,163,0.26), transparent 72%),
+      radial-gradient(30% 24% at 96% 60%, rgba(55,184,255,0.10), transparent 75%);
+  }
+  /* Noise Texture — 필름 그레인 */
+  .noise-bg{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:url('bg-noise.svg'); background-size:180px 180px; opacity:0.05; mix-blend-mode:overlay;
+  }
+
+  header{
+    position:sticky; top:0; z-index:100; background:rgba(10,11,13,0.86); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{display:flex; align-items:center; justify-content:space-between; height:56px; padding:0 18px;}
+  .logo{font-family:'Quicksand',var(--font-body); font-weight:600; font-size:18px; letter-spacing:0.14em; text-transform:uppercase;}
+  .logo span{color:var(--accent);}
+  .footer-logo{font-family:'Quicksand',var(--font-body); font-weight:600; font-size:18px; letter-spacing:0.14em; text-transform:uppercase;}
+  .footer-logo span{color:var(--accent);}
+  .header-icons{display:flex; align-items:center; gap:10px;}
+  .icon-btn{width:22px; height:22px; color:var(--ink);}
+  .header-auth-link{font-size:12.5px; font-weight:700; color:var(--muted); padding:8px 10px;}
+  .header-auth-link.primary{color:#fff; background:var(--elev); border-radius:8px; padding:8px 13px;}
+
+  .banner-wrap{padding:0;}
+  .banner{position:relative; aspect-ratio:8/7; overflow:hidden; background:#14151A;}   /* 2026-10-13 대표 지시: 홈 맨 위 배너만 7:8 → 8:7(리팩과 같은 높이, 폰 388×340). 배너 이미지 규격 1080×945 */
+  .banner-track{display:flex; height:100%; opacity:0; transition:transform .35s ease, opacity .3s ease;}
+  .banner-slide{flex:0 0 100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:flex-end; padding:26px 22px;}
+  .banner-slide .bs-content{position:relative; z-index:3; max-width:64%;}
+  .banner-slide .bs-eyebrow{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:800; margin-bottom:12px; color:#fff;}
+  .banner-slide .bs-title{font-size:26px; font-weight:900; color:#fff; line-height:1.3; margin-bottom:11px; letter-spacing:-0.02em;}
+  .banner-slide .bs-sub{font-size:12.5px; color:rgba(255,255,255,0.6); line-height:1.55; margin-bottom:16px;}
+  .banner-slide .bs-hl{color:#FFC94D;}
+  .banner-slide .bs-hl-p{color:#bd94ff;}
+  .banner-slide .bs-cta{display:inline-flex; align-items:center; gap:8px; padding:11px 18px; border:1.5px solid rgba(255,255,255,0.45); border-radius:30px; color:#fff; font-size:13px; font-weight:800; background:rgba(255,255,255,0.07);}
+  .banner-slide .bs-photo{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:2;}
+  /* 배너 캠페인 정보 오버레이 (리팩 스타일) — 제목·개봉현황·가격 */
+  .bs-ov{position:absolute; left:0; right:0; bottom:0; z-index:3; padding:36px 18px 14px;
+    background:linear-gradient(0deg, rgba(0,0,0,0.82), rgba(0,0,0,0.45) 55%, transparent); pointer-events:none;}
+  .bs-ov-title{font-size:16px; font-weight:900; color:#fff; letter-spacing:-0.02em; margin-bottom:8px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .bs-ov-row{display:flex; align-items:center; gap:10px;}
+  .bs-ov-bar{flex:1; height:4px; background:rgba(255,255,255,0.22); border-radius:3px; overflow:hidden;}
+  .bs-ov-bar i{display:block; height:100%; background:var(--accent); border-radius:3px;}
+  .bs-ov-cnt{flex:none; font-size:11px; font-weight:700; color:rgba(255,255,255,0.85); font-variant-numeric:tabular-nums;}
+  .bs-ov-price{flex:none; font-size:14px; font-weight:900; color:#fff; white-space:nowrap;}
+  .bs-ov-price .dc{color:var(--accent); margin-right:5px; font-size:12.5px;}
+  .bs-ov-price .og{color:rgba(255,255,255,0.5); text-decoration:line-through; font-weight:600; font-size:11px; margin-right:5px;}
+  .bs-ov-price small{font-size:10px; font-weight:600; color:rgba(255,255,255,0.6);}
+  .banner-slide .bs-visual{position:absolute; z-index:1; right:0; top:44%; transform:translateY(-50%); width:50%; height:74%;}
+  .banner-slide .bs-visual svg{width:100%; height:100%; overflow:visible;}
+  .slide-1{background:radial-gradient(circle at 72% 42%, #4b1f8f 0%, #1b0d38 56%, #0a0616 100%);}
+  .slide-2{background:radial-gradient(circle at 72% 50%, #3a1a6e 0%, #140a26 56%, #0a0612 100%);}
+  .slide-3{background:radial-gradient(circle at 72% 44%, #3e2f0c 0%, #1a1405 52%, #0a0803 100%);}
+  .slide-4{background:linear-gradient(155deg,#0d1b3d 0%, #111 55%, #0a2a5c 130%);}
+  .banner-dots{display:none;}   /* 배너는 1장 운영 — 도트 인디케이터 숨김 (2026-08-28 대표 지시) */
+  .banner-dots .d{width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.35);}
+  .banner-dots .d.active{background:#fff; width:14px; border-radius:3px;}
+  .banner-count{
+    position:absolute; top:24px; left:22px; z-index:2; background:rgba(255,255,255,0.15); color:#fff;
+    font-size:11px; font-weight:700; padding:5px 10px; border-radius:20px; font-family:var(--font-mono);
+  }
+
+  .ticker-bar{background:var(--elev); overflow:hidden; position:relative;}
+  .ticker-label{
+    position:absolute; left:0; top:0; bottom:0; z-index:3; display:flex; align-items:center; gap:6px;
+    background:var(--elev); padding:0 14px 0 18px; font-size:11px; font-weight:700; color:var(--ink);
+  }
+  .ticker-label .live-dot{width:5px; height:5px; border-radius:50%; background:var(--success); animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  .ticker-bar::after{content:''; position:absolute; right:0; top:0; bottom:0; width:36px; background:linear-gradient(-90deg, var(--elev), transparent); z-index:2;}
+  .ticker-track{display:flex; width:max-content; animation:scroll-left 26s linear infinite; padding:11px 0 11px 110px;}
+  @keyframes scroll-left{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  .ticker-item{display:flex; align-items:center; gap:7px; padding:0 18px; border-right:1px solid var(--line-strong); font-size:11.5px; white-space:nowrap; color:var(--ink);}
+  .ticker-item .t-tag{font-size:9.5px; font-weight:700; padding:2px 5px; border-radius:4px; background:var(--success-dim); color:var(--success); font-family:var(--font-mono);}
+  .ticker-item .t-user{color:var(--faint); font-family:var(--font-mono);}
+
+  /* 미니 게임 카드 (상단 진입 · 모바일 세로 스택) */
+  .game-row{display:flex; flex-direction:column; gap:10px;}
+  .game-card{display:flex; align-items:center; gap:13px; padding:14px 16px; border-radius:14px; position:relative; overflow:hidden; border:1px solid var(--line); color:#fff; text-decoration:none;}
+  .game-card .gc-emoji{font-size:26px; flex:none; filter:drop-shadow(0 2px 5px rgba(0,0,0,.35));}
+  .game-card .gc-body{display:flex; flex-direction:column; min-width:0; flex:1;}
+  .game-card .gc-t{font-size:15.5px; font-weight:800; letter-spacing:-.02em;}
+  .game-card .gc-s{font-size:11.5px; color:rgba(255,255,255,.72); margin-top:2px;}
+  .game-card .gc-badge{font-size:9.5px; font-weight:800; letter-spacing:.03em; background:rgba(255,255,255,.16); color:#fff; padding:4px 9px; border-radius:20px; flex:none;}
+  .g-pinball{background:linear-gradient(120deg,#123a34 0%,#0f2a3f 100%);}
+  .g-duck{background:linear-gradient(120deg,#0d2b3d 0%,#134a3f 100%);}
+  .g-card{background:linear-gradient(120deg,#2a2350 0%,#151033 100%);}
+  .feature-card{padding:34px 22px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:12px;}
+
+  /* 신규가입 이벤트 배너 (독립 카드) */
+  .signup-event-card{
+    display:block; margin:16px 20px; padding:26px 22px; border-radius:18px; position:relative; overflow:hidden;
+    background:linear-gradient(135deg,#0c1513 0%, #0f342e 52%, #2FB6A3 135%);
+    color:#fff;
+  }
+  .sec-glow{position:absolute; top:-40px; right:-30px; width:150px; height:150px; border-radius:50%; background:radial-gradient(circle, rgba(62,207,174,0.40), transparent 70%); pointer-events:none;}
+  .sec-badge{position:relative; display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:0.04em; color:#08130f; background:var(--accent); padding:5px 10px; border-radius:20px; margin-bottom:14px;}
+  .sec-title{position:relative; font-size:21px; font-weight:800; line-height:1.35; margin-bottom:8px;}
+  .sec-sub{position:relative; font-size:12.5px; color:rgba(255,255,255,0.65); line-height:1.6; margin-bottom:18px;}
+  .sec-progress-row{position:relative; display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:6px;}
+  .sec-progress-track{position:relative; height:5px; background:rgba(255,255,255,0.15); border-radius:3px; overflow:hidden; margin-bottom:14px;}
+  .sec-progress-fill{height:100%; background:var(--accent); border-radius:3px;}
+  .sec-cta{position:relative; font-size:12.5px; font-weight:800; color:#111; background:#fff; padding:11px 16px; border-radius:10px; text-align:center;}
+
+  /* 진행 중인 이벤트 — 가로 슬라이드 카드 (리팩식) */
+  .ev-hscroll{display:flex; gap:11px; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; padding:2px 2px 6px; scroll-snap-type:x proximity;}
+  .ev-hscroll::-webkit-scrollbar{display:none;}
+  .ev-slide{flex:0 0 76%; max-width:300px; scroll-snap-align:start; display:block; position:relative; overflow:hidden;
+    border-radius:16px; padding:20px 18px 18px; border:1px solid rgba(255,255,255,0.08); color:#fff;}
+  .ev-slide .evs-glow{position:absolute; top:-46px; right:-36px; width:150px; height:150px; border-radius:50%; pointer-events:none;}
+  .ev-mint{background:linear-gradient(135deg,#0c1513 0%, #0f342e 55%, #1E8A75 140%);}
+  .ev-mint .evs-glow{background:radial-gradient(circle, rgba(62,207,174,0.45), transparent 70%);}
+  .ev-gold{background:linear-gradient(135deg,#151109 0%, #33270e 55%, #8A6A1E 140%);}
+  .ev-gold .evs-glow{background:radial-gradient(circle, rgba(227,179,65,0.42), transparent 70%);}
+  .ev-purple{background:linear-gradient(135deg,#120d18 0%, #251536 55%, #5B2E8A 140%);}
+  .ev-purple .evs-glow{background:radial-gradient(circle, rgba(167,139,250,0.40), transparent 70%);}
+  .ev-blue{background:linear-gradient(135deg,#0a1018 0%, #0e2236 55%, #1E5C8A 140%);}
+  .ev-blue .evs-glow{background:radial-gradient(circle, rgba(96,165,250,0.40), transparent 70%);}
+  .evs-badge{position:relative; display:inline-block; font-size:10px; font-weight:800; letter-spacing:.06em; color:#0B0C0E; background:#fff; padding:4px 9px; border-radius:20px; margin-bottom:12px;}
+  .evs-emoji{position:absolute; top:14px; right:16px; font-size:26px;}
+  .evs-title{position:relative; font-size:17px; font-weight:800; margin-bottom:7px;}
+  .evs-sub{position:relative; font-size:12px; color:rgba(255,255,255,0.72); line-height:1.6; margin-bottom:14px;}
+  .evs-sub b{color:#fff;}
+  .evs-cta{position:relative; font-size:12px; font-weight:800; color:rgba(255,255,255,0.92);}
+
+  /* 이벤트 카드 v2 (2026-09-11) — 피카유니버스 규격: 341×114(3:1) · 12px 라운드 · 12px 간격, 이미지 배경 + HTML 텍스트 오버레이
+     이미지: 루트의 ev-*.webp (1170×390, 왼쪽 60% 어두운 여백 + 오른쪽 일러스트). 파일 없으면 --ev-fallback 그라데이션이 보임 */
+  .ev-hscroll{gap:12px; padding:2px 20px 6px 0; margin-right:-20px;}
+  .ev-slide{flex:0 0 min(341px, calc(100vw - 89px)); max-width:none; aspect-ratio:3/1; padding:0; border:none; border-radius:12px;
+    background-color:#0B0B0D;
+    background-image:var(--ev-img, none), var(--ev-fallback, linear-gradient(135deg,#14161b 0%,#0B0B0D 100%));
+    background-size:cover, cover; background-position:center, center; background-repeat:no-repeat, no-repeat;}
+  .ev-mint{--ev-fallback:linear-gradient(135deg,#0c1513 0%, #0f342e 55%, #1E8A75 140%);}
+  .ev-gold{--ev-fallback:linear-gradient(135deg,#151109 0%, #33270e 55%, #8A6A1E 140%);}
+  .ev-purple{--ev-fallback:linear-gradient(135deg,#120d18 0%, #251536 55%, #5B2E8A 140%);}
+  .ev-blue{--ev-fallback:linear-gradient(135deg,#0a1018 0%, #0e2236 55%, #1E5C8A 140%);}
+  .evs-text{position:absolute; left:18px; top:50%; transform:translateY(-50%); max-width:62%; z-index:1;}
+  .evs-title{font-size:19px; font-weight:800; line-height:1.25; letter-spacing:-0.02em; margin:0; text-shadow:0 1px 8px rgba(0,0,0,0.45);}
+  .evs-sub{font-size:12.5px; color:rgba(255,255,255,0.78); line-height:1.45; margin:5px 0 0; text-shadow:0 1px 6px rgba(0,0,0,0.45);}
+  @media (max-width:360px){ .evs-title{font-size:17px;} .evs-sub{font-size:11.5px;} }
+
+  /* 신뢰 카드 (TRUST/SLOT SYSTEM/NO꽝/RECORD) */
+  .trust-card{display:flex; gap:14px; align-items:center; padding:16px 0; border-bottom:1px solid var(--line); position:relative;}
+  .trust-card:last-child{border-bottom:none;}
+  .trust-card.link{cursor:pointer;}
+  .tc-icon-chip{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .tc-icon-chip svg{width:20px; height:20px;}
+  .tc-icon-chip.blue{background:linear-gradient(135deg,var(--accent),#0a4a86);}
+  .tc-icon-chip.ink{background:linear-gradient(135deg,#2b2b2b,#111);}
+  .tc-icon-chip.gold{background:linear-gradient(135deg,#E3B341,#C79A2E);}
+  .tc-body{flex:1; padding-right:8px;}
+  .tc-tag{font-size:10.5px; font-weight:800; color:var(--accent); letter-spacing:0.03em; margin-bottom:4px;}
+  .trust-card:nth-child(3) .tc-tag{color:#8a6d00;}
+  .tc-body h3{font-size:14.5px; font-weight:800; line-height:1.4; margin-bottom:4px;}
+  .tc-body p{font-size:12px; color:var(--muted); line-height:1.55;}
+  .tc-arrow{align-self:center; color:var(--faint); font-size:16px; flex-shrink:0;}
+
+  /* WHY 오리파코리아 중앙정렬 헤더 */
+  .trust-header{text-align:center; margin-bottom:22px;}
+  .trust-header-row{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px;}
+  .trust-logo-mark{width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,var(--accent),#0a4a86); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .trust-logo-mark svg{width:18px; height:18px;}
+  .trust-header h2{font-size:19px; font-weight:800;}
+  .trust-header-eyebrow{font-size:11px; font-weight:700; color:var(--accent); letter-spacing:0.06em;}
+  .feature-card .fc-icon{width:38px; height:38px; color:var(--accent); margin-bottom:6px;}
+  .feature-card .fc-tag{font-size:11px; font-weight:800; color:var(--accent); letter-spacing:0.03em; font-family:var(--font-mono);}
+  .feature-card h3{font-size:19px; font-weight:800; line-height:1.4;}
+  .feature-card p{font-size:13.5px; color:var(--muted); line-height:1.6;}
+  .feature-card.dark{background:var(--elev); border-bottom:none;}
+  .feature-card.dark .fc-icon{color:#fff;}
+  .feature-card.dark h3{color:#fff;}
+  .feature-card.dark p{color:rgba(255,255,255,0.55);}
+
+  section.block{padding:24px 20px; border-bottom:1px solid var(--line);}
+  .section-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:16px;}
+  .section-head .eyebrow-sm{font-size:11.5px; font-weight:700; color:var(--accent); margin-bottom:5px; letter-spacing:0.02em;}
+  .section-head h2{font-size:18px; font-weight:800; letter-spacing:-0.02em;}
+  .see-all{font-size:12px; font-weight:700; color:var(--muted);}
+
+  /* repack 스타일 가로스크롤 카드 — 위아래 2줄 그리드, 옆으로 스와이프 */
+  /* scroll-snap 제거(2026-08-23): 모바일에서 탭 시 스냅 재계산으로 목록이 끝까지 튀는 버그 원인 */
+  .oripa-list{display:grid; grid-auto-flow:column; grid-template-rows:auto auto; grid-auto-columns:180px; gap:12px; overflow-x:auto; padding:2px 2px 8px; scrollbar-width:none;}
+  /* v82 PC 가로 슬라이드 — 마우스 드래그로 넘기기 + 호버 시 ‹ › 화살표 (터치 기기에서는 숨김) */
+  .hs-wrap{position:relative;}
+  .hs-drag{cursor:grab; user-select:none;}
+  .hs-drag.dragging{cursor:grabbing; scroll-behavior:auto;}
+  .hs-drag.dragging a{pointer-events:none;}
+  .hs-arrow{position:absolute; top:50%; transform:translateY(-50%); z-index:8; width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(10,12,18,.82); color:#fff; font-size:20px; line-height:36px; text-align:center; cursor:pointer; opacity:0; transition:opacity .15s; box-shadow:0 4px 14px rgba(0,0,0,.35); backdrop-filter:blur(4px);}
+  .hs-arrow.l{left:-6px;} .hs-arrow.r{right:-6px;}
+  .hs-wrap:hover .hs-arrow{opacity:1;}
+  .hs-arrow[hidden]{display:none;}
+  @media (hover:none), (pointer:coarse){ .hs-arrow{display:none !important;} .hs-drag{cursor:auto;} }
+  /* 풀오픈 섹션은 캠페인 수가 적어 1줄 가로 스크롤로 표시 · 원피스 컬렉션도 1줄(2026-10-03 대표 지시 — 원피스는 여러 개 안 만듦) · 프리미엄 컬렉션도 1줄(2026-10-13 대표 지시) */
+  #fullopenList, #onepieceList, #premiumList, #originalList{grid-template-rows:auto;}
+  .oripa-list::-webkit-scrollbar{display:none;}
+  /* 포인트샵 홈 미리보기 — 1줄 가로 스크롤 */
+  /* 2026-09-10 포인트샵 카드 개편과 동일 스타일: 오리파 카드 폭(180px)·정사각 회색 무대(#1C1E24)·배경 제거 후 전체 노출·제목 13px/가격 16px */
+  .shop-hlist{display:grid; grid-auto-flow:column; grid-auto-columns:180px; gap:12px; overflow-x:auto; padding:2px 2px 8px; scrollbar-width:none;}
+  .shop-hlist::-webkit-scrollbar{display:none;}
+  .shp-card{width:180px; background:var(--paper); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:block;}   /* UI 2.0 밝은 톤 (이미지 칸만 어둡게 유지) */
+  .shp-img{aspect-ratio:1/1; position:relative; background:#1C1E24 radial-gradient(70% 60% at 50% 40%, rgba(255,255,255,0.06), transparent 70%);}
+  .shp-img .im{position:absolute; inset:10px; background-position:center; background-size:contain; background-repeat:no-repeat;}
+  .shp-img .im.raw{mix-blend-mode:lighten;}
+  .shp-img .so{position:absolute; inset:0; background:rgba(0,0,0,0.62); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#fff; letter-spacing:0.05em;}
+  .shp-body{padding:8px 11px 10px; background:var(--paper);}
+  .shp-name{font-size:13px; font-weight:700; line-height:1.38; margin:0 0 5px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-align:left; word-break:break-all; overflow-wrap:anywhere;}
+  /* 남은 수량 — 가격 위 작은 글씨, 오른쪽 정렬 (5개 이하 빨간 강조) */
+  .shp-stock{font-size:10.5px; font-weight:700; color:var(--muted); text-align:right; margin:0 0 1px;}
+  .shp-stock.low{color:#E5534B;}
+  /* 가격은 오리파 캠페인 카드(.pc-price .final 16px)와 동일 */
+  .shp-price{display:flex; align-items:baseline; justify-content:flex-end; color:var(--ink, #14171A); font-weight:800;   /* 2026-10-27 밝은 카드에서 흰 글씨라 안 보이던 것 수정 */ font-size:16px; letter-spacing:-0.02em; white-space:nowrap;}
+  .shp-price span{font-size:11px; font-weight:600; color:var(--muted); margin-left:2px;}
+  .pc{width:180px; background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; align-self:start;}
+  .pc:active{transform:scale(.98);}
+  /* 상품 카드 상단: 공용 배경(발광 무대) 위에 상품 누끼를 올림 */
+  /* 2026-10-13 대표 결정(1안): 무대 이미지(card-bg.jpg) 폴백 제거 — 느린 회선에서 사진보다 먼저 보이던 초록 빛줄기 대신 단색 어두운 배경 */
+  .pc-img{position:relative; aspect-ratio:4/3; overflow:hidden;
+    background:#0A0D0A;}
+  /* 풀오픈 오리파 카드 = 다른 시리즈와 같은 공용 무대(card-bg) — 2026-10-03 대표 지시로 붉은 불꽃 무대(fullopen-stage.jpg) 폐지 */
+  /* 핀볼 오리파 카드 = 파란빛 무대 (배경만 색조 회전 — 상품 사진은 그대로) */
+  #pinballList .pc-img{background:#0A0D0A;}
+  #pinballList .pc-img::before{content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg,#0B1622 0%,#0A0D0A 100%);}   /* 2026-10-13: 파란 무대 이미지 → 단색 그라데이션 */
+  /* 캠페인 이미지 = 풀배경(540×405, 4:3) 전면 채움 — 이미지 없으면 무대 배경이 폴백 */
+  .pc-img .pc-photo{position:absolute; left:0; right:0; top:0; bottom:0;
+    background-position:center; background-repeat:no-repeat; background-size:cover;}
+  .pc-img .pc-ph{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:.5;}
+  .pc-badge{position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.62); backdrop-filter:blur(4px); color:#fff; font-size:10px; font-weight:800; padding:4px 8px; border-radius:7px; letter-spacing:.02em;}
+  .pc-badge.live{background:var(--accent); color:#08130f;}
+  .pc-tag2{position:absolute; top:8px; right:8px; background:var(--danger); color:#fff; font-size:9.5px; font-weight:800; padding:3px 7px; border-radius:6px;}
+  .pc-tag2.rounds{background:rgba(0,0,0,0.62); backdrop-filter:blur(4px); color:#fff; font-variant-numeric:tabular-nums;}
+  /* v82 카운트다운 종료 뱃지 — 좌상단 빨강, 남은 시간 30초마다 갱신 */
+  .pc-tag2.cd{left:8px; right:auto; background:#F45B5B; color:#fff; font-variant-numeric:tabular-nums; letter-spacing:.01em;}
+  .pc{position:relative;}
+  .pc-closed{filter:saturate(.5);}
+  .pc-ended-ov{position:absolute; inset:0; z-index:6; display:flex; align-items:center; justify-content:center; background:rgba(6,8,13,0.68); border-radius:14px; pointer-events:none;}
+  /* 2026-09-11 솔드아웃(마감) 카드: 뱃지는 두고 클릭·진입 차단 (풀오픈 제외) — 정렬은 byLive가 이미 마감을 맨 뒤로 보냄 */
+  .pc.pc-noenter{pointer-events:none; cursor:default;}
+  .pc-ended-ov b{background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.22); color:#fff; font-size:14px; font-weight:800; letter-spacing:.03em; padding:8px 18px; border-radius:999px;}
+  .pc-body{padding:11px 10px 13px;}
+  /* 제목 2줄 기준 (2026-08-26 캠페인명 전부 2줄 정리) — 3줄 이름이 남아 있으면 자동으로 3줄까지 늘어남 */
+  .pc-title{font-size:13px; font-weight:700; line-height:1.38; min-height:2.76em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; margin-bottom:9px; word-break:break-all; overflow-wrap:anywhere; text-align:left;}
+  .pc-meta{font-size:10.5px; color:var(--faint); margin-bottom:7px;}
+  .pc-meta b{color:var(--muted); font-weight:700;}
+  /* 2026-10-21 오리지널 오리파(대형 구좌) 카드: 진행률 막대 대신 남은 메인히트·최근 당첨 (500만 자리는 0.1%씩 움직여 안 팔리는 것처럼 보임 — 대표 지시) */
+  .pc-mega{margin:2px 0 8px; padding:8px 9px; background:rgba(62,207,174,.08); border:1px solid rgba(62,207,174,.35); border-radius:11px; min-width:0;}
+  .pc-mega .pm-main{display:flex; align-items:baseline; justify-content:space-between; gap:6px; white-space:nowrap; font-size:11.5px; font-weight:700; color:var(--muted);}
+  .pc-mega .pm-v{flex:none; font-variant-numeric:tabular-nums;}
+  .pc-mega .pm-main b{color:var(--accent); font-size:18px; font-weight:800; letter-spacing:-0.02em;}
+  .pc-mega .pm-win{margin-top:5px; font-size:12px; font-weight:600; color:var(--ink); line-height:1.4; min-height:2.8em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow-wrap:anywhere;}
+  .pc-mega .pm-wl{color:var(--accent); font-weight:800;}
+  .pc-mega .pm-open{margin-top:4px; font-size:10px; color:var(--faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums;}
+  /* 후킹 라인: 총 상품가액 — 카드 제일 하단, 금액과 같은 오른쪽 정렬 */
+  .pc-hook{font-size:10.5px; color:var(--muted); text-align:right; margin:5px 0 0; white-space:nowrap;}
+  .pc-hook b{color:var(--accent); font-weight:800; font-size:12px;}
+  /* 가격 줄: 할인율·정가·최종가를 오른쪽에 붙여서 (캠페인 목록과 동일한 밀착 배치) */
+  .pc-price{display:flex; align-items:baseline; justify-content:flex-end; gap:5px; white-space:nowrap;}
+  .pc-price .orig{color:var(--faint); text-decoration:line-through; font-size:10.5px; overflow:hidden; text-overflow:ellipsis;}
+  .pc-price .final{color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.02em; flex:none;}
+  .pc-price .final small{font-size:11px; font-weight:600; color:var(--muted); margin-left:2px;}
+  .pc-price .disc{color:var(--accent); font-weight:800; font-size:12px; flex:none;}
+  /* 로딩 스켈레톤 */
+  .pc-skel{width:180px; border-radius:14px; overflow:hidden; background:var(--card); border:1px solid var(--line); align-self:start;}
+  /* (풀배경 통일로 리스트별 누끼 여백 규칙 제거됨) */
+  .oripa-list > p{grid-row:span 2; align-self:center; min-width:70vw;}
+  .pc-skel .skimg{aspect-ratio:4/3;} .pc-skel .skb{padding:11px 12px 13px;}
+  .pc-skel .sk{background:linear-gradient(90deg, rgba(255,255,255,0.035) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.035) 63%); background-size:400% 100%; animation:skShimmer 1.3s ease-in-out infinite; border-radius:6px;}
+  .pc-skel .skl{height:12px; margin-bottom:8px;} .pc-skel .skl.s2{width:70%;} .pc-skel .skl.s3{width:45%; height:16px; margin-bottom:0;}
+  @keyframes skShimmer{0%{background-position:100% 0;} 100%{background-position:-100% 0;}}
+  /* (이벤트 카드는 signup-event-card 스타일 재사용 — 위아래 여백 16px 균형) */
+  .oripa-row{display:block; border:1px solid var(--line); border-radius:18px; overflow:hidden; background:var(--paper);}
+
+  /* 상단 비주얼 영역 — 타입 워터마크 + 1등/2등 카드목업 쇼케이스 */
+  .oripa-visual{aspect-ratio:16/10; position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:16px;}
+  .oripa-visual .ov-watermark{position:absolute; top:50%; left:16px; transform:translateY(-50%); width:88px; height:88px; opacity:0.14; display:flex; align-items:center; justify-content:center;}
+  .oripa-visual .ov-watermark svg{width:100%; height:100%;}
+  .oripa-visual .ov-fill-badge{position:absolute; top:12px; left:12px; z-index:3; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); color:#fff; font-size:10.5px; font-weight:700; padding:5px 10px; border-radius:20px; font-family:'Pretendard';}
+  .oripa-visual .ov-urgent-badge{position:absolute; top:12px; right:12px; z-index:3; background:var(--danger); color:#fff; font-size:10px; font-weight:800; padding:5px 9px; border-radius:20px; animation:urgent-pulse 1.6s ease-in-out infinite;}
+  @keyframes urgent-pulse{0%,100%{opacity:1;} 50%{opacity:0.55;}}
+  .thumb-1{background:linear-gradient(150deg,#0d1b3d,#1c3d7a);}
+  .thumb-2{background:linear-gradient(150deg,#1a0d3d,#4a1c7a);}
+  .thumb-3{background:linear-gradient(150deg,#3d1a0d,#7a3a1c);}
+  .thumb-4{background:linear-gradient(150deg,#0d3d24,#1c7a4e);}
+  .thumb-5{background:linear-gradient(150deg,#3d0d24,#7a1c4e);}
+  .thumb-6{background:linear-gradient(150deg,#111,#2b2b2b);}
+
+  .ov-showcase{position:relative; z-index:2; display:flex; align-items:flex-end; gap:6px;}
+  .card-mockup-sc{
+    width:48px; height:52px; border-radius:7px; position:relative; overflow:hidden; flex-shrink:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    border:1.5px solid rgba(255,255,255,0.35); box-shadow:0 5px 12px rgba(0,0,0,0.3);
+  }
+  .card-mockup-sc.tier2{background:linear-gradient(160deg,#B87400,#8a5800 60%,#5c3900);}
+  .card-mockup-sc.tier3{background:linear-gradient(160deg,#7C4DDC,#5a34a8 60%,#3d2373);}
+  .card-mockup-sc.tier4{background:linear-gradient(160deg,#D9662E,#a84b1f 60%,#7a350f);}
+  .card-mockup-sc.tier5{background:linear-gradient(160deg,#0C8599,#075868 60%,#043c40);}
+  .sc-shine{position:absolute; inset:0; z-index:1; background:linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.45) 50%, transparent 65%); background-size:250% 250%; background-position:130% 0%; animation:cm-shine-sweep 3.4s ease-in-out infinite;}
+  .sc-photo{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;}
+  @keyframes cm-shine-sweep{0%, 55%{background-position:130% 0%;} 85%{background-position:-30% 0%;} 100%{background-position:-30% 0%;}}
+  .sc-rank{position:relative; z-index:2; font-size:8px; font-weight:800; color:#fff;}
+  .sc-rank.photo-rank{position:absolute; bottom:2px; right:3px; background:rgba(0,0,0,0.55); padding:1px 4px; border-radius:3px; z-index:2;}
+  .sc-icon{position:relative; z-index:2; opacity:0.9;}
+
+  /* 본문 영역 */
+  .oripa-body{padding:14px;}
+  .oripa-body .r-title{font-size:15px; font-weight:800; margin-bottom:3px;}
+  .round-tag{display:inline-block; vertical-align:middle; font-size:10.5px; font-weight:700; color:var(--accent); background:var(--accent-dim); padding:2px 7px; border-radius:5px; margin-left:4px;}
+  .oripa-body .r-sub{font-size:11.5px; color:var(--muted); margin-bottom:10px;}
+
+  /* 등수별 시세 칸 (몇 등까지든 자동 확장) */
+  .pinball-promo{display:block; margin-bottom:14px; border-radius:18px; overflow:hidden; text-decoration:none;}
+  .pinball-promo-inner{position:relative; padding:18px 18px 16px; background:linear-gradient(135deg, #123a34 0%, #0f2a3f 55%, #10233a 100%); border:1px solid rgba(62,207,174,0.4); border-radius:18px;}
+  .pinball-promo .pp-badge{display:inline-block; font-size:10px; font-weight:800; color:#08130F; background:var(--accent); padding:3px 9px; border-radius:20px; letter-spacing:.02em;}
+  .pinball-promo .pp-title{font-size:20px; font-weight:800; color:#fff; margin-top:10px; letter-spacing:-.02em;}
+  .pinball-promo .pp-sub{font-size:12px; color:#B9D9D1; margin-top:6px; line-height:1.5;}
+  .pinball-promo .pp-go{margin-top:12px; font-size:13px; font-weight:800; color:var(--accent);}
+  .total-prize-row{display:flex; justify-content:space-between; align-items:center; padding:9px 12px; margin-bottom:10px; border-radius:10px; background:linear-gradient(90deg, rgba(62,207,174,0.16), rgba(62,207,174,0.05)); border:1px solid rgba(62,207,174,0.38);}
+  .total-prize-row .tp-label{font-size:11.5px; font-weight:700; color:var(--sub); letter-spacing:-0.01em;}
+  .total-prize-row .tp-value{font-size:15px; font-weight:800; color:var(--accent); letter-spacing:-0.02em;}
+  .tier-price-grid{display:grid; grid-template-columns:1fr; gap:6px; margin-bottom:10px;}
+  .tier-price-cell{background:var(--surface); border-radius:10px; padding:8px 10px; display:flex; align-items:center; gap:8px;}
+  .tpc-rank-badge{width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9.5px; font-weight:800; color:#fff; flex-shrink:0;}
+  .tpc-rank-badge.tier1{background:linear-gradient(135deg,var(--accent),#0a4a86);}
+  .tpc-rank-badge.tier2{background:linear-gradient(135deg,#B87400,#8a5800);}
+  .tpc-rank-badge.tier3{background:linear-gradient(135deg,#7C4DDC,#5a34a8);}
+  .tpc-rank-badge.tier4{background:linear-gradient(135deg,#D9662E,#a84b1f);}
+  .tpc-rank-badge.tier5{background:linear-gradient(135deg,#0C8599,#075868);}
+  .tpc-info{min-width:0;}
+  .tpc-value{font-size:12px; font-weight:800; color:var(--ink); white-space:nowrap;}
+  .tpc-name{font-size:9.5px; color:var(--muted); line-height:1.4; word-break:keep-all;}
+  .tpc-rank-badge.lastone{background:linear-gradient(135deg,#E3B341,#C79A2E);}
+
+  .entry-price-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+  .entry-price-row .r-price{font-size:15px; font-weight:800;}
+  .entry-price-row .r-price span{font-size:11px; font-weight:600; color:var(--muted); margin-left:2px;}
+  .urgent-inline{font-size:10.5px; font-weight:800; color:var(--danger);}
+
+  .fill-line{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px; font-family:'Pretendard';}
+  .progress-track{height:5px; background:var(--line); border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--accent); border-radius:3px;}
+  .random-note-sm{font-size:11px; color:var(--accent); font-weight:700; margin-top:8px;}
+
+  .hscroll{display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;}
+  .hscroll::-webkit-scrollbar{display:none;}
+  .hcard{display:block; flex:0 0 132px; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--paper);}
+  .hcard .hthumb{aspect-ratio:3/4; position:relative; display:flex; align-items:center; justify-content:center;}
+  .hcard .hthumb .type-icon{width:28px; height:28px;}
+  .hcard .hthumb .new-tag{position:absolute; top:8px; left:8px; background:var(--elev); color:#fff; font-size:9px; font-weight:800; padding:3px 6px; border-radius:5px;}
+  .hcard .hbody{padding:10px 12px;}
+  .hcard .hbody .htitle{font-size:12px; font-weight:700; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .hcard .hbody .hprice{font-size:12.5px; font-weight:800;}
+
+  .tabs{display:flex; gap:6px; margin-bottom:14px; overflow-x:auto; scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; border:1px solid var(--line); color:var(--muted); white-space:nowrap;}
+  .tab.active{background:var(--elev); color:#fff; border-color:var(--ink);}
+
+  .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+  .sup-card{border:1px solid var(--line); border-radius:14px; padding:18px; background:var(--paper); display:flex; flex-direction:column; gap:26px;}
+  .sup-card .sup-icon{width:34px; height:34px; border-radius:9px; background:var(--surface); display:flex; align-items:center; justify-content:center;}
+  .sup-card .sup-name{font-size:13.5px; font-weight:800; margin-bottom:3px;}
+  .sup-card .sup-sub{font-size:11px; color:var(--muted);}
+
+  .link-card{display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:10px; background:var(--paper);}
+  .link-card .lc-icon{width:36px; height:36px; border-radius:10px; background:var(--surface); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .link-card .lc-text{flex:1;}
+  .link-card .lc-tag{font-size:10px; font-weight:800; color:var(--accent); margin-bottom:2px; font-family:var(--font-mono);}
+  .link-card .lc-title{font-size:13.5px; font-weight:700;}
+  .link-card .lc-sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .link-card .lc-arrow{color:var(--faint);}
+  .link-card.new .lc-tag{color:var(--warning);}
+
+  .list-row{display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-top:1px solid var(--line);}
+  .list-row:first-child{border-top:none;}
+  .list-row .tag{font-size:10px; font-weight:800; padding:3px 6px; border-radius:5px; margin-right:8px;}
+  .tag.notice{background:var(--accent-dim); color:var(--accent);}
+  .tag.event{background:var(--warning-dim); color:#B87400;}
+  .list-row .lr-title{font-size:13px; font-weight:600;}
+  .list-row .lr-date{font-size:11px; color:var(--faint); font-family:var(--font-mono); flex-shrink:0;}
+
+  .bottom-nav{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px;
+    background:rgba(10,11,13,0.92); backdrop-filter:blur(10px); border-top:1px solid var(--line);
+    display:flex; z-index:200;
+  }
+  .bn-item{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:11px 0 14px; font-size:10.5px; font-weight:600; color:var(--faint);}
+  .bn-item.active{color:var(--ink);}
+  .bn-item svg{width:21px; height:21px;}
+
+  .chat-fab{
+    position:fixed; bottom:96px; left:50%; transform:translateX(174px); width:50px; height:50px; border-radius:50%;
+    background:var(--elev); color:#fff; display:flex; align-items:center; justify-content:center; z-index:200;
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  }
+
+  footer{background:transparent; color:var(--muted); padding:32px 20px 40px; font-size:11.5px; line-height:1.9; border-top:1px solid var(--line);}
+  footer .footer-logo{margin-bottom:14px;}
+  footer .footer-links{display:flex; gap:14px; margin-bottom:16px;}
+  footer .footer-links a{color:var(--ink); font-weight:600; font-size:12px;}
+  /* 접이식 사업자정보 */
+  .foot-toggle{display:flex; align-items:center; gap:6px; padding:0; background:none; border:none; color:var(--muted); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; letter-spacing:-.01em;}
+  .foot-toggle:hover{color:var(--ink);}
+  .foot-toggle .ft-arrow{transition:transform .25s ease;}
+  .foot-toggle.open .ft-arrow{transform:rotate(180deg);}
+  .foot-info{max-height:0; overflow:hidden; opacity:0; transition:max-height .3s ease, opacity .25s ease, margin .25s ease;}
+  .foot-info.open{max-height:400px; opacity:1; margin-top:12px;}
+  .foot-info .fi-tabs{display:flex; gap:16px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);}
+  .foot-info .fi-tabs a{color:var(--ink); font-weight:700; font-size:12px;}
+  .foot-info .fi-tabs a:hover{color:var(--accent);}
+
+  /* ── 데스크톱: 좌측 브랜딩 + 우측 앱 (레퍼런스 스타일) ── */
+  .brand-panel{ display:none; }
+  @media (min-width:960px){
+    html,body{ background:#000; }
+    body{ display:flex; justify-content:center; align-items:stretch; gap:64px; }
+    .brand-panel{
+      display:flex; flex-direction:column; justify-content:center;
+      width:360px; flex:0 0 360px; padding:0 20px;
+      position:sticky; top:0; height:100vh; align-self:flex-start;
+    }
+    .brand-panel .bp-logo{ font-family:'Quicksand',var(--font-body); font-size:30px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink); }
+    .brand-panel .bp-logo span{ color:var(--accent); }
+    .brand-panel .bp-tag{ margin-top:18px; font-size:19px; font-weight:700; line-height:1.5; color:var(--ink); }
+    .brand-panel .bp-sub{ margin-top:12px; font-size:13.5px; line-height:1.7; color:var(--muted); }
+    .brand-panel .bp-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); margin-right:8px; }
+    /* 2026-11-23 PC 왼쪽 칸 앱 안내 (960px 이상에서만 보임) */
+    .bp-app{ margin-top:26px; padding-top:22px; border-top:1px solid var(--line); }
+    .bp-app h2{ font-size:19px; font-weight:800; color:var(--ink); line-height:1.4; }
+    .bp-app p{ margin-top:6px; font-size:13.5px; line-height:1.6; color:var(--muted); }
+    .bp-qrs{ display:flex; gap:12px; margin-top:16px; }
+    .bp-qr{ flex:1; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 12px 13px; text-align:center; }
+    .bp-qr img{ display:block; width:100%; height:auto; }
+    .bp-qr a{ display:block; margin-top:9px; background:#111418; color:#fff; border-radius:9px; padding:9px 0 8px; font-size:12.5px; font-weight:800; line-height:1.25; text-decoration:none; }
+    .bp-qr a small{ display:block; font-size:9.5px; font-weight:600; color:#B9C0C7; }
+    .bp-foot{ margin-top:14px; font-size:12px; color:var(--faint); }
+    .app{ margin:0; flex:0 0 430px; border-left:1px solid var(--line); border-right:1px solid var(--line); }
+    /* 하단 네비를 앱 컬럼 중앙에 정렬: (브랜드폭 360 + gap 64)/2 = 212 만큼 우측 이동 */
+    .bottom-nav{ transform:translateX(calc(-50% + 212px)); }
+    .search-overlay, .modal-sheet, .toast{ } /* 오버레이는 중앙 유지(모바일 규격) */
+  }
+</style>
+<link rel="stylesheet" href="theme-light.css?v=20261024">
+<style id="cfCss">
+  .cf-list.cf-groups{gap:0; padding:0 0 18px;}
+  .cf-sec{padding:18px 16px 4px;}
+  .cf-sec-h{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:11px;}
+  .cf-sec-h h3{font-size:18px; font-weight:800; color:var(--ink); margin:0;}
+  .cf-sec-h h3 em{font-style:normal; font-size:12.5px; font-weight:700; color:var(--faint); margin-left:6px;}
+  .cf-more{font-size:12.5px; font-weight:700; color:var(--accent); cursor:pointer; padding:6px 0 6px 12px; text-decoration:none;}
+  .cf-g2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .cf-s{display:block; min-width:0; background:var(--paper); border:1px solid var(--line); border-radius:13px; overflow:hidden; box-shadow:0 1px 3px rgba(16,24,40,.05); color:inherit; text-decoration:none;}
+  .cf-s .cf-tags{left:7px; top:7px; gap:4px;}
+  .cf-s .cf-tag{font-size:9.5px; padding:3px 7px;}
+  .cf-sb{padding:9px 10px 11px;}
+  .cf-st{font-size:12.5px; font-weight:800; line-height:1.38; color:var(--ink); height:34px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:keep-all; overflow-wrap:anywhere;}
+  .cf-sp{margin-top:6px; font-size:15.5px; font-weight:900; color:var(--ink); font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .cf-sp em{font-style:normal; font-size:11.5px; font-weight:800;}
+  .cf-sl{margin-top:3px; font-size:10.5px; color:var(--muted, var(--sub)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums;}
+  .cf-sl b{color:var(--ink);}
+  .cf-sl.n{color:var(--accent); font-weight:700;}
+  .cf-s .cf-bar{height:4px; margin-top:6px;}
+  .cf-bar-wrap{position:sticky; top:56px; z-index:50; background:var(--cf-bar-bg, var(--bg)); border-bottom:1px solid var(--line);}
+  .cf-cats{display:flex; gap:20px; overflow-x:auto; padding:0 18px; scrollbar-width:none;}
+  .cf-tabs-host .cf-cats{padding-top:2px;}   /* 헤더 안(항상 고정) */
+  .cf-cats::-webkit-scrollbar{display:none;}
+  .cf-cat{flex:none; padding:13px 0 11px; font-size:15px; font-weight:700; color:var(--faint); border-bottom:2.5px solid transparent; cursor:pointer; white-space:nowrap;}
+  .cf-cat.on{color:var(--ink); border-bottom-color:var(--accent);}
+  .cf-sorts{display:flex; gap:6px; padding:12px 16px 4px; overflow-x:auto; scrollbar-width:none;}
+  .cf-sorts::-webkit-scrollbar{display:none;}
+  .cf-sort{flex:none; font-size:12.5px; font-weight:700; padding:7px 13px; border-radius:999px; border:1px solid var(--line-strong, var(--line)); color:var(--muted, var(--sub)); background:var(--paper); cursor:pointer;}
+  .cf-sort.on{background:var(--ink); border-color:var(--ink); color:var(--paper);}
+  .cf-list{display:flex; flex-direction:column; gap:16px; padding:12px 16px 20px;}
+  .cf-card{display:block; background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(16,24,40,.05); color:inherit; text-decoration:none;}
+  .cf-link{display:block; color:inherit; text-decoration:none;}
+  .cf-img{position:relative; aspect-ratio:4/3; background:#0A0D0A; overflow:hidden;}
+  .cf-photo{position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat;}
+  .cf-tags{position:absolute; left:10px; top:10px; display:flex; gap:6px; flex-wrap:wrap; z-index:2;}
+  .cf-tag{font-size:11px; font-weight:800; padding:4px 9px; border-radius:999px; background:rgba(255,255,255,.94); color:#121417; box-shadow:0 1px 4px rgba(0,0,0,.18);}
+  .cf-tag.mvp{background:#FFF4D6; color:#7A5200; border:1px solid #F1D489;}
+  .cf-tag.cd{background:#E5484D; color:#fff;}
+  .cf-body{padding:13px 15px 14px;}
+  .cf-title{font-size:16px; font-weight:800; line-height:1.4; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:keep-all; overflow-wrap:anywhere;}
+  .cf-row{display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-top:10px;}
+  .cf-price{flex:none; display:flex; align-items:baseline; gap:2px; white-space:nowrap; color:var(--ink);}
+  .cf-price b{font-size:22px; font-weight:900; letter-spacing:-0.02em; font-variant-numeric:tabular-nums;}
+  .cf-price em{font-style:normal; font-size:14px; font-weight:800;}
+  .cf-price span{font-size:12px; color:var(--faint); margin-left:4px; font-weight:600;}
+  .cf-pwrap{flex:none;}
+  .cf-was{font-size:11.5px; line-height:1; margin-bottom:3px; white-space:nowrap;}
+  .cf-was .cf-disc{font-weight:900; color:#E5484D; margin-right:5px; font-size:12.5px;}
+  .cf-was s{color:var(--faint);}
+  .cf-stock{flex:1; min-width:0; max-width:62%; text-align:right;}
+  .cf-left{font-size:12px; color:var(--muted, var(--sub)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums;}
+  .cf-left b{color:var(--ink); font-weight:800; font-size:13px;}
+  .cf-left span{color:var(--faint);}
+  .cf-left.cf-note{color:var(--accent); font-weight:700; white-space:normal;}
+  .cf-bar{height:6px; margin-top:6px; background:var(--line); border-radius:999px; overflow:hidden;}
+  .cf-rate{font-size:13px; font-weight:700; color:var(--ink, #121417); white-space:nowrap;}
+  .cf-rate b{font-size:16px; font-weight:800; color:var(--accent, #0E9B7E);}
+  .cf-rnote{font-size:10.5px; line-height:1.4; color:var(--faint, #8A9199); margin-top:3px; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cf-bar i{display:block; height:100%; background:var(--accent); border-radius:999px;}
+  .cf-sub{margin-top:9px; font-size:12px; color:var(--muted, var(--sub)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cf-sub b{color:var(--accent); font-weight:800;}
+  .cf-subn{color:var(--faint); font-size:11px;}
+  .cf-btns{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:0 15px 15px;}
+  .cf-btn{display:flex; align-items:center; justify-content:center; height:44px; border-radius:10px; font-size:14.5px; font-weight:800; border:1.5px solid var(--ink); color:var(--ink); background:var(--paper); text-decoration:none;}
+  .cf-btn.b2{background:#2B2F36; border-color:#2B2F36; color:#fff;}
+  .cf-btn.b3{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .cf-btn.b4{grid-column:1 / -1; background:var(--accent); border-color:var(--accent); color:#fff; height:46px; font-size:15px;}
+  .cf-btn.off{opacity:.35; pointer-events:none;}
+  .cf-empty{padding:48px 20px; text-align:center; font-size:13px; color:var(--muted, var(--sub));}
+  /* 2026-11-26 대표 지시: 새로고침·첫 진입 때 흰 화면 대신 실제 배치와 같은 뼈대 칸(움직임 없음, 배경보다 한 단계만 짙은 색) */
+  .cf-skel{height:330px; border-radius:16px; background:var(--elev, #EEF2F3);}
+  .cf-sk-h{width:84px; height:20px; border-radius:7px; background:var(--elev, #EEF2F3); margin-bottom:11px;}
+  .cf-sk-c{min-width:0; background:var(--paper); border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .cf-sk-i{aspect-ratio:4/3; background:var(--elev, #EEF2F3);}
+  .cf-sk-b{padding:10px 10px 12px;}
+  .cf-sk-l{height:11px; border-radius:6px; background:var(--elev, #EEF2F3); margin-bottom:7px;}
+  .cf-sk-l.s2{width:72%;} .cf-sk-l.s3{width:46%; height:15px; margin:9px 0 0;}</style><style>html,body,button,a,input,label{touch-action:manipulation;}</style></head>
+<body>
+
+<aside class="brand-panel">
+  <div class="bp-logo"><img loading="lazy" src="logo2-panel.png?v=2" alt="오리파코리아 2.0" style="width:380px;height:auto;display:inline-block;vertical-align:middle"></div>
+  <div class="bp-app" id="bpApp">
+    <h2>앱으로 더 편하게</h2>
+    <p>휴대폰 카메라로 QR을 비춰 주세요.</p>
+    <div class="bp-qrs">
+      <div class="bp-qr"><img loading="lazy" src="qr_play.svg?v=1" alt="Google Play QR"><a href="https://play.google.com/store/apps/details?id=com.oripakorea.app" target="_blank" rel="noopener"><small>안드로이드</small>Google Play</a></div>
+      <div class="bp-qr"><img loading="lazy" src="qr_ios.svg?v=1" alt="App Store QR"><a href="https://apps.apple.com/kr/app/id6830101762" target="_blank" rel="noopener"><small>아이폰</small>App Store</a></div>
+    </div>
+    <div class="bp-foot">PC에서도 지금처럼 이용할 수 있습니다.</div>
+  </div>
+  <script src="https://connect.facebook.net/signals/config/1274766974632281?v=2.9.441&amp;r=stable&amp;domain=oripa-korea.com&amp;hme=abf59d235177e3601acac6035d7c2a28fadbda4b0c64009bc203ceed9fa8bb90&amp;ex_m=119%2C243%2C172%2C27%2C82%2C83%2C163%2C78%2C77%2C11%2C182%2C102%2C20%2C154%2C142%2C46%2C85%2C90%2C184%2C111%2C150%2C177%2C8%2C4%2C5%2C7%2C6%2C3%2C103%2C116%2C162%2C72%2C186%2C110%2C185%2C212%2C264%2C37%2C84%2C284%2C283%2C282%2C14%2C25%2C28%2C40%2C62%2C118%2C68%2C10%2C73%2C112%2C113%2C114%2C120%2C145%2C38%2C36%2C147%2C148%2C149%2C144%2C143%2C173%2C86%2C176%2C174%2C175%2C57%2C69%2C67%2C138%2C19%2C180%2C52%2C335%2C336%2C337%2C334%2C32%2C17%2C31%2C18%2C33%2C34%2C35%2C55%2C164%2C87%2C127%2C22%2C24%2C51%2C47%2C49%2C48%2C95%2C104%2C108%2C125%2C161%2C165%2C53%2C126%2C29%2C26%2C134%2C79%2C43%2C167%2C166%2C168%2C158%2C156%2C30%2C42%2C66%2C124%2C179%2C80%2C21%2C129%2C93%2C76%2C23%2C97%2C98%2C131%2C96%2C152%2C151%2C155%2C109%2C178%2C181%2C41%2C351%2C353%2C374%2C257%2C239%2C70%2C240%2C238%2C377%2C368%2C59%2C258%2C122%2C146%2C92%2C136%2C61%2C54%2C56%2C128%2C135%2C141%2C140%2C65%2C74%2C169%2C88%2C89%2C130%2C44%2C39%2C60%2C63%2C115%2C183%2C1%2C139%2C16%2C137%2C12%2C2%2C64%2C105%2C15%2C75%2C71%2C133%2C101%2C100%2C188%2C189%2C106%2C107%2C9%2C117%2C187%2C58%2C159%2C99%2C91%2C81%2C132%2C121%2C170%2C50%2C160%2C0%2C94%2C153%2C157%2C171%2C45%2C123%2C13%2C190" async=""></script><script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script>try{ if(window.androidBridge || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) document.getElementById('bpApp').style.display='none'; }catch(e){}</script>
+</aside>
+
+<div class="glow-bg"></div>
+<div class="grid-bg"></div>
+<div class="noise-bg"></div>
+<div class="app">
+
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="javascript:void(0)" onclick="window.scrollTo({top:0, behavior:'smooth'})"><img src="logo2-header.png?v=3" alt="오리파코리아 2.0" style="height:30px;width:auto;display:inline-block;vertical-align:middle"></a>
+      <div class="header-icons" id="headerAuthArea">
+        <a href="login.html" class="header-auth-link">로그인</a>
+        <a href="signup.html" class="header-auth-link primary">회원가입</a>
+      </div>
+    </div>
+    <div id="campTabs" class="cf-tabs-host"><div class="cf-cats"><div class="cf-cat on" data-c="all">전체</div><div class="cf-cat" data-c="event">이벤트</div><div class="cf-cat" data-c="premium">프리미엄</div><div class="cf-cat" data-c="pokemon">포켓몬</div><div class="cf-cat" data-c="onepiece">원피스</div><div class="cf-cat" data-c="original">고환원</div></div></div>   <!-- UI 2.0: 카테고리 탭 = 헤더 안(항상 고정), camp-feed.js 가 채움 -->
+  </header>
+  <!-- 2026-10-25 심야 추첨 띠: 시작 5분 전 ~ 마감까지만 보임 (설정은 nightly_state, 10분 캐시 · v103 전·꺼짐이면 안 보임) -->
+  <a id="nightStrip" href="nightly.html" style="display:none; margin:10px 16px 0; padding:11px 14px; border-radius:12px; background:linear-gradient(100deg,#0E1B2E,#123A3A); color:#fff; font-size:13.5px; font-weight:800; text-decoration:none; align-items:center; gap:8px;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFE08A" style="flex:none"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg><span id="nightStripT" style="flex:1; min-width:0">심야 추첨</span><span style="color:#9FF5DF">›</span>
+  </a>
+
+  <!-- UI 2.0 (2026-10-23 대표 지시): 맨 위 메인 배너 숨김 → 헤더 바로 아래 최근 당첨·이벤트. 배너 이미지는 불러오지 않음(loadBanners 호출 제거) -->
+  <div class="banner-wrap" style="display:none">
+    <div class="banner" id="banner">
+      <div class="banner-track" id="bannerTrack" style="transform: translateX(-100%); opacity: 1;">
+        <a class="banner-slide slide-1" href="campaigns.html">
+          <div class="bs-visual">
+            <svg viewBox="0 0 200 200" fill="none">
+              <defs>
+                <linearGradient id="bcard" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a3ac0"></stop><stop offset="0.55" stop-color="#3a1670"></stop><stop offset="1" stop-color="#1a0d33"></stop></linearGradient>
+                <radialGradient id="bpod" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#aa64ff" stop-opacity="0.75"></stop><stop offset="1" stop-color="#7a3cdc" stop-opacity="0"></stop></radialGradient>
+              </defs>
+              <ellipse cx="100" cy="170" rx="72" ry="21" fill="url(#bpod)"></ellipse>
+              <ellipse cx="100" cy="167" rx="52" ry="13" fill="none" stroke="#c79bff" stroke-width="2" opacity="0.85"></ellipse>
+              <g transform="rotate(9 100 92)">
+                <rect x="62" y="28" width="76" height="122" rx="9" fill="url(#bcard)" stroke="#cdaaff" stroke-width="1.6"></rect>
+                <path d="M100 56 l7 15 16 2 -12 12 3 16 -14 -8 -14 8 3 -16 -12 -12 16 -2 Z" fill="#FFC94D"></path>
+                <rect x="72" y="120" width="56" height="12" rx="4" fill="#ffffff" opacity="0.14"></rect>
+              </g>
+              <circle cx="52" cy="46" r="3" fill="#FFC94D" opacity="0.8"></circle><circle cx="150" cy="40" r="2.5" fill="#c79bff" opacity="0.8"></circle><circle cx="164" cy="120" r="3" fill="#FFC94D" opacity="0.7"></circle><rect x="40" y="96" width="6" height="6" fill="#a06bff" opacity="0.7" transform="rotate(20 43 99)"></rect>
+            </svg>
+          </div>
+          <div class="bs-content">
+            <div class="bs-eyebrow"><span style="color:#FFC94D; font-size:14px;">♛</span> 100% 실물 카드 보장</div>
+            <div class="bs-title">모든 번호에<br><span class="bs-hl">실물 카드</span>가<br>있습니다</div>
+            <div class="bs-sub">등급이 설정된 상품 외 나머지<br>번호도 전부 실물 랜덤 일반카드예요.</div>
+            <span class="bs-cta">지금 개봉하기 →</span>
+          </div>
+        </a>
+        <a class="banner-slide slide-2" href="campaigns.html">
+          <div class="bs-visual">
+            <svg viewBox="0 0 200 200" fill="none">
+              <defs><linearGradient id="bwatch" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a2a80"></stop><stop offset="1" stop-color="#180d30"></stop></linearGradient></defs>
+              <ellipse cx="100" cy="178" rx="60" ry="15" fill="#9a5af0" opacity="0.3"></ellipse>
+              <rect x="92" y="22" width="16" height="12" rx="3" fill="#7a5ab0"></rect>
+              <circle cx="100" cy="106" r="64" fill="url(#bwatch)" stroke="#8f6fd0" stroke-width="3"></circle>
+              <circle cx="100" cy="106" r="64" fill="none" stroke="#bd94ff" stroke-width="6" stroke-dasharray="130 402" stroke-linecap="round" transform="rotate(-90 100 106)"></circle>
+              <text x="100" y="126" text-anchor="middle" font-size="62" font-weight="900" fill="#e9d4ff" font-family="Pretendard, sans-serif">5</text>
+            </svg>
+          </div>
+          <div class="bs-content">
+            <div class="bs-eyebrow"><span style="color:#bd94ff; font-size:14px;">⏱</span> 수량 마감제</div>
+            <div class="bs-title">다 채워지면<br><span class="bs-hl-p">5초 후 자동 오픈</span></div>
+            <div class="bs-sub">순서 조작이 불가능한<br>구조로 설계했습니다.</div>
+          </div>
+        </a>
+        <a class="banner-slide slide-3" href="#trust">
+          <div class="bs-visual">
+            <svg viewBox="0 0 200 200" fill="none">
+              <defs><linearGradient id="bshield" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"></stop><stop offset="0.5" stop-color="#f0b93c"></stop><stop offset="1" stop-color="#a9781c"></stop></linearGradient></defs>
+              <ellipse cx="100" cy="178" rx="58" ry="14" fill="#f0b93c" opacity="0.22"></ellipse>
+              <ellipse cx="100" cy="118" rx="80" ry="30" fill="none" stroke="#f0b93c" stroke-width="1.5" opacity="0.4" transform="rotate(-12 100 118)"></ellipse>
+              <path d="M100 32 L152 54 V106 C152 142 128 166 100 178 C72 166 48 142 48 106 V54 Z" fill="url(#bshield)" stroke="#fff3d0" stroke-width="2"></path>
+              <path d="M80 106 l14 15 28 -34" fill="none" stroke="#2a1c00" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="bs-content">
+            <div class="bs-eyebrow"><span style="color:#5aa8ff; font-size:14px;">🛡</span> TRUST</div>
+            <div class="bs-title">가장 안전하고<br><span class="bs-hl">가성비</span> 좋은 오리파</div>
+            <div class="bs-sub">확률과 경품 구성을<br>참여 전에 전부 공개합니다.</div>
+          </div>
+        </a>
+      </div>
+      <div class="banner-count" id="bannerCount">2/3</div>
+      <div class="banner-dots" id="bannerDots"><span class="d"></span><span class="d active"></span><span class="d "></span></div>
+    </div>
+  </div>
+
+  <div class="ticker-bar">
+    <div class="ticker-label"><span class="live-dot"></span>최근 당첨</div>
+    <div class="ticker-track" id="tickerTrack" style="animation-duration: 111s;"><div class="ticker-item"><span class="t-user">원피스 오리파</span><span><b>***으</b>님 OP-15 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***0</b>님 어비스아이 팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***봐</b>님 메가심포니아 팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 리자몽 V SAR VSTAR 유니버스 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 인페르노X 1박스 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">원피스 오리파</span><span><b>***으</b>님 OP-15 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***0</b>님 어비스아이 팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***봐</b>님 메가심포니아 팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 리자몽 V SAR VSTAR 유니버스 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 인페르노X 1박스 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div><div class="ticker-item"><span class="t-user">포켓몬 오리파</span><span><b>***1</b>님 메가 확장팩 인페르노X 1팩 (JP) 당첨</span></div></div>
+  </div>
+
+  <!-- 신뢰 배지(크림·카드성지 정식 거래처 문구)는 2026-09-11 대표 지시로 제거 -->
+
+  <!-- 진행 중인 이벤트 — 히어로 바로 아래 (2026-09-11 상단 이동), 피카유니버스 규격 이미지 카드. 이미지: ev-*.webp 1170×390 -->
+  <section class="block" id="eventSec" style="padding-top:18px; padding-bottom:14px;">
+    <div class="section-head">
+      <div><div class="eyebrow-sm">EVENT</div><h2>이벤트</h2></div>
+      <a class="see-all" href="events.html">더보기 →</a>
+    </div>
+    <div class="hs-wrap"><div class="ev-hscroll hs-drag" data-hs="1">
+      <!-- 배너 이미지에 문구가 포함되어 있어 HTML 텍스트 오버레이 없음. 상세: event-detail.html?e=… (출석은 기능 페이지로 직행) -->
+      <!-- 2026-10-25 심야 추첨 (임시 CSS 디자인 — 대표 배너 이미지 1170×390 오면 style 에 --ev-img 추가) · 처음부터 보이고(스냅이 첫 카드에 맞도록) v103 전·꺼짐이면 지움 -->
+      <!-- 2026-10-27 대표 배너 이미지 적용(ev-nightly.webp, 문구 포함) — 아래 글자 칸은 숨김(스크립트가 채우는 id 유지) -->
+      <a class="ev-slide" id="evNightHome" href="nightly.html" aria-label="심야 추첨 이벤트" style="display:block;--ev-img:url('ev-nightly.webp?v=20261027b');--ev-fallback:linear-gradient(120deg,#0E1B2E 0%,#132A3A 60%,#123A3A 100%); color:#fff; text-decoration:none;">
+        <span class="evs-text" style="display:none">
+          <span style="display:block; font-size:11.5px; font-weight:800; letter-spacing:.02em; color:#9FF5DF; white-space:nowrap">매일 <b id="evNhT">23:55</b> 참여 · <b id="evNhD">00:10</b> 발표</span>
+          <span style="display:block; font-size:18px; font-weight:900; line-height:1.3; margin-top:3px; white-space:nowrap">심야 추첨 <span style="color:#FFE08A" id="evNhP">10명 × 5,000P</span></span>
+        </span>
+      </a>
+      <a class="ev-slide ev-mint" href="event-detail.html?e=first-charge" style="--ev-img:url('ev-first-charge.webp')" aria-label="첫 충전 이벤트 — 최대 5만P 추가 지급"></a>
+      <a class="ev-slide ev-blue" href="attendance.html" aria-label="매일 출석체크 이벤트" style="--ev-img: url('ev-attendance.webp');"></a>
+      <a class="ev-slide ev-purple" href="event-detail.html?e=invite" aria-label="친구 초대 이벤트" style="--ev-img: url('ev-invite.webp');"></a>
+      <a class="ev-slide ev-gold" href="event-detail.html?e=membership" aria-label="회원 등급제" style="--ev-img: url('ev-membership.webp');"></a>
+      <a class="ev-slide ev-mint" href="event-detail.html?e=sns-review" aria-label="당첨 상품 인증 이벤트" style="--ev-img: url('ev-sns-review.webp');"></a>
+    </div><div class="hs-arrow l" aria-hidden="true" hidden="">‹</div><div class="hs-arrow r" aria-hidden="true">›</div></div>
+    <script>
+      // 2026-11-06 속도: 옆으로 넘겨야 보이는 이벤트 배너 4장은 첫 화면을 다 받은 뒤(또는 넘기기 시작할 때) 받기
+      (function(){
+        var go=function(){ document.querySelectorAll('.ev-slide[data-ev-img]').forEach(function(el){ el.style.setProperty('--ev-img',"url('"+el.getAttribute('data-ev-img')+"')"); el.removeAttribute('data-ev-img'); }); };
+        var rail=document.querySelector('.ev-hscroll');
+        if(rail){ rail.addEventListener('touchstart',go,{once:true,passive:true}); rail.addEventListener('scroll',go,{once:true,passive:true}); }
+        if(document.readyState==='complete') setTimeout(go,1500); else window.addEventListener('load',function(){ setTimeout(go,1500); },{once:true});
+      })();
+    </script>
+  </section>
+
+  <!-- UI 2.0 (2026-10-23 대표 지시): 시리즈별 가로 스크롤 섹션 → 카테고리 탭 + 정렬 + 1줄 1개 카드 목록 하나로 (camp-feed.js, 오리파 탭과 공용) -->
+  <section id="campSec" style="border-bottom:1px solid var(--line);">
+    <div id="campFeed"><div class="cf-sorts" style="display:none"><div class="cf-sort on" data-s="hot">인기순</div><div class="cf-sort" data-s="new">최신순</div><div class="cf-sort" data-s="low">저가순</div><div class="cf-sort" data-s="high">고가순</div></div><div class="cf-list cf-groups"><div class="cf-sec" data-sec="event"><div class="cf-sec-h"><h3>이벤트<em>2</em></h3><a class="cf-more" data-c="event" role="button">전체 보기 ›</a></div><div class="cf-g2"><a class="cf-s" data-id="f4e7d66c-ac63-4b6e-8b91-54d47da9a263" data-cat="event" href="oripa-v2.html?id=f4e7d66c-ac63-4b6e-8b91-54d47da9a263">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1787861333577_p6d97o.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag">Event</span></div></div>
+        <div class="cf-sb"><div class="cf-st">100원의 행복 4회차 1회 참여 한정 이벤트 </div><div class="cf-sp">100<em>원</em></div><div class="cf-sl">남은 수 <b>304</b>/1,000</div><div class="cf-bar"><i style="width:69.60%"></i></div></div></a><a class="cf-s" data-id="929b3cf1-de4d-440c-8172-7bb4d71a6680" data-cat="event" href="daily-charge.html">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;event-img/dc_main.jpg?v=2&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">꽝없는 데일리 충전</div><div class="cf-sp">1만~100만<em>원</em></div><div class="cf-sl n">하루 1회 · 보너스 포인트</div></div></a></div></div><div class="cf-sec" data-sec="premium"><div class="cf-sec-h"><h3>프리미엄<em>4</em></h3><a class="cf-more" data-c="premium" role="button">전체 보기 ›</a></div><div class="cf-g2"><a class="cf-s" data-id="cf03e113-0809-47b6-b2de-f8022e886b9d" data-cat="premium" href="oripa-v2.html?id=cf03e113-0809-47b6-b2de-f8022e886b9d">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1791828981739_zcv8xj.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag">NEW</span></div></div>
+        <div class="cf-sb"><div class="cf-st">PSA10 당첨 확률 100% 프리미엄 오리파 2회차</div><div class="cf-sp">150,000<em>원</em></div><div class="cf-sl">남은 수 <b>37</b>/180</div><div class="cf-bar"><i style="width:79.44%"></i></div></div></a><a class="cf-s" data-id="70225636-1f30-4e09-aac9-391174130b44" data-cat="premium" href="oripa-v2.html?id=70225636-1f30-4e09-aac9-391174130b44">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1794765686879_733jgn.th.jpg&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">PSA10 당첨 확률 100% 시그니처 오리파 3회차</div><div class="cf-sp">220,000<em>원</em></div><div class="cf-sl">남은 수 <b>167</b>/190</div><div class="cf-bar"><i style="width:12.11%"></i></div></div></a><a class="cf-s" data-id="104f41e1-0739-45c0-a787-ab7b7a43d4a4" data-cat="premium" href="oripa-v2.html?id=104f41e1-0739-45c0-a787-ab7b7a43d4a4">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1794766784247_s7cgz2.th.jpg&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">PSA10 당첨 확률 100% 크라운 오리파 1회차</div><div class="cf-sp">500,000<em>원</em></div><div class="cf-sl">남은 수 <b>98</b>/110</div><div class="cf-bar"><i style="width:10.91%"></i></div></div></a><a class="cf-s" data-id="ccdadd82-a397-45fa-8728-d2d49f5a5a84" data-cat="premium" href="oripa-v2.html?id=ccdadd82-a397-45fa-8728-d2d49f5a5a84">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1794766261626_xfhlsq.th.jpg&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">PSA10 당첨 확률 100% 그레일 오리파 3회차</div><div class="cf-sp">300,000<em>원</em></div><div class="cf-sl">남은 수 <b>156</b>/160</div><div class="cf-bar"><i style="width:2.50%"></i></div></div></a></div></div><div class="cf-sec" data-sec="pokemon"><div class="cf-sec-h"><h3>포켓몬<em>6</em></h3><a class="cf-more" data-c="pokemon" role="button">전체 보기 ›</a></div><div class="cf-g2"><a class="cf-s" data-id="1f072ef0-8ff4-4f65-a66e-fb1f985303f3" data-cat="pokemon" href="oripa-v2.html?id=1f072ef0-8ff4-4f65-a66e-fb1f985303f3">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1790869636356_4q7q2x.jpg&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">990원의 행복(2회차) ALL PSA10 피카츄에디션</div><div class="cf-sp">990<em>원</em></div><div class="cf-sl">남은 수 <b>5,731</b>/20,000</div><div class="cf-bar"><i style="width:71.34%"></i></div></div></a><a class="cf-s" data-id="341411df-bc10-43aa-a5c0-45ba8c3e4aa5" data-cat="pokemon" href="oripa-v2.html?id=341411df-bc10-43aa-a5c0-45ba8c3e4aa5">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1792430112752_2ik0eo.jpg&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">포켓몬 JP 박스 프로모 역대급 라인업(990원)</div><div class="cf-sp">990<em>원</em></div><div class="cf-sl">남은 수 <b>9,505</b>/30,000</div><div class="cf-bar"><i style="width:68.32%"></i></div></div></a><a class="cf-s" data-id="05d1fe7f-5bf9-426f-ac31-8bad10ed00e2" data-cat="pokemon" href="oripa-v2.html?id=05d1fe7f-5bf9-426f-ac31-8bad10ed00e2">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1793259879707_43c0s9.th.jpg&quot;);"></div>
+          </div>
+        <div class="cf-sb"><div class="cf-st">나만없어 HIT 카드</div><div class="cf-sp">8,900<em>원</em></div><div class="cf-sl">남은 수 <b>566</b>/1,600</div><div class="cf-bar"><i style="width:64.63%"></i></div></div></a><a class="cf-s" data-id="c87d4de4-a37b-46a0-9ade-c9753bd86098" data-cat="pokemon" href="oripa-v2.html?id=c87d4de4-a37b-46a0-9ade-c9753bd86098">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1787432130065_wy2vhw.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag">2탄</span></div></div>
+        <div class="cf-sb"><div class="cf-st">ALL PSA10🔥 다시 돌아온 맥날 프로모 에디션</div><div class="cf-sp">1,900<em>원</em></div><div class="cf-sl">남은 수 <b>4,470</b>/10,000</div><div class="cf-bar"><i style="width:55.30%"></i></div></div></a></div></div><div class="cf-sec" data-sec="onepiece"><div class="cf-sec-h"><h3>원피스<em>3</em></h3><a class="cf-more" data-c="onepiece" role="button">전체 보기 ›</a></div><div class="cf-g2"><a class="cf-s" data-id="658f9554-e8bc-4f4d-ba21-d686d26d30d0" data-cat="onepiece" href="oripa-v2.html?id=658f9554-e8bc-4f4d-ba21-d686d26d30d0">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1794770646494_x1d8e3.th.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag">NEW</span></div></div>
+        <div class="cf-sb"><div class="cf-st">히로인즈 에디션</div><div class="cf-sp">5,000<em>원</em></div><div class="cf-sl">남은 수 <b>2,027</b>/2,500</div><div class="cf-bar"><i style="width:18.92%"></i></div></div></a><a class="cf-s" data-id="0abd447c-be35-4bde-9225-fcb3d747ee73" data-cat="onepiece" href="oripa-v2.html?id=0abd447c-be35-4bde-9225-fcb3d747ee73">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1794770663546_hzmyzf.th.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag">NEW</span></div></div>
+        <div class="cf-sb"><div class="cf-st">990원의 행복(2회차) 루피 에디션</div><div class="cf-sp">990<em>원</em></div><div class="cf-sl">남은 수 <b>16,987</b>/20,000</div><div class="cf-bar"><i style="width:15.07%"></i></div></div></a><a class="cf-s" data-id="6a81767c-2253-48bc-ad43-3a4fbb0f07ec" data-cat="onepiece" href="oripa-v2.html?id=6a81767c-2253-48bc-ad43-3a4fbb0f07ec">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1794770692291_aa7n5y.th.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag">NEW</span></div></div>
+        <div class="cf-sb"><div class="cf-st">사황·전설 에디션</div><div class="cf-sp">10,000<em>원</em></div><div class="cf-sl">남은 수 <b>944</b>/1,000</div><div class="cf-bar"><i style="width:5.60%"></i></div></div></a></div></div><div class="cf-sec" data-sec="original"><div class="cf-sec-h"><h3>고환원<em>3</em></h3><a class="cf-more" data-c="original" role="button">전체 보기 ›</a></div><div class="cf-g2"><a class="cf-s" data-id="65b7eb5b-66b8-4215-87d9-074a9a9d4d0b" data-cat="original" href="oripa-v2.html?id=65b7eb5b-66b8-4215-87d9-074a9a9d4d0b">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1793046861464_njipvn.th.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag mvp">🏆 MVP 감사 상품</span></div></div>
+        <div class="cf-sb"><div class="cf-st">초가성비 100P보장 총 상품가액 7억원</div><div class="cf-sp">180<em>원</em></div></div></a><a class="cf-s" data-id="3ad1920b-5051-4da0-96c2-43d0a4bda60d" data-cat="original" href="oripa-v2.html?id=3ad1920b-5051-4da0-96c2-43d0a4bda60d">
+        <div class="cf-img"><div class="cf-photo" style="background-image: url(&quot;https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1793046913160_c02qf9.th.jpg&quot;);"></div>
+          <div class="cf-tags"><span class="cf-tag mvp">🏆 MVP 감사 상품</span></div></div>
+        <div class="cf-sb"><div class="cf-st">1/2 확률 1,000P지급 총 상품가액 26억원</div><div class="cf-sp">1,000<em>원</em></div></div></a><a class="cf-s" data-id="99a0898b-3665-4c16-b802-1389c11a400b" data-cat="original" href="oripa-v2.html?id=99a0898b-3665-4c16-b802-1389c11a400b">
+        <div class="cf-img"><div class="cf-photo" data-bg="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1793046967984_mfce5h.th.jpg"></div>
+          <div class="cf-tags"><span class="cf-tag mvp">🏆 MVP 감사 상품</span></div></div>
+        <div class="cf-sb"><div class="cf-st">1/3 확률 12,000P지급 총 상품가액 136억원</div><div class="cf-sp">5,000<em>원</em></div></div></a></div></div></div></div>
+  </section>
+  <script src="camp-feed.js?v=20261126a"></script>
+
+  <section class="block" id="shopSec" style="display: block; padding-bottom: 10px;">
+    <div class="section-head">
+      <div><div class="eyebrow-sm">POINT SHOP</div><h2>포인트샵</h2></div>
+      <a class="see-all" href="pointshop.html">더보기 →</a>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin:-8px 0 14px;line-height:1.6">모은 포인트와 크레딧으로 상품을 구매하세요. 전 상품 무료배송!</div>
+    <div class="hs-wrap"><div class="shop-hlist hs-drag" id="shopHList" data-hs="1">
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1788978272362_vq4dtf.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">30주년 셀레브레이션 1팩(JP)</div>
+            <div class="shp-stock">남은 수량 47개</div>
+            <div class="shp-price">20,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1788603743780_wwy3gy.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">30주년 셀레브레이션 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 26개</div>
+            <div class="shp-price">300,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1788977933310_expxvx.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">30주년 셀레브레이션 에브이·블래키 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 100개</div>
+            <div class="shp-price">250,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1790705368447_wuhsoq.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">덱 100 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 94개</div>
+            <div class="shp-price">35,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1790705632742_uvn58w.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">테라스탈 페스타 ex 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 49개</div>
+            <div class="shp-price">230,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1790705561652_ktoboh.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">메가드림 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 50개</div>
+            <div class="shp-price">170,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1790705509741_53tuo1.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">화이트플레어 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 50개</div>
+            <div class="shp-price">270,000<span>원</span></div></div>
+        </a>
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="https://eacpxovbushbznzcoxoh.supabase.co/storage/v1/object/public/images/img/1790705468468_2a7jgu.jpg"></div></div>
+          <div class="shp-body"><div class="shp-name">블랙볼트 1박스(JP)</div>
+            <div class="shp-stock">남은 수량 9개</div>
+            <div class="shp-price">275,000<span>원</span></div></div>
+        </a></div><div class="hs-arrow l" aria-hidden="true" hidden="">‹</div><div class="hs-arrow r" aria-hidden="true">›</div></div>
+  </section>
+
+  <!-- 이벤트 섹션은 2026-09-11 히어로 바로 아래로 이동 (#eventSec) -->
+
+  <section class="block">
+    <div class="section-head"><div><div class="eyebrow-sm">ANNOUNCEMENT</div><h2>공지사항</h2></div></div>
+    <div id="noticeList"><div class="list-row"><div style="display:flex; align-items:center;"><span class="tag notice">공지</span><span class="lr-title">이용약관 개정 안내 (11/14 시행): 실제 운영에 맞춰 본인확인 시점을 '오리파 참여 전'으로 변경합니다. 충전은 본인확인 전에도 가능합니다. 거부 의사가 없으면 동의로 보며, 원치 않으면 시행일 전까지 탈퇴할 수 있습니다.</span></div><span class="lr-date">11.07</span></div><div class="list-row"><div style="display:flex; align-items:center;"><span class="tag notice">공지</span><span class="lr-title">안드로이드 App 완료 + iOS App 출시 완료</span></div><span class="lr-date">11.07</span></div></div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="privacy.html"><b>개인정보처리방침</b></a>
+    </div>
+
+    <!-- 접이식: 기본은 닫힘, 눌러야 사업자정보가 펼쳐짐 -->
+    <button class="foot-toggle" id="footToggle" onclick="toggleFootInfo()" aria-expanded="false">
+      <span>이용약관 및 사업자정보</span>
+      <svg class="ft-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+    <div class="foot-info" id="footInfo">
+      <div class="fi-tabs">
+        <a href="terms.html">이용약관</a>
+        <a href="privacy.html">개인정보처리방침</a>
+      </div>
+      주식회사 선양그룹 · 대표 이희창 · 사업자등록번호 196-87-02329<br>
+      통신판매업신고번호 제 2022-서울강남-02036 호<br>
+      주소 서울특별시 강남구 논현로75길 15 501호<br>
+      고객센터 cs@oripa-korea.com<br>
+      호스팅 서비스 제공자 Cloudflare, Inc.<br>
+      고객센터 운영시간 평일 10:00 ~ 18:00
+    </div>
+
+    <div style="margin-top:16px;">© 2026 오리파코리아. All rights reserved.</div>
+  </footer>
+
+  <a class="chat-fab" href="javascript:void(0)" onclick="openInfoModal('contact')" aria-label="문의하기" style="display:none">   <!-- 2026-10-24 대표 지시: 홈에서 채팅 버튼 숨김(1,000회 버튼 가림) -->
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-4-1L3 20l1.1-4.2A8.5 8.5 0 1 1 21 11.5Z"></path></svg>
+  </a>
+
+  <nav class="bottom-nav">
+    <div class="bn-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"></path></svg>
+      홈
+    </div>
+    <a class="bn-item" href="campaigns.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M4 10h16M10 4v16"></path></svg>
+      오리파
+    </a>
+    <a class="bn-item" href="inventory.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8"></path><path d="M1 4h22v4H1z"></path><path d="M10 12h4"></path></svg>
+      보관함
+    </a>
+    <a class="bn-item" href="winners.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3h8v4a4 4 0 0 1-8 0V3Z"></path><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"></path><path d="M11 12v3M9 18h6l-1-3h-4Z"></path></svg>
+      당첨이력
+    </a>
+    <a class="bn-item" href="mypage.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path></svg>
+      마이
+    </a>
+  </nav>
+
+</div>
+
+<!-- search overlay -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-top">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    <input id="searchInput" placeholder="오리파, 카드, 용품을 검색해보세요" autofocus="" style="">
+    <button onclick="closeSearch()">닫기</button>
+  </div>
+  <div class="search-body">
+    <div class="search-label">인기 검색어</div>
+    <div class="search-chips">
+      <span onclick="runSearch('스페셜 박스')">스페셜 박스</span>
+      <span onclick="runSearch('레어 컬렉션')">레어 컬렉션</span>
+      <span onclick="runSearch('시크릿 박스')">시크릿 박스</span>
+      <span onclick="runSearch('익스팬션')">익스팬션</span>
+    </div>
+    <div id="searchResult"></div>
+  </div>
+</div>
+
+<!-- info modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet" id="modalSheet"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<style>
+  .search-overlay{position:fixed; inset:0; background:var(--bg); z-index:500; display:none; max-width:430px; margin:0 auto;}
+  .search-overlay.open{display:block;}
+  .search-top{display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid var(--line);}
+  .search-top input{flex:1; border:none; outline:none; font-size:14px; font-family:inherit; background:transparent; color:var(--ink);} .search-top input::placeholder{color:var(--faint);}
+  .search-top button{font-size:13px; font-weight:700; color:var(--muted); flex-shrink:0;}
+  .search-body{padding:20px 18px;}
+  .search-label{font-size:12px; font-weight:700; color:var(--muted); margin-bottom:10px;}
+  .search-chips{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;}
+  .search-chips span{font-size:12.5px; font-weight:600; padding:8px 13px; border-radius:20px; background:var(--surface); color:var(--ink);}
+  .search-result-item{padding:12px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:600; display:none; align-items:flex-end;}
+  .modal-overlay.open{display:flex;}
+  /* 모바일 주소창/홈 인디케이터를 감안해 dvh + safe-area 사용 (vh는 구형 브라우저 폴백) */
+  .modal-sheet{width:100%; max-width:430px; margin:0 auto; background:var(--paper); border-radius:20px 20px 0 0; padding:22px 20px calc(28px + env(safe-area-inset-bottom)); animation:slide-up .25s ease; max-height:85vh; max-height:85dvh; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  @keyframes slide-up{from{transform:translateY(100%);} to{transform:translateY(0);}}
+  .modal-title{font-size:16px; font-weight:800; margin-bottom:14px;}
+  .modal-body{font-size:13.5px; line-height:1.75; color:#333;}
+  .modal-body .compare-row{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:13px;}
+  .modal-body .compare-row span:first-child{color:var(--muted);}
+  .modal-body .compare-row span:last-child{font-weight:700;}
+  .modal-close{width:100%; background:var(--elev); color:#fff; padding:14px; border-radius:11px; font-size:14px; font-weight:700; margin-top:18px;}
+  .contact-item{display:flex; align-items:center; gap:12px; padding:14px; border:1px solid var(--line); border-radius:12px; margin-bottom:10px;}
+  .contact-item svg{flex-shrink:0;}
+  .contact-item .ci-t{font-size:13.5px; font-weight:700;}
+  .contact-item .ci-s{font-size:11.5px; color:var(--muted);}
+
+  /* ── 신뢰 배지 (카드 수급처) ── */
+  .trust-bar{display:flex; align-items:center; gap:9px; margin:22px 20px 0; padding:12px 14px; border:1px solid var(--accent-dim,#123029); background:rgba(62,207,174,.07); border-radius:12px;}
+  .trust-bar .tb-ic{flex:none; width:19px; height:19px; border-radius:50%; background:var(--accent,#3ECFAE); color:#06251C; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center;}
+  .trust-bar .tb-txt{font-size:12.5px; color:var(--muted,#A2AAB6); letter-spacing:-.02em;}
+  .trust-bar .tb-txt b{color:var(--ink,#F2F4F7); font-weight:800;}
+
+  /* ── 접속 팝업 ── */
+  #sitePopupOv{position:fixed; inset:0; background:rgba(0,0,0,.66); z-index:900; display:flex; align-items:center; justify-content:center; padding:24px; backdrop-filter:blur(2px);}
+  #sitePopupOv .sp-box{width:100%; max-width:340px; background:var(--paper,#0B0C0E); border:1px solid var(--line,#2B2E34); border-radius:18px; overflow:hidden; box-shadow:0 18px 60px rgba(0,0,0,.5);}
+  #sitePopupOv .sp-img{width:100%; display:block;}
+  #sitePopupOv .sp-body{padding:22px 20px 6px;}
+  #sitePopupOv .sp-title{font-size:17px; font-weight:800; color:var(--accent,#3ECFAE); margin-bottom:10px;}
+  #sitePopupOv .sp-content{font-size:13px; line-height:1.7; color:var(--ink,#F2F4F7);}
+  #sitePopupOv .sp-btns{display:flex; gap:8px; padding:16px 20px 20px;}
+  #sitePopupOv .sp-btns button{flex:1; padding:12px 0; border-radius:10px; font-size:12.5px; font-weight:700; cursor:pointer; border:none; font-family:inherit;}
+  #sitePopupOv .sp-today{background:transparent; color:var(--muted,#A2AAB6); border:1px solid var(--line-strong,#3C4048) !important;}
+  #sitePopupOv .sp-close{background:var(--accent,#3ECFAE); color:#06251C;}
+  .toast{position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); max-width:380px; width:88%; background:var(--elev); color:#fff; padding:14px 18px; border-radius:12px; font-size:13px; font-weight:600; text-align:center; z-index:700; opacity:0; transition:all .25s ease; pointer-events:none;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+
+<script>
+  document.getElementById('modalOverlay') && document.getElementById('modalOverlay').addEventListener('click', e=>{
+    if(e.target.id==='modalOverlay') closeInfoModal();
+  });
+</script>
+
+<script>
+  const ICONS = {
+    'thumb-1': {name:'WATER', svg:'<svg class="type-icon" viewBox="0 0 64 64"><path d="M32 8C20 24 12 34 12 44a20 20 0 0 0 40 0c0-10-8-20-20-36Z" fill="rgba(255,255,255,0.94)"/></svg>'},
+    'thumb-2': {name:'PSYCHIC', svg:'<svg class="type-icon" viewBox="0 0 64 64"><path d="M32 8c0 10 4 14 14 14-10 0-14 4-14 14 0-10-4-14-14-14 10 0 14-4 14-14Z" fill="rgba(255,255,255,0.94)"/></svg>'},
+    'thumb-3': {name:'FIRE', svg:'<svg class="type-icon" viewBox="0 0 64 64"><path d="M32 6C24 18 16 22 16 34a16 16 0 0 0 32 0c0-7-4-11-8-15 1 6-2 10-6 10s-6-4-6-9c0-6 2-9 4-14Z" fill="rgba(255,255,255,0.94)"/></svg>'},
+    'thumb-4': {name:'NATURE', svg:'<svg class="type-icon" viewBox="0 0 64 64"><path d="M50 14C34 14 18 26 18 46c20 0 32-16 32-32Z" fill="rgba(255,255,255,0.94)"/></svg>'},
+    'thumb-5': {name:'RARE', svg:'<svg class="type-icon" viewBox="0 0 64 64"><path d="M14 24 32 8l18 16-8 28H22Z" fill="none" stroke="rgba(255,255,255,0.94)" stroke-width="2.5" stroke-linejoin="round"/></svg>'},
+    'thumb-6': {name:'METAL', svg:'<svg class="type-icon" viewBox="0 0 64 64"><path d="M32 6 52 14v16c0 16-9 26-20 30-11-4-20-14-20-30V14L32 6Z" fill="none" stroke="rgba(255,255,255,0.94)" stroke-width="2.5"/></svg>'},
+  };
+
+  let bannerTimer = null, bannerCurrent = 0, bannerSlideCount = 0;
+  function bannerGoTo(i){
+    if(bannerSlideCount===0) return;
+    bannerCurrent = (i+bannerSlideCount)%bannerSlideCount;
+    const track = document.getElementById('bannerTrack');
+    const dotsWrap = document.getElementById('bannerDots');
+    const countEl = document.getElementById('bannerCount');
+    track.style.transform = `translateX(-${bannerCurrent*100}%)`;
+    [...dotsWrap.children].forEach((d,idx)=> d.classList.toggle('active', idx===bannerCurrent));
+    if(countEl) countEl.textContent = `${bannerCurrent+1}/${bannerSlideCount}`;
+  }
+  function initBannerCarousel(){
+    const track = document.getElementById('bannerTrack');
+    const dotsWrap = document.getElementById('bannerDots');
+    bannerSlideCount = track.children.length;
+    dotsWrap.innerHTML = '';
+    for(let i=0;i<bannerSlideCount;i++){
+      dotsWrap.insertAdjacentHTML('beforeend', `<span class="d ${i===0?'active':''}"></span>`);
+    }
+    bannerCurrent = 0; bannerGoTo(0);
+    if(bannerTimer) clearInterval(bannerTimer);
+    if(bannerSlideCount>1) bannerTimer = setInterval(()=> bannerGoTo(bannerCurrent+1), 4000);
+  }
+  (function(){
+    const el = document.getElementById('banner'); let startX=0;
+    el.addEventListener('touchstart', e=> startX=e.touches[0].clientX);
+    el.addEventListener('touchend', e=>{
+      const dx = e.changedTouches[0].clientX - startX;
+      if(dx>40) bannerGoTo(bannerCurrent-1); else if(dx<-40) bannerGoTo(bannerCurrent+1);
+    });
+  })();
+  initBannerCarousel();
+
+  // 관리자가 올린 배너(이미지)가 있으면 기본 슬라이드를 교체합니다. 없으면 기본 슬라이드 유지.
+  let bannerRevealed = false;
+  function revealBanner(){ if(bannerRevealed) return; bannerRevealed = true; const t=document.getElementById('bannerTrack'); if(t) t.style.opacity='1'; }
+  // 옛 기본 배너가 잠깐 노출되는 것 방지: 즉시 노출하지 않고, Firestore 배너가 결정된 뒤(loadBanners) 한 번에 노출.
+  // 로딩 중에는 배너 영역이 중립 다크(placeholder)로만 보임.
+  async function loadBanners(){
+    try{
+      const { supabase } = await window.__sbPromise;
+      const { data } = await supabase.from('banners').select('*');
+      const banners = (data||[]).map(b=>({ ...b, order:b.order }))
+        .filter(b=> b.active !== false && b.image)
+        .sort((a,b)=> (a.order||0) - (b.order||0));
+      if(banners.length > 0){
+        // 럭키 캠페인 링크 배너는 캠페인 정보(제목·개봉현황·가격)를 리팩식 오버레이로 표시
+        const campIds = banners.map(b=> (String(b.link||'').match(/oripa-v2\.html\?id=([0-9a-f-]{36})/)||[])[1]).filter(Boolean);
+        const campById = {};
+        if(campIds.length){
+          try{
+            const { data:cs } = await supabase.from('oripa_v2')
+              .select('id,name,price,orig_price,total_slots,sold_count,slots,status').in('id', campIds);
+            (cs||[]).forEach(c=>{ campById[c.id]=c; });
+          }catch(_){}
+        }
+        const ovHtml = (b)=>{
+          const cid=(String(b.link||'').match(/oripa-v2\.html\?id=([0-9a-f-]{36})/)||[])[1];
+          const c=cid&&campById[cid]; if(!c) return '';
+          const total=c.total_slots||((c.slots||[]).length)||1;
+          const filled=((c.slots||[]).length ? (c.slots||[]).filter(s=>s&&s.status&&s.status!=='open').length : (c.sold_count!=null?c.sold_count:0));   // v74: slots 없으면 sold_count(신규 슬롯리스)
+          const pct=Math.min(100, Math.round(filled/total*100));
+          const cnt=filled.toLocaleString();   // 2026-09-19: N 마스킹 해제 (정확한 개봉 수)
+          const price=c.price||0, orig=c.orig_price||0;
+          return `<div class="bs-ov">
+            <div class="bs-ov-title">${String(c.name||'').replace(/\n/g,' ')}</div>
+            <div class="bs-ov-row">
+              <div class="bs-ov-bar"><i style="width:${pct}%${barMin(filled, total)}"></i></div>
+              <span class="bs-ov-cnt">${bigSlots(total)?fmtMan(filled)+' / '+fmtMan(total):cnt+' / '+total.toLocaleString()}</span>
+              <span class="bs-ov-price">${orig>price?`<span class="dc">${Math.round((1-price/orig)*100)}%</span><span class="og">${orig.toLocaleString()}원</span>`:''}${price.toLocaleString()}원<small> / 1장</small></span>
+            </div>
+          </div>`;
+        };
+        const track = document.getElementById('bannerTrack');
+        track.innerHTML = banners.map(b=>{
+          const img = `<img class="bs-photo" src="${b.image}" alt="${b.title||'배너'}">${ovHtml(b)}`;
+          return b.link
+            ? `<a class="banner-slide" href="${b.link}">${img}</a>`
+            : `<div class="banner-slide">${img}</div>`;
+        }).join('');
+        initBannerCarousel();
+      }
+      // 업로드 배너가 있으면 그걸로, 없으면 기본 슬라이드로 — 결정된 뒤에 한 번에 노출(중간 전환 안 보이게)
+      revealBanner();
+    }catch(err){ console.error('배너 로드 실패:', err); revealBanner(); }
+  }
+  // 안전장치: 배너 로드가 지연/실패해도 3초 뒤엔 무조건 보여줌
+  setTimeout(revealBanner, 3000);
+
+  // 무료 응모권 이벤트 참여 현황 — 관리자가 만든 무료 이벤트 오리파(isFree)의 filled/slots
+  async function loadEventProgress(){
+    const txt = document.getElementById('eventProgressText');
+    const fill = document.getElementById('eventProgressFill');
+    if(!txt) return;
+    try{
+      const { supabase } = await window.__sbPromise;
+      const { data } = await supabase.from('oripa_products').select('*').eq('is_free', true);
+      const ev = (data||[]).map(p=>({ isFree:p.is_free, drawn:p.drawn, filled:p.filled, slots:p.slots, tiers:p.tiers }))
+        .find(p=> p.isFree && !p.drawn && (p.filled||0) < (p.slots||0));
+      const subEl = document.getElementById('signupEventSub');
+      if(ev){
+        const f = ev.filled||0, s = ev.slots||1;
+        txt.textContent = `${f} / ${s}`;
+        if(fill) fill.style.width = Math.min(100, Math.round(f/s*100)) + '%';
+        if(subEl){
+          const tiers = Array.isArray(ev.tiers) ? ev.tiers : [];
+          const prizeCnt = tiers.reduce((a,t)=> a + (Number(t.count)||1), 0);
+          const maxVal = tiers.reduce((m,t)=> Math.max(m, Number(t.value)||Number(t.valued)||0), 0);
+          const prizeTxt = prizeCnt>0
+            ? `${maxVal>0 ? `시세 약 ${(maxVal/10000).toLocaleString()}만원 (참고용) ` : ''}상품 ${prizeCnt}개가 걸려있어요.`
+            : '';
+          subEl.textContent = `가입 시 받은 무료 응모권으로 ${s}자리 한정 이벤트 오리파에 참여해보세요. ${prizeTxt}`.trim();
+        }
+      } else {
+        txt.textContent = '진행중인 이벤트 없음';
+        if(fill) fill.style.width = '0%';
+        if(subEl) subEl.textContent = '지금은 진행중인 무료 이벤트가 없어요. 가입하고 무료 응모권을 미리 받아두면 다음 이벤트에 바로 참여할 수 있어요.';
+      }
+    }catch(err){
+      txt.textContent = '- / -';
+      if(fill) fill.style.width = '0%';
+    }
+  }
+
+  // 오리파 상품 목록 — Firestore 'oripaProducts' 컬렉션에서 실시간으로 불러옵니다.
+  // (관리자 페이지에서 만들거나 수정한 상품이 여기 그대로 반영돼요)
+  let oripaData = [];
+
+  // 자동갱신 횟수를 다 채운(=자리가 다 찼고 더 이상 갱신되지 않는) 캠페인은 종료로 간주해 목록에서 제외
+  /* "N/M 회차" 표시 — 1회성 캠페인도 1/1 회차로 항상 노출 */
+  function roundLabel(p){
+    return `${p.roundNo || 1}/${p.autoRenewCount || 1} 회차`;
+  }
+
+  function isOripaEnded(p){
+    // 자리가 다 차도 남은 회차가 있으면 종료 아님 (다음 회차 카운트다운 중 → 계속 노출)
+    const full = (p.filled||0) >= (p.slots||0) && (p.slots||0) > 0;
+    const lastRound = (p.roundNo||1) >= (p.autoRenewCount||1);
+    return full && lastRound;
+  }
+
+  // 2026-10-21 대형 구좌(총 10만 자리↑) 카드 개봉 현황: 180px 카드에 맞게 '만' 단위 (소수 첫째 자리 내림 — 완판 전 '500만 / 500만' 방지)
+  //   + 1% 미만이면 막대 최소 2px. 총 10만 자리 미만 캠페인은 기존 표기 그대로.
+  function bigSlots(t){ return (Number(t)||0) >= 100000; }
+  function fmtMan(n){ n=Math.max(0, Math.floor(Number(n)||0)); if(n<10000) return n.toLocaleString(); return n<10000000 ? (Math.floor(n/1000)/10)+'만' : Math.floor(n/10000).toLocaleString()+'만'; }
+  function barMin(filled, total){ return (bigSlots(total) && filled>0 && filled/total<0.01) ? ';min-width:2px' : ''; }
+
+  // 2026-10-21 오리지널 오리파(대형 구좌) 카드 본문 — 막대 대신 ① 남은 메인히트(아직 안 나온 확정·랜덤히트 / 전체) ② 최근 당첨(가장 늦은 soldAt, 닉 ***끝자) ③ 개봉 수(작게)
+  //   CUR 경품은 'CUR(1,000P)' 로 표시. campaigns.html 에도 같은 함수
+  function megaEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function megaInfo(d){
+    const gs = (Array.isArray(d.guaranteed) ? d.guaranteed : []).filter(g=>g && typeof g==='object');
+    const at = g => (typeof g.soldAt==='number' ? g.soldAt : (Number(g.soldAt) || Date.parse(g.soldAt) || 0));
+    let last = null;
+    gs.forEach(g=>{ if(g.soldAt && at(g)>0 && (!last || at(g)>at(last))) last = g; });
+    const name = g => (g.cur===true || g.cur==='true') ? `CUR(${Number(g.pointValue!=null ? g.pointValue : (g.value||0)).toLocaleString()}P)` : String(g.name||'메인히트').replace(/\n/g,' ');
+    const nick = n => { let s=String(n||'').trim(); if(s.includes('@')) s=s.split('@')[0]; return s ? '***'+s.slice(-1) : '***'; };
+    return { left: gs.filter(g=>!g.soldAt).length, total: gs.length, win: last ? { nick: nick(last.nick), name: name(last) } : null };
+  }
+  function megaBodyHtml(d){
+    const m = megaInfo(d);
+    return `<div class="pc-mega">${m.total>0 ? `<div class="pm-main"><span>남은 메인히트</span> <span class="pm-v"><b>${m.left.toLocaleString()}</b> / ${m.total.toLocaleString()}</span></div>` : ''}`
+      + `<div class="pm-win">${m.win ? `<span class="pm-wl">최근 당첨</span> ${megaEsc(m.win.nick)} · ${megaEsc(m.win.name)}` : '첫 메인히트 주인공을 기다려요'}</div>`
+      + `<div class="pm-open">개봉 ${fmtMan(d.filled)} / ${fmtMan(d.slots)}</div></div>`;
+  }
+
+  // 총 경품가액: 각 등급 (시세 × 수량) 합계 — Last One 제도 폐지
+  function totalPrizeValue(p){
+    let sum = 0;
+    (p.tiers||[]).forEach(t=> sum += (t.value||0) * (t.count||1));
+    (p.guaranteed||[]).forEach(g=> sum += (g.value||0));   // 확정 지급 경품 포함
+    return sum;
+  }
+
+  // 즉시공개(V2) 상품을 홈 카드 형태로 불러옵니다. (기존 v1은 사용하지 않음)
+  async function loadOripaData(){
+    try{
+      const { supabase } = await window.__sbPromise;
+      // commits(해시 커밋 ~19KB)는 목록에서 안 쓰므로 제외 — 모바일 로딩 절감
+      // 테스트 전용 캠페인(v71): stats_exempt 계정에게만 노출 — 프로필 1회 조회 후 캐시
+      if(window.__isTesterP===undefined){
+        window.__isTesterP=(async()=>{
+          try{ const u=(await supabase.auth.getSession()).data?.session?.user; if(!u) return false;
+            const { data:pf }=await supabase.from('profiles').select('stats_exempt').eq('id',u.id).maybeSingle();
+            return !!(pf&&pf.stats_exempt);
+          }catch(_){ return false; }
+        })();
+      }
+      supabase.rpc('oripa_v2_close_expired').then(()=>{}, ()=>{});   // v82: 종료 시각 지난 캠페인 마감 처리 (함수 없으면 무시) · 2026-11-06 속도: 기다리지 않음 — 지난 캠페인은 아래 renderPopular 가 ends_at 으로 이미 숨김
+      // 2026-10-23 경량 목록(camp-feed loadLean) 먼저 — 실패하면(옛 DB 등) 아래 예전 전체 칸 조회·폴백 순서 그대로
+      let rows = (window.CampFeed && CampFeed.loadLean) ? await CampFeed.loadLean(supabase) : null, selErr = null;
+      if(!rows) ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+        .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed,open_mode,fullopen_results,badge_text,test_only,series,ends_at,end_reason,mega,created_at')
+        .order('sort_order',{ascending:true}));
+      if(selErr && /mega/.test(selErr.message||'')){   // v100 SQL 미적용 DB 폴백 (mega 없이 = 지금과 같음)
+        ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+          .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed,open_mode,fullopen_results,badge_text,test_only,series,ends_at,end_reason,created_at')
+          .order('sort_order',{ascending:true}));
+      }
+      if(selErr && /end_reason/.test(selErr.message||'')){   // v83 SQL 미적용 DB 폴백
+        ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+          .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed,open_mode,fullopen_results,badge_text,test_only,series,ends_at')
+          .order('sort_order',{ascending:true}));
+      }
+      if(selErr && /series|ends_at/.test(selErr.message||'')){   // v82 SQL 미적용 DB 폴백 (배포 순서 무관 안전)
+        ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+          .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed,open_mode,fullopen_results,badge_text,test_only')
+          .order('sort_order',{ascending:true}));
+      }
+      if(selErr && /test_only/.test(selErr.message||'')){   // v71 SQL 미적용 DB 폴백 (배포 순서 무관 안전)
+        ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+          .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed,open_mode,fullopen_results,badge_text')
+          .order('sort_order',{ascending:true}));
+      }
+      if(selErr && /badge_text/.test(selErr.message||'')){   // v69 SQL 미적용 DB 폴백 (배포 순서 무관 안전)
+        ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+          .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed,open_mode,fullopen_results')
+          .order('sort_order',{ascending:true}));
+      }
+      if(selErr && /open_mode/.test(selErr.message||'')){   // v54 SQL 미적용 DB 폴백 (배포 순서 무관 안전)
+        ({ data:rows, error:selErr } = await supabase.from('oripa_v2')
+          .select('id,name,price,orig_price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed')
+          .order('sort_order',{ascending:true}));
+      }
+      if(selErr && /orig_price/.test(selErr.message||'')){   // v50 SQL 미적용 DB 폴백 (배포 순서 무관 안전)
+        ({ data:rows } = await supabase.from('oripa_v2')
+          .select('id,name,price,total_slots,sold_count,round_no,auto_renew,status,sort_order,main_image,pack_image,tiers,slots,normal,last_one,guaranteed')
+          .order('sort_order',{ascending:true}));
+      }
+      oripaData = (rows||[]).map(d=>{
+        const data = { id:d.id, name:d.name, price:d.price, origPrice:d.orig_price, totalSlots:d.total_slots, roundNo:d.round_no,
+          status:d.status, mainImage:d.main_image, packImage:d.pack_image, tiers:d.tiers, slots:d.slots, lastOne:d.last_one, guaranteed:d.guaranteed||[] };
+        const slots = data.slots || [];
+        const total = data.totalSlots || slots.length || 1;
+        const filled = (slots.length ? slots.filter(s=> s && s.status && s.status!=='open').length : (d.sold_count!=null ? d.sold_count : 0));   // v74: slots 있으면 slots(레거시 럭키·풀오픈) / 없으면 sold_count(신규 순차개봉 슬롯리스)
+        const tiers = (data.tiers || []).map((t,i)=>({
+          rank: parseInt(t.grade,10) || (i+1),
+          name: t.name,
+          value: t.value || 0,
+          count: t.count || 1,
+          image: t.image || '',
+        }));
+        return {
+          id: d.id,
+          thumb: 'thumb-1',
+          title: data.name || '이름없는 오리파',
+          sub: '',
+          price: data.price || 0,
+          slots: total,
+          filled: filled,
+          roundNo: data.roundNo || 1,
+          autoRenewCount: d.auto_renew || 1,
+          mainImage: data.mainImage || (tiers[0] && tiers[0].image) || data.packImage || '',
+          isFree: false,
+          hidden: false,
+          sortOrder: (d.sort_order==null ? 9999 : d.sort_order),
+          status: data.status || 'live',
+          lastOne: data.lastOne || null,
+          lastOneValue: data.lastOne && data.lastOne.value || 0,
+          tiers,
+          guaranteed: data.guaranteed,
+          badgeText: (d.badge_text||'').trim(),   // v69 카드 뱃지 (New/Hot/Event…) — 회차 표시 대체
+          testOnly: d.test_only===true,           // v71 테스트 전용 (컬럼 없으면 undefined → 일반 취급)
+          dcCfg: (d.normal && typeof d.normal.dc==='object' && d.normal.dc) ? d.normal.dc : null,   // 2026-11-05 꽝없는 데일리 충전(홈 카드 1장으로 묶음)
+          series: d.series||'pokemon',            // v82 시리즈(pokemon/onepiece) — 컬럼 없으면 포켓몬
+          endsAt: d.ends_at||null,                // v82 카운트다운 종료 시각 (NULL=무기한)
+          endReason: d.end_reason||null,          // v83 종료 사유: 'time' 기한 종료 / 'hits' 히트 마감
+          mega: d.mega===true,                    // v100 대형 구좌 = 오리지널 오리파 (컬럼 없으면 false → 지금과 같음)
+          origPrice: d.orig_price || 0,
+          createdAt: d.created_at || null,        // UI 2.0 최신순 정렬
+          rawTiers: d.tiers || [], won: d.won || null,   // 2026-10-24 오리지널 카드 '남은 상품'(히트 지급 수)
+          openMode: d.open_mode || 'instant',   // v54 풀오픈
+          // 회차 사이(개봉 완료 → 다음 회차 대기): 마감 아님 — 곧 자동 재시작 (v58)
+          foNext: (d.open_mode==='fullopen') && d.status==='ended'
+                  && (d.round_no||1) < (d.auto_renew||1)
+                  && !(d.fullopen_results && d.fullopen_results.forced),
+        };
+      });
+      const __tester = await window.__isTesterP;                                // v71: 테스트 전용은 테스터에게만
+      oripaData = oripaData.filter(p => !p.testOnly || __tester)
+        .filter(p => p.status!=='hidden')                                       // 임시저장(비공개)은 노출 제외
+        .map(p => ({ ...p, ended: p.openMode==='fullopen'
+          ? (p.status==='ended' && !p.foNext)                                   // 풀오픈: 회차가 모두 소진(또는 강제마감)됐을 때만 마감
+          : ((p.status==='ended') || isOripaEnded(p)) }));                      // 종료돼도 숨기지 않고 '마감' 표시
+      // (2026-08-26) 홈 카드 확률 표시는 총 상품가액으로 교체됨 — 확률은 상세페이지에서만 노출
+    }catch(err){
+      console.error('오리파 목록 로드 실패:', err);
+      oripaData = [];
+    }
+  }
+
+  /*
+    인기 오리파 정렬 규칙:
+    1) 남은 자리가 적은(=마감 임박) 상품을 우선순위로 최대 5개까지 노출
+    2) 한 번 이 목록에 노출된 상품은 해당 회차가 종료(오픈)될 때까지 계속 유지되어야 함
+       → 실제 서비스에서는 서버에 "노출 고정(pinned) 여부"를 저장해두고,
+         새 상품이 아무리 마감에 임박해도 이미 노출된 회차를 밀어내지 않도록 처리 필요.
+         (이 정적 데모에서는 매 로드마다 남은자리 기준으로만 정렬합니다)
+
+    등수별 시세(tiers)는 관리자 페이지에서 몇 등까지든 자유롭게 추가/수정 가능하도록 설계되어 있어요.
+    1등 사진은 상단 비주얼(썸네일 배경) 자리에 들어갈 예정이라 별도 카드로 띄우지 않고,
+    2등부터는 비주얼 좌측 하단에 왼쪽→오른쪽 순서로 작은 카드가 붙습니다.
+  */
+  const TIER_COLORS = {2:'tier2', 3:'tier3', 4:'tier4', 5:'tier5'};
+  const popularList = document.getElementById('popularList');
+
+  // 핀볼 오리파 — 실제 오리파 카드와 동일한 형태로, pinballConfig의 1·2·3등 상품 사진/시세/이름 노출
+  // 핀볼 캠페인 목록 (다중). {id, cfg}. id=null 이면 기존 단일(pinballConfig/current)
+  let pinballCampaigns = [];
+  async function loadPinballCfg(){
+    const { supabase } = await window.__sbPromise;
+    // 다중 핀볼 캠페인(pinball_configs) 중 활성만 홈에 노출
+    try{
+      let { data } = await supabase.from('pinball_configs').select('*').eq('active', true).order('sort_order',{ascending:true});
+      { const __tester = await window.__isTesterP; data = (data||[]).filter(r => r.test_only !== true || __tester); }   // v90: 테스트 전용 핀볼은 테스터에게만
+      // v79: 캠페인별 RPC 2회(N+1) 대신 단일 RPC(pinball_home_state)로 앵커·판매회차 일괄 조회.
+      //   함수가 아직 없거나(42883/404) 배열이 아니면 null → 아래에서 기존 캠페인별 RPC로 폴백
+      const homeState = await (async ()=>{
+        if(!(data||[]).length) return null;
+        try{
+          let { data:hs, error } = await supabase.rpc('pinball_home_state');
+          if(error) return null;
+          if(typeof hs==='string'){ try{ hs=JSON.parse(hs); }catch(_){ return null; } }
+          if(!Array.isArray(hs)) return null;
+          const m=new Map(); hs.forEach(x=>{ if(x && x.id!=null) m.set(String(x.id), x); });
+          return m;
+        }catch(_){ return null; }
+      })();
+      pinballCampaigns = await Promise.all((data||[]).map(async r=>{
+        // 진행 회차 = 게임 페이지와 동일한 "시계 기준"(앵커부터 경과 시간 ÷ 회차 길이)
+        // 캠페인 종료·남은 회차는 "실제 판매된 회차(paid)" 기준 — 참여 없는 회차는 소모되지 않음(v31)
+        const durMs=(r.round_duration_sec||90)*1000, totalR=r.total_rounds||0;
+        let no=1, paid=0;
+        const hs = homeState ? homeState.get(String(r.id)) : null;
+        if(hs){
+          const a=Number(hs.anchor_ms)||0;
+          if(a>0){ no=Math.floor((Date.now()-a)/durMs)+1; if(no<1) no=1; }
+          paid=Number(hs.paid_rounds)||0;
+        }else{
+          try{
+            const { data:anchor }=await supabase.rpc('pinball_ensure_anchor', { p_ckey: r.id });
+            const a=Number(anchor)||0;
+            if(a>0){ no=Math.floor((Date.now()-a)/durMs)+1; if(no<1) no=1; }
+          }catch(_){}
+          try{
+            const { data:pd }=await supabase.rpc('pinball_paid_rounds', { p_campaign_id: String(r.id) });
+            paid=Number(pd)||0;
+          }catch(_){}
+        }
+        const isEnded = totalR>0 && paid>=totalR;
+        return { id:r.id, cfg:{
+          name:r.name||'핀볼 오리파', campaignCode:r.campaign_code, prizes:r.prizes||[],
+          pricePerBall:r.price_per_ball, origPricePerBall:r.orig_price_per_ball||0,
+          totalBalls:r.total_balls, company:r.company, map:r.map,
+          randomCardName:r.random_card_name, randomCardImage:r.random_card_image, mainImage:r.main_image||'', active:true,
+          badgeText:(r.badge_text||'').trim(),
+          totalRounds:totalR, roundNo: Math.min(paid+ (isEnded?0:1), totalR||9999), ended: isEnded,
+          createdAt:r.created_at||null, sortOrder:(r.sort_order==null ? 9999 : r.sort_order)
+        }};
+      }));
+    }catch(err){ console.warn('핀볼 설정 로드 실패:', err); pinballCampaigns=[]; }
+  }
+  function buildPinballCard(cfg, id){
+    cfg = cfg || {};
+    let prizes = Array.isArray(cfg.prizes)&&cfg.prizes.length ? cfg.prizes : [cfg.prize1,cfg.prize2].filter(Boolean);
+    if(!prizes.length) prizes = [{name:'1등 상품', value:0, image:''}];
+    const T = prizes.map((p,i)=>({ rank:i+1, name:p.name||`${i+1}등 상품`, value:p.value||0, image:p.image||'' }));
+    const price = cfg.pricePerBall || 5000;
+    const first = T[0] || {};
+    const showcase = T.filter(t=>t.rank>=2).map(t=> t.image ? `
+      <div class="card-mockup-sc ${TIER_COLORS[t.rank] || 'tier5'}">
+        <img class="sc-photo" loading="lazy" decoding="async" src="${t.image}" alt="${t.name}"><div class="sc-rank photo-rank">${t.rank}등</div>
+      </div>` : `
+      <div class="card-mockup-sc ${TIER_COLORS[t.rank] || 'tier5'}">
+        <div class="sc-shine"></div><div class="sc-rank">${t.rank}등</div>
+      </div>`).join('');
+    const priceGrid = T.map(t=>`
+      <div class="tier-price-cell">
+        <div class="tpc-rank-badge ${TIER_COLORS[t.rank] || 'tier1'}">${t.rank}등</div>
+        <div class="tpc-info"><div class="tpc-value">${(t.value||0).toLocaleString()}원</div><div class="tpc-name">${t.name}</div></div>
+      </div>`).join('') + `
+      <div class="tier-price-cell">
+        <div class="tpc-rank-badge lastone">🎴</div>
+        <div class="tpc-info"><div class="tpc-value">랜덤 일반카드</div><div class="tpc-name">당첨되지 않은 공 1개당 1장 지급</div></div>
+      </div>`;
+    const totalVal = T.reduce((s,t)=>s+(t.value||0),0);
+    const totalBalls = cfg.totalBalls || 100;
+    const hero = cfg.mainImage || first.image || '';
+    const visualBg = hero
+      ? `style="background-image:linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.1)), url('${hero}'); background-size:cover; background-position:center;"`
+      : '';
+    const href = 'game/index.html' + (id ? ('?id=' + encodeURIComponent(id)) : '');
+    const title = cfg.name || '핀볼 오리파';
+    return `
+      <a class="pc${cfg.ended?' pc-closed pc-noenter':''}"${cfg.ended?' aria-disabled="true" tabindex="-1"':` href="${href}"`}>
+        ${cfg.ended?`<div class="pc-ended-ov"><b>캠페인 마감</b></div>`:''}
+        <div class="pc-img">
+          ${hero?`<div class="pc-photo" data-src="${hero}"></div>`
+                :'<div class="pc-ph"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3ECFAE" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg></div>'}
+          ${cfg.badgeText ? `<div class="pc-tag2 rounds">${cfg.badgeText}</div>` : ''}
+        </div>
+        <div class="pc-body">
+          <div class="pc-title">${String(title).replace(/\n/g,'<br>')}</div>
+          <div class="pc-price" style="margin-top:10px">${(cfg.origPricePerBall>price)
+            ? `<span class="disc">${Math.round((1-price/cfg.origPricePerBall)*100)}%</span><span class="orig">${cfg.origPricePerBall.toLocaleString()}원</span>`
+            : `<span class="disc">공 1개</span>`}<span class="final">${price.toLocaleString()}<small>원</small></span></div>
+        </div>
+      </a>`;
+  }
+
+  // ── 모바일 오클릭 방지: 가로 스크롤(스냅 정착 포함) 직후의 탭은 클릭으로 치지 않음 ──
+  // 스와이프 후 목록이 스냅으로 미세하게 움직이는 동안 탭하면, 클릭 판정 시점에
+  // 손가락 아래로 옆 카드가 이동해 엉뚱한 캠페인이 열리는 문제(모바일 전용) 차단.
+  document.querySelectorAll('.oripa-list').forEach(list=>{
+    // ① 근본 원인 차단: 탭으로 카드(<a>)가 포커스되면 브라우저가 "잘려 보이는 카드를
+    //    다 보이게" 목록을 가로로 자동 스크롤함(화면 위로 살짝 잘리는 윗줄만 발생).
+    //    mousedown 기본동작(포커스)을 막으면 자동 스크롤이 사라지고 클릭은 정상 동작.
+    list.addEventListener('mousedown', e=>{ e.preventDefault(); });
+    // ② 보조 가드: 진짜 스와이프(큰 이동)가 진행 중일 때의 탭만 클릭에서 제외.
+    //    포커스로 인한 수 px 미세 보정은 무시해 정상 탭이 씹히지 않게 함.
+    let lastScroll=0, lastSL=list.scrollLeft;
+    list.addEventListener('scroll', ()=>{
+      const d=Math.abs(list.scrollLeft-lastSL); lastSL=list.scrollLeft;
+      if(d>12) lastScroll=Date.now();
+    }, {passive:true});
+    list.addEventListener('click', e=>{
+      if(Date.now()-lastScroll<150){ e.preventDefault(); e.stopPropagation(); }
+    }, true);
+  });
+
+  function applyKnockouts(){
+    // 풀배경 전면 채움 정책(2026-08-23): 이미지를 가공 없이 그대로 표시.
+    // (기존 검정배경 자동누끼는 풀배경 이미지의 어두운 부분에 구멍을 내는 부작용이 있어 중단)
+    document.querySelectorAll('.pc-photo[data-src]').forEach(el=>{
+      const s=String(el.dataset.src||'').replace(/\.tm\.(jpg|png|webp)$/, '.th.$1'); if(!s) return;   // 2026-10-22: 어드민이 함께 저장한 4:3 썸네일(480×360)
+      el.style.backgroundImage=`url('${s}')`;
+      el.removeAttribute('data-src');
+    });
+  }
+
+  // v82 PC 가로 슬라이드: 홈의 가로 스크롤 목록(.oripa-list/.ev-hscroll/.shop-hlist/.hscroll)을 마우스로 끌어 넘기고,
+  //   호버 시 좌우 화살표로 한 화면씩 이동. 드래그 중 클릭은 무시(카드가 실수로 열리지 않게). 터치 기기는 기존 스와이프 그대로.
+  (function(){
+    const fine = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    if(!fine) return;
+    function setup(list){
+      if(list.dataset.hs) return; list.dataset.hs='1';
+      list.classList.add('hs-drag');
+      const wrap=document.createElement('div'); wrap.className='hs-wrap';
+      list.parentNode.insertBefore(wrap, list); wrap.appendChild(list);
+      const mk=(dir)=>{ const b=document.createElement('div'); b.className='hs-arrow '+(dir<0?'l':'r'); b.textContent=dir<0?'‹':'›'; b.setAttribute('aria-hidden','true');
+        b.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); list.scrollBy({left:dir*Math.max(200,list.clientWidth*0.8), behavior:'smooth'}); }); wrap.appendChild(b); return b; };
+      const L=mk(-1), R=mk(1);
+      const upd=()=>{ const max=list.scrollWidth-list.clientWidth-2; L.hidden = list.scrollLeft<=2; R.hidden = max<=0 || list.scrollLeft>=max; };
+      list.addEventListener('scroll', upd, {passive:true}); new ResizeObserver(upd).observe(list); new MutationObserver(upd).observe(list,{childList:true}); upd();
+      // 마우스 드래그
+      let down=false, sx=0, sl=0, moved=false;
+      list.addEventListener('mousedown', e=>{ if(e.button!==0) return; down=true; moved=false; sx=e.pageX; sl=list.scrollLeft; });
+      window.addEventListener('mousemove', e=>{ if(!down) return; const dx=e.pageX-sx; if(!moved && Math.abs(dx)>5){ moved=true; list.classList.add('dragging'); } if(moved){ list.scrollLeft=sl-dx; e.preventDefault(); } });
+      window.addEventListener('mouseup', ()=>{ if(!down) return; down=false; if(moved){ setTimeout(()=>list.classList.remove('dragging'),0); } });
+      list.addEventListener('click', e=>{ if(moved){ e.preventDefault(); e.stopPropagation(); } }, true);
+      // 세로 휠 → 가로 이동 (목록 위에서만, 넘길 게 있을 때만)
+      list.addEventListener('wheel', e=>{ if(Math.abs(e.deltaY)<=Math.abs(e.deltaX)) return; const max=list.scrollWidth-list.clientWidth; if(max<=0) return;
+        const next=list.scrollLeft+e.deltaY; if((e.deltaY<0 && list.scrollLeft>0) || (e.deltaY>0 && list.scrollLeft<max)){ list.scrollLeft=next; e.preventDefault(); } }, {passive:false});
+    }
+    const boot=()=>document.querySelectorAll('.oripa-list, .ev-hscroll, .shop-hlist, .hscroll').forEach(setup);
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  })();
+
+  // v82 카운트다운 종료 — 남은 시간 문구 ("종료까지 4일 12:33") + 30초마다 갱신, 시각이 지나면 마감 카드로 다시 그림
+  function fmtLeft(ends){
+    const ms = +new Date(ends) - Date.now();
+    if(!(ms>0)) return '종료';
+    const d=Math.floor(ms/864e5), h=Math.floor(ms%864e5/36e5), m=Math.floor(ms%36e5/6e4);
+    return '종료까지 ' + (d>0 ? `${d}일 ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}` : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+  }
+  // UI 2.0 (2026-10-23): 홈 캠페인 = camp-feed.js 하나 (카테고리 탭·정렬·1줄 1개 카드). 30초마다 남은 시간 갱신, 끝난 캠페인이 있으면 다시 그림
+  //   2026-10-28 대표 지시: 홈 첫 화면은 '고환원' 칸이 선택된 상태로 (탭 순서·위치는 그대로, 고환원 캠페인이 없으면 camp-feed.js 가 전체로 돌림)
+  //   2026-11-04 대표 지시: 홈 첫 화면 = '이벤트' 칸 (이벤트 캠페인이 없으면 고환원 → 그것도 없으면 전체)
+  //   2026-11-23 대표 지시: 홈 첫 화면 = '전체' 칸(카테고리별 묶음) · 고환원 칸은 맨 뒤
+  const campFeed = window.CampFeed ? CampFeed.mount(document.getElementById('campFeed'), { tabsHost: document.getElementById('campTabs'), startCat: 'all' }) : null;
+  function tickCountdowns(){
+    const expired = campFeed ? campFeed.tick() : false;
+    if(expired && typeof oripaData!=='undefined' && oripaData.length) renderPopular();
+  }
+  setInterval(tickCountdowns, 30000);
+
+  function renderPopular(){
+    // v82: 종료 시각이 지난 캠페인은 마감 취급 (서버도 구매 차단)
+    oripaData.forEach(d=>{ if((d.endsAt && +new Date(d.endsAt) <= Date.now()) || d.endReason==='hits') d.ended = true; });
+    // 2026-10-03 대표 지시: 기한 종료·히트 마감·캠페인 종료(풀오픈 최종 종료 포함)는 홈에서 제외 — 당첨 이력에는 그대로 남음
+    const items = oripaData.filter(d=>!d.ended).map(d=>({
+      kind:'v2', id:d.id, title:d.title, img:d.mainImage, price:d.price, origPrice:d.origPrice,
+      filled:d.filled, slots:d.slots, series:d.series, mega:d.mega, openMode:d.openMode, foNext:d.foNext,
+      badgeText:d.badgeText, endsAt:d.endsAt, createdAt:d.createdAt, sortOrder:d.sortOrder, guaranteed:d.guaranteed,
+      tiers:d.rawTiers, won:d.won, normal: d.dcCfg ? { dc: d.dcCfg } : null,
+    }));
+    pinballCampaigns.filter(c=>!c.cfg.ended).forEach(c=>{
+      const cfg = c.cfg, p0 = (Array.isArray(cfg.prizes) && cfg.prizes[0]) || {};
+      items.push({ kind:'pinball', id:c.id, title:cfg.name, img:cfg.mainImage || p0.image || '', price:cfg.pricePerBall || 0,
+        origPrice:cfg.origPricePerBall || 0, badgeText:cfg.badgeText, createdAt:cfg.createdAt, sortOrder:cfg.sortOrder,
+        href:'game/index.html' + (c.id ? ('?id=' + encodeURIComponent(c.id)) : '') });
+    });
+    if(campFeed) campFeed.setItems(items);
+  }
+
+  // 실제 당첨 기록(winners)에서 최근 오픈 결과를 불러와 티커에 표시합니다.
+  async function loadTicker(){
+    const track = document.getElementById('tickerTrack');
+    try{
+      const { supabase } = await window.__sbPromise;
+      // 핀볼(등수 당첨) + 풀오픈(히트 당첨)을 함께 노출 — 랜덤 일반카드 제외 · 최신순 20명
+      // v79: 공개 뷰(winners_public: uid/주소 제외·닉네임 사전 마스킹)에서 읽고,
+      //   뷰가 아직 없으면(42P01 등) 기존 winners 테이블로 폴백
+      let fromView = false;
+      const fetchWinners = async ()=>{
+        const q = t=> supabase.from(t).select('*').gt('value', 0).order('created_at',{ascending:false}).limit(80);
+        let res = await q('winners_public');
+        if(res && !res.error && Array.isArray(res.data)){ fromView = true; return res; }
+        return await q('winners');
+      };
+      let [{ data }, foRes] = await Promise.all([
+        fetchWinners(),
+        supabase.from('oripa_v2').select('id,open_mode,test_only,series'),   // v71: 테스트 전용 당첨은 티커 제외 · series: 티커 라벨(포켓몬/원피스)
+      ]);
+      if(foRes && foRes.error && /series/.test(foRes.error.message||'')){   // v82 미적용 DB 폴백
+        foRes = await supabase.from('oripa_v2').select('id,open_mode,test_only');
+      }
+      if(foRes && foRes.error && /test_only/.test(foRes.error.message||'')){   // v71 미적용 DB 폴백
+        foRes = await supabase.from('oripa_v2').select('id,open_mode');
+      }
+      const v2rows = (foRes&&foRes.data)||[];
+      const foIds = new Set(v2rows.filter(r=>r.open_mode==='fullopen').map(r=>r.id));
+      const testIds = new Set(v2rows.filter(r=>r.test_only===true).map(r=>r.id));
+      const v2ids = new Set(v2rows.map(r=>r.id));
+      const opIds = new Set(v2rows.filter(r=>r.series==='onepiece').map(r=>r.id));   // 원피스 시리즈 캠페인
+      const ikIds = new Set(v2rows.filter(r=>r.series==='ichiban').map(r=>r.id));   // v94 이치방쿠지 시리즈 캠페인
+      const pmIds = new Set(v2rows.filter(r=>r.series==='premium').map(r=>r.id));   // v95 프리미엄 컬렉션 캠페인
+      const evIds = new Set(v2rows.filter(r=>r.series==='event').map(r=>r.id));     // 2026-11-04 이벤트 오리파
+      // 테스트 전용 캠페인 + 삭제된 캠페인(테스트 회차 등)의 당첨은 티커 제외
+      //   — 핀볼 당첨(rank 있음)은 oripa_v2에 없는 게 정상이라 그대로 통과
+      data = (data||[]).filter(w=> w.rank ? true : (v2ids.has(w.product_id) && !testIds.has(w.product_id)));
+      // 핀볼(등수)·풀오픈·럭키(즉시개봉) 히트 전부 노출 — 예전엔 럭키가 빠져 옛 기록만 돌았음 (2026-08-28 수정)
+      const all = (data||[])
+        .map(w=>({ productId:w.product_id, productName:w.product_name, rank:w.rank, nickname:w.nickname, value:w.value,
+          prizeName:w.prize_name,
+          createdAt: w.created_at ? { seconds: Math.floor(new Date(w.created_at).getTime()/1000) } : null }))
+        .filter(w=> (w.value||0) > 0 && !/랜덤|일반카드/.test(String(w.prizeName||'')));
+      // 최신 히트 당첨 20건 그대로 — 한 유저가 여러 건 당첨돼도 전부 노출 (2026-08-28 대표 확정)
+      const rows = all.slice(0, 20);
+      if(rows.length === 0){
+        const bar = track.closest('.ticker-bar');
+        if(bar) bar.style.display = 'none';
+        return;
+      }
+      // 닉네임 마스킹: 마지막 글자만 노출 (예: 계절 → ***절)
+      const maskNickRaw=(name)=>{ let s=String(name||"").trim(); if(s.includes("@")) s=s.split("@")[0]; if(!s) return "***"; return '***'+s.slice(-1); };
+      // winners_public 뷰는 닉네임이 이미 '***끝자' 형태라 재마스킹 생략(빈 닉 '***'→'****' 방지); 폴백(winners)만 마스킹
+      const maskNick=(name)=> fromView ? String(name||'***') : maskNickRaw(name);
+      const label=w=> w.rank ? (w.productName==='핀볼 룰렛'?'핀볼 오리파':(w.productName||'오리파'))
+        : (foIds.has(w.productId) ? '풀오픈 오리파' : (opIds.has(w.productId) ? '원피스 오리파' : (ikIds.has(w.productId) ? '이치방쿠지 오리파' : (pmIds.has(w.productId) ? '프리미엄 오리파' : (evIds.has(w.productId) ? '이벤트 오리파' : '포켓몬 오리파')))));   // 시리즈별 표기 ('럭키 오리파' 명칭 폐지 · v94 이치방쿠지 · v95 프리미엄)
+      // winners 테이블 값(상품명·닉네임·상품명)은 전부 HTML 이스케이프 후 삽입 (XSS 방지)
+      const escT=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      // 형식: ***오 (상품명) 당첨 — 등수 대신 상품명 (시간 표기 없음)
+      const one = rows.map(w=>
+        `<div class="ticker-item"><span class="t-user">${escT(label(w))}</span><span><b>${escT(maskNick(w.nickname))}</b>님 ${escT(String(w.prizeName||'히트').replace(/\n/g,' '))} 당첨</span></div>`
+      ).join('');
+      // 내역이 적어도 끊김·빈 화면 없이 흐르도록: 한 세트를 화면 폭 이상으로 반복한 뒤 2벌 연결(-50% 루프 이음새 유지)
+      track.innerHTML = one;
+      const setW = track.scrollWidth || 1;
+      const barW = (track.closest('.ticker-bar')||{}).clientWidth || 360;
+      const half = one.repeat(Math.max(1, Math.ceil((barW*1.2) / setW)));
+      track.innerHTML = half + half;
+      // 속도는 내용 길이에 비례한 등속(약 55px/s) — 아이템 수와 무관하게 일정한 체감 속도
+      track.style.animationDuration = Math.max(18, Math.round((track.scrollWidth/2) / 55)) + 's';
+    }catch(err){
+      console.error('당첨 티커 로드 실패:', err);
+      const bar = track.closest('.ticker-bar');
+      if(bar) bar.style.display = 'none';
+    }
+  }
+
+  /* ---- 공지사항 (Firestore 'notices' 연동 — 관리자(admin2)에서 등록) ---- */
+  const noticeList = document.getElementById('noticeList');
+  function renderNotices(list){
+    if(!list || list.length===0){
+      noticeList.innerHTML = '<p style="font-size:12.5px; color:var(--muted); padding:10px 0;">등록된 공지사항이 없습니다.</p>';
+      return;
+    }
+    noticeList.innerHTML = list.map(n=>{
+      const tagClass = n.tag==='event' ? 'event' : 'notice';
+      const tagLabel = n.tag==='event' ? '이벤트' : '공지';
+      return `<div class="list-row"><div style="display:flex; align-items:center;"><span class="tag ${tagClass}">${tagLabel}</span><span class="lr-title">${n.title||''}</span></div><span class="lr-date">${n.date||''}</span></div>`;
+    }).join('');
+  }
+  async function loadNotices(){
+    try{
+      const { supabase } = await window.__sbPromise;
+      const { data } = await supabase.from('notices').select('*').order('created_at',{ascending:false});
+      renderNotices(data||[]);
+    }catch(err){ console.error('공지 로드 실패:', err); renderNotices([]); }
+  }
+  renderNotices([]);
+
+  /* ---- 포인트샵 홈 미리보기 ---- */
+  async function loadShopPreview(){
+    try{
+      const { supabase } = await window.__sbPromise;
+      const { data } = await supabase.from('shop_products').select('id,name,image,price,stock')
+        .eq('active', true).order('sort',{ascending:true}).order('created_at',{ascending:false}).limit(8);
+      const list=data||[];
+      if(!list.length) return;   // 상품 없으면 섹션 숨김 유지
+      const escS=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      document.getElementById('shopHList').innerHTML=list.map(p=>`
+        <a class="shp-card" href="pointshop.html">
+          <div class="shp-img"><div class="im raw" data-src="${escS(p.image||'')}"></div>${p.stock<=0?'<div class="so">SOLD OUT</div>':''}</div>
+          <div class="shp-body"><div class="shp-name">${escS(p.name)}</div>
+            ${p.stock>0?`<div class="shp-stock${p.stock<=5?' low':''}">남은 수량 ${p.stock}개</div>`:''}
+            <div class="shp-price">${(p.price||0).toLocaleString()}<span>원</span></div></div>
+        </a>`).join('');
+      document.getElementById('shopSec').style.display='block';
+      // 상품 사진 배경 제거(pointshop.html psPrep와 동일 로직) — 완료 시 raw 해제
+      // 2026-11-06 속도: 이 칸이 화면 가까이 왔을 때 한 장씩만 처리 — 맨 아래 칸의 사진 8장을 첫 화면에서 받아 픽셀 계산까지 하느라 화면이 멈추던 문제
+      const shopEls=[...document.querySelectorAll('#shopHList .shp-img .im[data-src]')];
+      const shopStart=async()=>{
+        shopEls.forEach(el=>{ const u=el.dataset.src; if(u) el.style.backgroundImage=`url('${u.replace(/['"()\\\s]/g, c=>'%'+c.charCodeAt(0).toString(16).toUpperCase().padStart(2,'0'))}')`; });
+        for(const el of shopEls){
+          const u=el.dataset.src; if(!u) continue;
+          const d=await shpPrep(u).catch(()=>null);
+          if(d){ el.style.backgroundImage=`url('${d}')`; el.classList.remove('raw'); }
+          await new Promise(r=>setTimeout(r, 30));   // 한 장 끝날 때마다 화면이 숨 쉴 틈
+        }
+      };
+      if('IntersectionObserver' in window){
+        const shopWatch=()=>{ const shopIO=new IntersectionObserver((es)=>{ if(es.some(e=>e.isIntersecting)){ shopIO.disconnect(); shopStart(); } }, { rootMargin:'200px 0px' });
+          shopIO.observe(document.getElementById('shopSec')); };
+        Promise.resolve(window.__homeCardsP).then(shopWatch, shopWatch);   // 위쪽 카드가 그려진 뒤부터 봄 — 카드가 뜨기 전엔 이 칸이 화면 가까이 있는 것처럼 보이므로
+      }else shopStart();
+    }catch(err){ console.warn('포인트샵 미리보기 로드 실패:', err); }
+  }
+  /* 상품 사진 배경 제거 + 여백 크롭 (pointshop.html의 psPrep 복제본 — 두 파일 동시 수정 필요) */
+  const shpCache=new Map();
+  function shpPrep(url){
+    if(shpCache.has(url)) return shpCache.get(url);
+    const pr=new Promise((resolve)=>{
+      const img=new Image(); img.crossOrigin='anonymous';
+      img.onerror=()=>resolve(null);
+      img.onload=()=>{
+        try{
+          const MAX=640; const sc=Math.min(1, MAX/Math.max(img.naturalWidth,img.naturalHeight));
+          const w=Math.max(1,Math.round(img.naturalWidth*sc)), h=Math.max(1,Math.round(img.naturalHeight*sc));
+          const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d',{willReadFrequently:true});
+          x.drawImage(img,0,0,w,h);
+          const im=x.getImageData(0,0,w,h), d=im.data;
+          const corner=(cx,cy)=>{let r=0,g=0,b=0,n=0;for(let yy=cy;yy<cy+6;yy++)for(let xx=cx;xx<cx+6;xx++){const i=(yy*w+xx)*4;r+=d[i];g+=d[i+1];b+=d[i+2];n++;}return [r/n,g/n,b/n];};
+          const cs=[corner(0,0),corner(w-6,0),corner(0,h-6),corner(w-6,h-6)];
+          const bg=[0,1,2].map(k=>cs.reduce((s,c)=>s+c[k],0)/4);
+          const spread=Math.max(...cs.map(c=>Math.abs(c[0]-bg[0])+Math.abs(c[1]-bg[1])+Math.abs(c[2]-bg[2])));
+          if(spread>60){ resolve(null); return; }
+          const lum=(bg[0]*0.299+bg[1]*0.587+bg[2]*0.114);
+          const TH=(lum<60||lum>200)?52:36;
+          const isBg=i=>Math.abs(d[i]-bg[0])+Math.abs(d[i+1]-bg[1])+Math.abs(d[i+2]-bg[2])<=TH;
+          const mark=new Uint8Array(w*h); const st=[];
+          for(let xx=0;xx<w;xx++){st.push(xx, (h-1)*w+xx);} for(let yy=0;yy<h;yy++){st.push(yy*w, yy*w+w-1);}
+          while(st.length){const p=st.pop(); if(mark[p]) continue; if(!isBg(p*4)) continue; mark[p]=1;
+            const px=p%w, py=(p-px)/w;
+            if(px>0) st.push(p-1); if(px<w-1) st.push(p+1); if(py>0) st.push(p-w); if(py<h-1) st.push(p+w);}
+          let minx=w,miny=h,maxx=-1,maxy=-1, removed=0;
+          for(let p=0;p<w*h;p++){ if(mark[p]){ d[p*4+3]=0; removed++; } else { const px=p%w, py=(p-px)/w; if(px<minx)minx=px; if(px>maxx)maxx=px; if(py<miny)miny=py; if(py>maxy)maxy=py; } }
+          if(maxx<0 || removed<w*h*0.03){ resolve(null); return; }
+          x.putImageData(im,0,0);
+          const pad=Math.round(Math.max(w,h)*0.02);
+          const sx=Math.max(0,minx-pad), sy=Math.max(0,miny-pad), sw=Math.min(w,maxx+pad+1)-sx, sh=Math.min(h,maxy+pad+1)-sy;
+          const o=document.createElement('canvas'); o.width=sw; o.height=sh; o.getContext('2d').drawImage(c,sx,sy,sw,sh,0,0,sw,sh);
+          resolve(o.toDataURL('image/png'));
+        }catch(e){ resolve(null); }
+      };
+      img.src=url;
+    });
+    shpCache.set(url,pr); return pr;
+  }
+
+  /* ---- toast ---- */
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+
+  /* ---- search overlay ---- */
+  function getSearchIndex(){
+    return [
+      ...oripaData.filter(d=>!d.ended).map(d=>({type:'오리파', title:d.title, price:d.price.toLocaleString()+'원 / 1장', link:'oripa-v2.html?id='+d.id})),   // 종료 캠페인은 검색에서도 제외 (2026-10-03)
+    ];
+  }
+  function openSearch(){
+    document.getElementById('searchOverlay').classList.add('open');
+    document.getElementById('searchInput').focus();
+  }
+  function closeSearch(){
+    document.getElementById('searchOverlay').classList.remove('open');
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResult').innerHTML = '';
+  }
+  function runSearch(q){
+    document.getElementById('searchInput').value = q;
+    const matches = getSearchIndex().filter(x=> x.title.includes(q));
+    const box = document.getElementById('searchResult');
+    if(matches.length===0){
+      box.innerHTML = `<div class="search-result-item">"${q}"에 대한 검색 결과가 없어요.</div>`;
+      return;
+    }
+    box.innerHTML = matches.map(m=>`
+      <a class="search-result-item" href="${m.link}" style="display:flex; justify-content:space-between; align-items:center; color:inherit; text-decoration:none;">
+        <div><div style="font-weight:700;">${m.title}</div><div style="font-size:11px; color:var(--muted);">${m.type}</div></div>
+        <div class="num" style="font-size:12.5px;">${m.price}</div>
+      </a>
+    `).join('');
+  }
+  document.getElementById('searchInput').addEventListener('input', e=>{
+    if(e.target.value.trim()) runSearch(e.target.value.trim());
+    else document.getElementById('searchResult').innerHTML = '';
+  });
+
+  /* ---- info modal ---- */
+  const infoContent = {
+    compare: {
+      title:'오리파 vs 단품 구매',
+      body:`
+        <div class="compare-row"><span>가격 부담</span><span>오리파가 더 낮음</span></div>
+        <div class="compare-row"><span>원하는 카드 확정</span><span>단품 구매가 확실</span></div>
+        <div class="compare-row"><span>기대값</span><span>상품마다 다름</span></div>
+        <div class="compare-row"><span>재미 요소</span><span>오리파가 더 큼</span></div>
+        <p style="margin-top:14px; color:var(--muted); font-size:12.5px;">확실하게 원하는 카드가 있다면 단품 구매를, 합리적인 가격에 다양한 카드를 노려보고 싶다면 오리파를 추천드려요.</p>
+      `
+    },
+    price: {
+      title:'내 카드 시세는?',
+      body:`<p>카드 시세 조회 기능은 현재 준비 중이에요. 오픈되면 보유하신 카드의 실시간 거래가를 바로 확인하실 수 있어요.</p>`
+    },
+    buyback: {
+      title:'찾으시는 카드가 없나요?',
+      body:`<p>원하시는 카드를 알려주시면 저희가 직접 매입·소싱해 드려요. 아래 이메일로 문의해 주세요.</p>
+        <a href="mailto:cs@oripa-korea.com" class="contact-item" style="margin-top:14px; color:inherit; text-decoration:none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+          <div><div class="ci-t">이메일 문의</div><div class="ci-s">cs@oripa-korea.com</div></div>
+        </a>`
+    },
+    contact: {
+      title:'무엇을 도와드릴까요?',
+      body:`
+        <p style="margin-bottom:14px;">문의는 이메일로 받고 있어요. 아래를 누르면 메일 작성 화면이 열려요.</p>
+        <a href="mailto:cs@oripa-korea.com" class="contact-item" style="color:inherit; text-decoration:none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+          <div><div class="ci-t">이메일 문의</div><div class="ci-s">cs@oripa-korea.com</div></div>
+        </a>
+        <p style="margin-top:12px; color:var(--muted); font-size:12px;">평일 10:00 - 18:00 순차적으로 답변드려요. 주문·배송 문의는 주문번호를 함께 적어주시면 빠르게 도와드릴 수 있어요.</p>
+      `
+    }
+  };
+  function openInfoModal(key){
+    const c = infoContent[key];
+    document.getElementById('modalSheet').innerHTML = `
+      <div class="modal-title">${c.title}</div>
+      <div class="modal-body">${c.body}</div>
+      <button class="modal-close" onclick="closeInfoModal()">닫기</button>
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeInfoModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+
+  // 푸터 사업자정보 접기/펼치기
+  function toggleFootInfo(){
+    const btn = document.getElementById('footToggle');
+    const box = document.getElementById('footInfo');
+    const open = !box.classList.contains('open');
+    box.classList.toggle('open', open);
+    btn.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+  }
+</script>
+
+<script type="module">
+  // 2026-10-25 심야 추첨 띠 (위 #nightStrip)
+  import { supabase as _nsb } from './supabase-init.js';
+  (function(){
+    const el=document.getElementById('nightStrip'), tx=document.getElementById('nightStripT'), card=document.getElementById('evNightHome'); if(!el) return;
+    let S=null, at=0, skew=0;
+    const min = hm => { const p=String(hm||'').split(':'); return (+p[0])*60+(+p[1]); };
+    async function get(){
+      try{ const c=JSON.parse(sessionStorage.getItem('oc_night')||'null'); if(c && Date.now()-c.at<600000){ S=c.s; at=c.at; skew=c.skew||0; return; } }catch(_){}
+      try{ const { data, error } = await _nsb.rpc('nightly_state'); if(error || !data) { S=null; return; }
+        S={ enabled:data.enabled, openAt:data.openAt, closeAt:data.closeAt, drawAt:data.drawAt||data.closeAt, winners:data.winners, points:data.points }; at=Date.now(); skew=+new Date(data.now)-Date.now();
+        try{ sessionStorage.setItem('oc_night', JSON.stringify({ s:S, at, skew })); }catch(_){} }catch(_){ S=null; }
+    }
+    function paint(){
+      if(!S || !S.enabled){ el.style.display='none'; if(card) card.style.display='none'; return; }
+      const nf=n=>Number(n||0).toLocaleString('ko-KR'), prize=`${nf(S.winners)}명 × ${nf(S.points)}P`;
+      if(card && !card._filled){ card._filled=true;   // 홈 이벤트 줄 카드 = 켜져 있으면 항상 (문구만 설정값으로)
+        document.getElementById('evNhT').textContent=S.openAt; document.getElementById('evNhD').textContent=S.drawAt; document.getElementById('evNhP').textContent=prize; }
+      const k=new Date(Date.now()+skew+9*3600e3), now=k.getUTCHours()*60+k.getUTCMinutes()+k.getUTCSeconds()/60;
+      // 띠 = 시작 5분 전 ~ 발표까지: 곧 시작 → 진행 중(마감까지) → 참여 마감(발표까지)
+      const o=min(S.openAt), c=min(S.closeAt), d=min(S.drawAt), rel=x=>((x-(o-5))%1440+1440)%1440, cs=rel(c), ds=Math.max(cs, rel(d));
+      const r=rel(now); if(r>=ds){ el.style.display='none'; return; }
+      el.style.display='flex';
+      const mmss=m=>{ const s=Math.max(0,Math.round(m*60)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
+      if(r<5) tx.textContent=`심야 추첨 곧 시작 · ${S.openAt} 오픈 · ${prize}`;
+      else if(r<cs) tx.textContent=`심야 추첨 진행 중 · 마감까지 ${mmss(cs-r)} · ${prize}`;
+      else tx.textContent=`심야 추첨 참여 마감 · ${S.drawAt} 발표까지 ${mmss(ds-r)}`;
+    }
+    get().then(paint); setInterval(paint, 1000); setInterval(()=>get().then(paint), 600000);
+  })();
+
+  import { supabase, signOutUser } from './supabase-init.js';
+  window.__sbPromise = Promise.resolve({ supabase });
+  window.__homeCardsP = window.__sbPromise.then(()=> Promise.all([loadOripaData(), loadPinballCfg()]).then(renderPopular));
+  // 2026-11-06 앱은 뒤로가기 때 페이지를 새로 그림 → 홈에서 보던 위치로 되돌림(크롬은 브라우저가 화면을 그대로 복원해 이 코드가 다시 돌지 않음)
+  (function(){
+    const K = 'oc_home_y';
+    addEventListener('pagehide', ()=>{ try{ sessionStorage.setItem(K, String(Math.round(scrollY))); }catch(_){} });
+    let back = false, y = 0, touched = false;
+    try{ const n = performance.getEntriesByType('navigation')[0]; back = !!n && n.type==='back_forward'; if(sessionStorage.getItem('oc_home_back')==='1'){ back = true; sessionStorage.removeItem('oc_home_back'); } y = +sessionStorage.getItem(K) || 0; }catch(_){}   // oc_home_back: 아이폰 앱의 '<'(2026-11-07, supabase-init.js)
+    if(!back || y<=0) return;
+    addEventListener('touchstart', ()=>{ touched = true; }, { once:true, passive:true });   // 손가락으로 이미 움직이면 끌어당기지 않음
+    window.__homeCardsP.then(()=> requestAnimationFrame(()=>{ if(!touched) try{ window.scrollTo({ top:y, behavior:'instant' }); }catch(_){} }), ()=>{});
+  })();
+  window.__sbPromise.then(()=> loadTicker());
+
+  // ── 접속 팝업 (어드민 팝업 관리 연동: active + 노출기간 내 최신 1건) ──
+  async function loadPopup(){
+    try{
+      const today = new Date(Date.now() + 9*3600*1000).toISOString().slice(0,10);   // 2026-11-06 한국 날짜(0시 기준) — 예전 UTC 는 오전 9시에 날짜가 바뀌어 새벽 등록 팝업이 안 떴음
+      const { data } = await supabase.from('popups').select('*')
+        .eq('active', true).order('created_at', { ascending:false }).limit(10);
+      const p = (data||[]).find(x=>
+        (!x.starts_at || x.starts_at <= today) && (!x.ends_at || x.ends_at >= today));
+      if(!p) return;
+      // 2026-11-09 대표 지시: '앱 출시' 안내 팝업은 우리 앱(안드로이드·아이폰) 안에서는 안 띄움 — 제목에 '앱' + 출시/설치/다운 이 들어간 팝업만
+      try{ const nativeApp = !!(window.androidBridge || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()));
+        if(nativeApp && /앱/.test(String(p.title||'')) && /출시|설치|다운/.test(String(p.title||''))) return; }catch(_){}
+      if(localStorage.getItem('popupHide_'+p.id) === today) return;   // 오늘 하루 보지 않기
+      try{ if(sessionStorage.getItem('popupSeen_'+p.id)) return; }catch(_){}   // 2026-11-06 닫거나 링크로 이동했으면 앱·브라우저를 다시 열 때까지 다시 띄우지 않음
+      const markSeen = ()=>{ try{ sessionStorage.setItem('popupSeen_'+p.id, '1'); }catch(_){} };
+      const link = String(p.link||'').trim();
+      const goUrl = (/^https:\/\//i.test(link) || /^\/(?!\/)/.test(link) || /^[\w-]+\.html([?#].*)?$/i.test(link)) ? link : '';   // 사이트 안 주소·https 만 허용
+      const esc = s=>String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      const ov = document.createElement('div');
+      ov.id = 'sitePopupOv';
+      ov.innerHTML = `
+        <div class="sp-box">
+          ${p.image ? `<img class="sp-img" loading="lazy" decoding="async" src="${esc(p.image)}" alt="">` : ''}
+          <div class="sp-body">
+            <div class="sp-title">${esc(p.title)}</div>
+            ${p.content ? `<div class="sp-content">${esc(p.content).replace(/\n/g,'<br>')}</div>` : ''}
+          </div>
+          <div class="sp-btns">
+            <button class="sp-today">오늘 하루 보지 않기</button>
+            <button class="sp-close">닫기</button>
+          </div>
+        </div>`;
+      document.body.appendChild(ov);
+      const kill = ()=>{ markSeen(); ov.remove(); };
+      ov.querySelector('.sp-close').onclick = kill;
+      ov.querySelector('.sp-today').onclick = ()=>{ localStorage.setItem('popupHide_'+p.id, today); kill(); };
+      ov.addEventListener('click', e=>{ if(e.target===ov) kill(); });
+      if(goUrl) ov.querySelectorAll('.sp-img,.sp-body').forEach(el=>{
+        el.style.cursor = 'pointer';
+        el.onclick = ()=>{ markSeen(); location.href = goUrl; };
+      });
+    }catch(_){ /* 팝업 실패는 무시 — 사이트 이용에 영향 없음 */ }
+  }
+  window.__sbPromise.then(()=> loadPopup());
+  window.__sbPromise.then(()=> loadNotices());
+  window.__sbPromise.then(()=> loadShopPreview());
+  // 친구 초대 카드 — 로그인 시 내 추천 코드 표시 + 복사/공유
+  let __myInviteCode = '';
+  async function loadInviteCode(){
+    try{
+      let code = '';
+      try{ const { data:p } = await supabase.from('profiles').select('ref_code').eq('id', (await supabase.auth.getUser()).data.user.id).maybeSingle(); code = (p && p.ref_code) || ''; }catch(_){}
+      if(!code){ try{ const { data:c } = await supabase.rpc('ensure_ref_code'); if(c) code = c; }catch(_){} }
+      if(!code) return;
+      __myInviteCode = code;
+      const codeEl = document.getElementById('myInviteCode'); if(codeEl) codeEl.textContent = code;
+      const mini = document.getElementById('miniInviteSub'); if(mini) mini.textContent = '내 코드 ' + code + ' · 탭하면 복사';
+      /* 안내 문구(CTA)는 제거됨 — 코드+버튼만 노출 */
+    }catch(err){ console.warn('초대 코드 로드 실패', err); }
+  }
+  window.copyInviteCode = async function(){
+    if(!__myInviteCode){ location.href='signup.html'; return; }
+    try{ await navigator.clipboard.writeText(__myInviteCode); alert('추천 코드가 복사됐어요!'); }
+    catch(_){ prompt('아래 코드를 길게 눌러 복사하세요', __myInviteCode); }
+  };
+  window.shareInvite = async function(){
+    if(!__myInviteCode){ location.href='signup.html'; return; }
+    // 링크에 코드를 실어 보냄 → 가입 페이지에서 추천 코드 자동 입력
+    const url = location.origin + '/signup.html?ref=' + encodeURIComponent(__myInviteCode);
+    const text = `오리파코리아 초대! 아래 링크로 가입하면 추천 코드 [${__myInviteCode}]가 자동 입력되고, 너도 나도 1,000P씩 받아 🎁`;
+    try{
+      if(navigator.share){ await navigator.share({ title:'오리파코리아 초대', text, url }); }
+      else{ await navigator.clipboard.writeText(text+' '+url); alert('초대 링크가 복사됐어요! 카카오톡 등에 붙여넣어 공유하세요.'); }
+    }catch(_){}
+  };
+
+  window.doLogout = async ()=>{
+    if(!confirm('로그아웃 하시겠어요?')) return;
+    await signOutUser();
+    window.location.reload();
+  };
+
+  async function renderAuthArea(user){
+    const area = document.getElementById('headerAuthArea');
+    const eventCard = document.getElementById('signupEventCard');
+    if(!area) return;
+    if(user){
+      let nickname = user.email || (user.user_metadata && user.user_metadata.nickname) || '회원';
+      try{
+        const { data:p } = await supabase.from('profiles').select('nickname').eq('id', user.id).maybeSingle();
+        if(p && p.nickname) nickname = p.nickname;
+      }catch(err){ console.error(err); }
+      area.innerHTML = `
+        <a href="mypage.html" class="header-auth-link">${nickname}</a>
+        <a href="javascript:void(0)" class="header-auth-link primary" onclick="doLogout()">로그아웃</a>
+      `;
+      // 친구 초대 카드: 로그인 시 내 추천 코드 노출 (복사·공유)
+      loadInviteCode();
+    } else {
+      area.innerHTML = `
+        <a href="login.html" class="header-auth-link">로그인</a>
+        <a href="signup.html" class="header-auth-link primary">회원가입</a>
+      `;
+    }
+  }
+  // 최초 로드 + 세션 준비(카카오 OAuth 리다이렉트 처리 포함) 시마다 헤더 갱신
+  supabase.auth.getSession().then(({data})=> renderAuthArea(data?.session?.user || null));   // 2026-11-06 속도: 서버 왕복 없이 저장된 로그인 정보로
+  supabase.auth.onAuthStateChange((event, session)=> renderAuthArea(session?.user || null));
+</script>
+
+<script>
+// ── 풀오픈 재방문 알림 (v54) ──
+// 풀오픈 자리를 산 캠페인 id가 localStorage('fo_watch')에 남아 있고,
+// 그 캠페인이 개봉 완료됐으면 접속 즉시 결과 확인 팝업을 띄운다.
+(async function(){
+  let watch=[];
+  try{ watch=JSON.parse(localStorage.getItem('fo_watch')||'[]'); }catch(_){}
+  if(!Array.isArray(watch)||!watch.length) return;
+  try{
+    const { supabase } = await window.__sbPromise;
+    const { data } = await supabase.from('oripa_v2')
+      .select('id,name,open_mode,fullopen_results').in('id', watch.slice(0,20));
+    const done=(data||[]).filter(r=>r.open_mode==='fullopen'&&r.fullopen_results);
+    if(!done.length) return;
+    // 팝업을 보여준 캠페인은 목록에서 제거 (한 번만 알림)
+    const doneIds=done.map(r=>r.id);
+    localStorage.setItem('fo_watch', JSON.stringify(watch.filter(id=>!doneIds.includes(id))));
+    const first=done[0];
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px';
+    ov.innerHTML=`<div style="max-width:320px;width:100%;background:var(--elev,#16181C);border:1.5px solid var(--accent,#3ECFAE);border-radius:16px;padding:22px 18px;text-align:center">
+      <div style="font-size:34px">🎉</div>
+      <div style="font-size:17px;font-weight:800;margin-top:8px">풀오픈 개봉 완료!</div>
+      <div style="font-size:12.5px;color:var(--sub,#A2AAB6);margin-top:6px">참여하신 <b style="color:var(--ink,#fff)">${String(first.name||'풀오픈 오리파').replace(/</g,'&lt;').replace(/\n/g,' ')}</b>${done.length>1?` 외 ${done.length-1}건`:''}의<br>전 자리 결과가 공개되었습니다.</div>
+      <a href="oripa-v2.html?id=${first.id}" style="display:block;margin-top:14px;padding:12px;background:var(--accent,#3ECFAE);color:#08130F;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none">결과 확인하기</a>
+      <button style="margin-top:8px;background:none;border:none;color:var(--faint,#6E747E);font-size:12px;cursor:pointer" onclick="this.closest('div').parentElement.remove()">나중에 볼게요 (보관함에 지급 완료)</button>
+    </div>`;
+    document.body.appendChild(ov);
+  }catch(_){}
+})();
+</script>
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;9c12b73eafad4a2d8b72c6ff18b1e380&quot;,&quot;r&quot;:1,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+
+</body></html>
